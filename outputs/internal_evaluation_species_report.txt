@@ -1,0 +1,41 @@
+Species Accuracy: 0.9551
+
+                             precision    recall  f1-score   support
+
+    Abyssocucumis abyssorum       0.97      0.97      0.97      4143
+    Apostichopus leukothele       0.99      0.91      0.95        90
+     Asbestopluma monticola       0.85      0.86      0.85        90
+    Benthocodon pedunculata       0.98      0.98      0.98        90
+       Chionoecetes tanneri       0.98      0.89      0.93        90
+          Chorilia longipes       0.92      0.94      0.93        90
+     Corallimorphus pilatus       0.98      0.98      0.98        90
+    Florometra serratissima       0.90      0.84      0.87        90
+    Gersemia juliepackardae       0.98      0.99      0.98        90
+          Heterochone calyx       0.98      0.96      0.97        90
+      Heteropolypus ritteri       0.96      0.94      0.95        90
+        Isidella tentaculum       0.90      0.94      0.92        90
+        Liponema brevicorne       0.96      0.89      0.92        90
+         Mediaster aequalis       0.98      1.00      0.99        90
+       Merluccius productus       0.90      0.91      0.91        90
+         Metridium farcimen       0.97      0.93      0.95        90
+      Microstomus pacificus       1.00      0.99      0.99        90
+          Octopus rubescens       1.00      0.88      0.93        90
+    Paelopatides confundens       0.97      0.97      0.97        63
+            Pandalus amplus       0.86      0.99      0.92        90
+        Pandalus platyceros       0.99      0.99      0.99        90
+         Pannychia moseleyi       0.90      0.81      0.85        89
+         Paragorgia arborea       0.96      0.97      0.96        90
+       Paralomis multispina       0.85      0.93      0.89        90
+       Pennatula phosphorea       0.96      0.97      0.96        90
+     Psathyrometra fragilis       0.87      0.89      0.88        90
+           Psolus squamatus       0.91      0.92      0.92        90
+      Ptychogastria polaris       0.97      0.96      0.96        90
+        Pyrosoma atlanticum       0.98      0.99      0.98        90
+  Rathbunaster californicus       0.99      0.92      0.95        90
+        Scotoplanes globosa       0.89      0.94      0.92        90
+         Sebastes diploproa       0.85      0.97      0.91        90
+Strongylocentrotus fragilis       0.98      0.99      0.98        90
+
+                   accuracy                           0.96      6995
+                  macro avg       0.94      0.94      0.94      6995
+               weighted avg       0.96      0.96      0.96      6995

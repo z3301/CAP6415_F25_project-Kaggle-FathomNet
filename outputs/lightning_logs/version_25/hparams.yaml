@@ -1,0 +1,9 @@
+class_counts:
+  class: 19
+  family: 51
+  genus: 51
+  kingdom: 2
+  order: 36
+  phylum: 8
+  species: 34
+lr: 0.0003

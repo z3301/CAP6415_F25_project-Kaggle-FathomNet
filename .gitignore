@@ -192,3 +192,26 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# Distribution / packaging
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+*.whl
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb
+*.html
+*.ckpt
+
+# Log files
+*.log
+
+# System files
+.DS_Store
+Thumbs.db
+
+>>>>>>> 7fc1609d3 (initial commit)

@@ -1,0 +1,6 @@
+class_counts:
+  family: 65
+  genus: 74
+  order: 42
+  species: 79
+lr: 0.0001

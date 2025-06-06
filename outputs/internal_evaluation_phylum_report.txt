@@ -1,0 +1,15 @@
+Phylum Accuracy: 0.9588
+
+               precision    recall  f1-score   support
+
+     Annelida       0.96      0.97      0.97      4065
+   Arthropoda       0.93      0.96      0.94       450
+     Chordata       0.94      0.96      0.95       360
+     Cnidaria       0.97      0.96      0.96       900
+Echinodermata       0.95      0.94      0.94       950
+     Mollusca       1.00      0.87      0.93        90
+     Porifera       0.92      0.88      0.90       180
+
+     accuracy                           0.96      6995
+    macro avg       0.95      0.93      0.94      6995
+ weighted avg       0.96      0.96      0.96      6995

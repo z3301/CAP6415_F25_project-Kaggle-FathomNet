@@ -1,0 +1,492 @@
+class_counts:
+  family: 65
+  genus: 74
+  order: 42
+  species: 79
+family_to_order:
+  Actinernidae: Actiniaria
+  Actiniaria: Actiniaria
+  Actiniidae: Actiniaria
+  Actinopterygii: Actinopterygii
+  Alcyoniidae: Malacalcyonacea
+  Amphipoda: Amphipoda
+  Antedonidae: Comatulida
+  Aphrocallistidae: Sceptrulophora
+  Asteriidae: Forcipulatida
+  Asteroidea: Asteroidea
+  Brisingida: Brisingida
+  Caridea: Decapoda
+  Ceriantharia: Ceriantharia
+  Cladorhizidae: Poecilosclerida
+  Coralliidae: Scleralcyonacea
+  Corallimorphidae: Corallimorpharia
+  Crinoidea: Crinoidea
+  Cucumariidae: Dendrochirotida
+  Elpidiidae: Elasipodida
+  Epialtidae: Decapoda
+  Farreidae: Sceptrulophora
+  Funiculinidae: Scleralcyonaceaunidopsis
+  Gastropoda: Gastropoda
+  Goniasteridae: Valvatida
+  Hexactinellida: Hexactinellida
+  Holothuroidea: Holothuroidea
+  Hormathiidae: Actiniaria
+  Isididae: Malacalcyonacea
+  Keratoisididae: Scleralcyonacea
+  Laetmogonidae: Elasipodida
+  Liponematidae: Actiniaria
+  Lithodidae: Decapoda
+  Merlucciidae: Gadiformes
+  Metridiidae: Actiniaria
+  Munidopsidae: Decapoda
+  Munnopsidae: Isopoda
+  Mycalidae: Poecilosclerida
+  Octopodidae: Octopoda
+  Ophiacanthidae: Ophiacanthida
+  Ophiuroidea: Ophiuroidea
+  Oregoniidae: Decapoda
+  Pandalidae: Decapoda
+  Pectinidae: Pectinida
+  Pennatulidae: Scleralcyonacea
+  Pleuronectidae: Pleuronectiformes
+  Porifera: Porifera
+  Primnoidae: Scleralcyonacea
+  Psolidae: Dendrochirotida
+  Ptychogastriidae: Trachymedusae
+  Pyrosomatidae: Pyrosomatida
+  Rhopalonematidae: Trachymedusae
+  Rossellidae: Lyssacinosida
+  Scleractinia: Scleractinia
+  Sebastidae: Perciformes
+  Serpulidae: Sabellida
+  Stichopodidae: Synallactida
+  Strongylocentrotidae: Camarodonta
+  Synallactidae: Synallactida
+  Terebellidae: Terebellida
+  Tunicata: Tunicata
+  Umbellulidae: Scleralcyonacea
+  Vesicomyidae: Venerida
+  Virgulariidae: Scleralcyonacea
+  Zenometridae: Comatulida
+  Zoantharia: Zoantharia
+genus_to_family:
+  Abyssocucumis: Cucumariidae
+  Acanthascinae: Rossellidae
+  Acanthoptilum: Virgulariidae
+  Actinernus: Actinernidae
+  Actiniaria: Actiniaria
+  Actinopterygii: Actinopterygii
+  Amphipoda: Amphipoda
+  Apostichopus: Stichopodidae
+  Asbestopluma: Cladorhizidae
+  Asteroidea: Asteroidea
+  Benthocodon: Rhopalonematidae
+  Brisingida: Brisingida
+  Caridea: Caridea
+  Ceriantharia: Ceriantharia
+  Chionoecetes: Oregoniidae
+  Chorilia: Epialtidae
+  Corallimorphus: Corallimorphidae
+  Crinoidea: Crinoidea
+  Delectopecten: Pectinidae
+  Elpidia: Elpidiidae
+  Farrea: Farreidae
+  Florometra: Antedonidae
+  Funiculina: Funiculinidae
+  Gastropoda: Gastropoda
+  Gersemia: Alcyoniidae
+  Heterocarpus: Pandalidae
+  Heterochone: Aphrocallistidae
+  Heteropolypus: Coralliidae
+  Hexactinellida: Hexactinellida
+  Hippasteria: Goniasteridae
+  Holothuroidea: Holothuroidea
+  Hormathiidae: Hormathiidae
+  Isidella: Keratoisididae
+  Isididae: Isididae
+  Isosicyonis: Actiniidae
+  Keratoisis: Keratoisididae
+  Liponema: Liponematidae
+  Lithodidae: Lithodidae
+  Mediaster: Goniasteridae
+  Merluccius: Merlucciidae
+  Metridium: Metridiidae
+  Microstomus: Pleuronectidae
+  Munidopsis: Munidopsidae
+  Munnopsidae: Munnopsidae
+  Mycale: Mycalidae
+  Octopus: Octopodidae
+  Ophiacanthidae: Ophiacanthidae
+  Ophiuroidea: Ophiuroidea
+  Paelopatides: Synallactidae
+  Pandalus: Pandalidae
+  Pannychia: Laetmogonidae
+  Paragorgia: Coralliidae
+  Paralomis: Lithodidae
+  Parastenella: Primnoidae
+  Peniagone: Elpidiidae
+  Pennatula: Pennatulidae
+  Porifera: Porifera
+  Psathyrometra: Zenometridae
+  Psolus: Psolidae
+  Ptychogastria: Ptychogastriidae
+  Pyrosoma: Pyrosomatidae
+  Rathbunaster: Asteriidae
+  Scleractinia: Scleractinia
+  Scotoplanes: Elpidiidae
+  Sebastes: Sebastidae
+  Sebastolobus: Sebastidae
+  Serpulidae: Serpulidae
+  Staurocalyptus: Rossellidae
+  Strongylocentrotus: Strongylocentrotidae
+  Terebellidae: Terebellidae
+  Tunicata: Tunicata
+  Umbellula: Umbellulidae
+  Vesicomyidae: Vesicomyidae
+  Zoantharia: Zoantharia
+id_to_name:
+  family:
+    0: Actinernidae
+    1: Actiniaria
+    2: Actiniidae
+    3: Actinopterygii
+    4: Alcyoniidae
+    5: Amphipoda
+    6: Antedonidae
+    7: Aphrocallistidae
+    8: Asteriidae
+    9: Asteroidea
+    10: Brisingida
+    11: Caridea
+    12: Ceriantharia
+    13: Cladorhizidae
+    14: Coralliidae
+    15: Corallimorphidae
+    16: Crinoidea
+    17: Cucumariidae
+    18: Elpidiidae
+    19: Epialtidae
+    20: Farreidae
+    21: Funiculinidae
+    22: Gastropoda
+    23: Goniasteridae
+    24: Hexactinellida
+    25: Holothuroidea
+    26: Hormathiidae
+    27: Isididae
+    28: Keratoisididae
+    29: Laetmogonidae
+    30: Liponematidae
+    31: Lithodidae
+    32: Merlucciidae
+    33: Metridiidae
+    34: Munidopsidae
+    35: Munnopsidae
+    36: Mycalidae
+    37: Octopodidae
+    38: Ophiacanthidae
+    39: Ophiuroidea
+    40: Oregoniidae
+    41: Pandalidae
+    42: Pectinidae
+    43: Pennatulidae
+    44: Pleuronectidae
+    45: Porifera
+    46: Primnoidae
+    47: Psolidae
+    48: Ptychogastriidae
+    49: Pyrosomatidae
+    50: Rhopalonematidae
+    51: Rossellidae
+    52: Scleractinia
+    53: Sebastidae
+    54: Serpulidae
+    55: Stichopodidae
+    56: Strongylocentrotidae
+    57: Synallactidae
+    58: Terebellidae
+    59: Tunicata
+    60: Umbellulidae
+    61: Vesicomyidae
+    62: Virgulariidae
+    63: Zenometridae
+    64: Zoantharia
+  genus:
+    0: Abyssocucumis
+    1: Acanthascinae
+    2: Acanthoptilum
+    3: Actinernus
+    4: Actiniaria
+    5: Actinopterygii
+    6: Amphipoda
+    7: Apostichopus
+    8: Asbestopluma
+    9: Asteroidea
+    10: Benthocodon
+    11: Brisingida
+    12: Caridea
+    13: Ceriantharia
+    14: Chionoecetes
+    15: Chorilia
+    16: Corallimorphus
+    17: Crinoidea
+    18: Delectopecten
+    19: Elpidia
+    20: Farrea
+    21: Florometra
+    22: Funiculina
+    23: Gastropoda
+    24: Gersemia
+    25: Heterocarpus
+    26: Heterochone
+    27: Heteropolypus
+    28: Hexactinellida
+    29: Hippasteria
+    30: Holothuroidea
+    31: Hormathiidae
+    32: Isidella
+    33: Isididae
+    34: Isosicyonis
+    35: Keratoisis
+    36: Liponema
+    37: Lithodidae
+    38: Mediaster
+    39: Merluccius
+    40: Metridium
+    41: Microstomus
+    42: Munidopsis
+    43: Munnopsidae
+    44: Mycale
+    45: Octopus
+    46: Ophiacanthidae
+    47: Ophiuroidea
+    48: Paelopatides
+    49: Pandalus
+    50: Pannychia
+    51: Paragorgia
+    52: Paralomis
+    53: Parastenella
+    54: Peniagone
+    55: Pennatula
+    56: Porifera
+    57: Psathyrometra
+    58: Psolus
+    59: Ptychogastria
+    60: Pyrosoma
+    61: Rathbunaster
+    62: Scleractinia
+    63: Scotoplanes
+    64: Sebastes
+    65: Sebastolobus
+    66: Serpulidae
+    67: Staurocalyptus
+    68: Strongylocentrotus
+    69: Terebellidae
+    70: Tunicata
+    71: Umbellula
+    72: Vesicomyidae
+    73: Zoantharia
+  order:
+    0: Actiniaria
+    1: Actinopterygii
+    2: Amphipoda
+    3: Asteroidea
+    4: Brisingida
+    5: Camarodonta
+    6: Ceriantharia
+    7: Comatulida
+    8: Corallimorpharia
+    9: Crinoidea
+    10: Decapoda
+    11: Dendrochirotida
+    12: Elasipodida
+    13: Forcipulatida
+    14: Gadiformes
+    15: Gastropoda
+    16: Hexactinellida
+    17: Holothuroidea
+    18: Isopoda
+    19: Lyssacinosida
+    20: Malacalcyonacea
+    21: Octopoda
+    22: Ophiacanthida
+    23: Ophiuroidea
+    24: Pectinida
+    25: Perciformes
+    26: Pleuronectiformes
+    27: Poecilosclerida
+    28: Porifera
+    29: Pyrosomatida
+    30: Sabellida
+    31: Sceptrulophora
+    32: Scleractinia
+    33: Scleralcyonacea
+    34: Scleralcyonaceaunidopsis
+    35: Synallactida
+    36: Terebellida
+    37: Trachymedusae
+    38: Tunicata
+    39: Valvatida
+    40: Venerida
+    41: Zoantharia
+  species:
+    0: Abyssocucumis abyssorum
+    1: Acanthascinae
+    2: Acanthoptilum
+    3: Actinernus
+    4: Actiniaria
+    5: Actinopterygii
+    6: Amphipoda
+    7: Apostichopus leukothele
+    8: Asbestopluma
+    9: Asbestopluma monticola
+    10: Asteroidea
+    11: Benthocodon pedunculata
+    12: Brisingida
+    13: Caridea
+    14: Ceriantharia
+    15: Chionoecetes tanneri
+    16: Chorilia longipes
+    17: Corallimorphus pilatus
+    18: Crinoidea
+    19: Delectopecten
+    20: Elpidia
+    21: Farrea
+    22: Florometra serratissima
+    23: Funiculina
+    24: Gastropoda
+    25: Gersemia juliepackardae
+    26: Heterocarpus
+    27: Heterochone calyx
+    28: Heteropolypus ritteri
+    29: Hexactinellida
+    30: Hippasteria
+    31: Holothuroidea
+    32: Hormathiidae
+    33: Isidella tentaculum
+    34: Isididae
+    35: Isosicyonis
+    36: Keratoisis
+    37: Liponema brevicorne
+    38: Lithodidae
+    39: Mediaster aequalis
+    40: Merluccius productus
+    41: Metridium farcimen
+    42: Microstomus pacificus
+    43: Munidopsis
+    44: Munnopsidae
+    45: Mycale
+    46: Octopus rubescens
+    47: Ophiacanthidae
+    48: Ophiuroidea
+    49: Paelopatides confundens
+    50: Pandalus amplus
+    51: Pandalus platyceros
+    52: Pannychia moseleyi
+    53: Paragorgia
+    54: Paragorgia arborea
+    55: Paralomis multispina
+    56: Parastenella
+    57: Peniagone
+    58: Pennatula phosphorea
+    59: Porifera
+    60: Psathyrometra fragilis
+    61: Psolus squamatus
+    62: Ptychogastria polaris
+    63: Pyrosoma atlanticum
+    64: Rathbunaster californicus
+    65: Scleractinia
+    66: Scotoplanes
+    67: Scotoplanes globosa
+    68: Sebastes
+    69: Sebastes diploproa
+    70: Sebastolobus
+    71: Serpulidae
+    72: Staurocalyptus
+    73: Strongylocentrotus fragilis
+    74: Terebellidae
+    75: Tunicata
+    76: Umbellula
+    77: Vesicomyidae
+    78: Zoantharia
+lr: 0.0003
+species_to_genus:
+  Abyssocucumis abyssorum: Abyssocucumis
+  Acanthascinae: Acanthascinae
+  Acanthoptilum: Acanthoptilum
+  Actinernus: Actinernus
+  Actiniaria: Actiniaria
+  Actinopterygii: Actinopterygii
+  Amphipoda: Amphipoda
+  Apostichopus leukothele: Apostichopus
+  Asbestopluma: Asbestopluma
+  Asbestopluma monticola: Asbestopluma
+  Asteroidea: Asteroidea
+  Benthocodon pedunculata: Benthocodon
+  Brisingida: Brisingida
+  Caridea: Caridea
+  Ceriantharia: Ceriantharia
+  Chionoecetes tanneri: Chionoecetes
+  Chorilia longipes: Chorilia
+  Corallimorphus pilatus: Corallimorphus
+  Crinoidea: Crinoidea
+  Delectopecten: Delectopecten
+  Elpidia: Elpidia
+  Farrea: Farrea
+  Florometra serratissima: Florometra
+  Funiculina: Funiculina
+  Gastropoda: Gastropoda
+  Gersemia juliepackardae: Gersemia
+  Heterocarpus: Heterocarpus
+  Heterochone calyx: Heterochone
+  Heteropolypus ritteri: Heteropolypus
+  Hexactinellida: Hexactinellida
+  Hippasteria: Hippasteria
+  Holothuroidea: Holothuroidea
+  Hormathiidae: Hormathiidae
+  Isidella tentaculum: Isidella
+  Isididae: Isididae
+  Isosicyonis: Isosicyonis
+  Keratoisis: Keratoisis
+  Liponema brevicorne: Liponema
+  Lithodidae: Lithodidae
+  Mediaster aequalis: Mediaster
+  Merluccius productus: Merluccius
+  Metridium farcimen: Metridium
+  Microstomus pacificus: Microstomus
+  Munidopsis: Munidopsis
+  Munnopsidae: Munnopsidae
+  Mycale: Mycale
+  Octopus rubescens: Octopus
+  Ophiacanthidae: Ophiacanthidae
+  Ophiuroidea: Ophiuroidea
+  Paelopatides confundens: Paelopatides
+  Pandalus amplus: Pandalus
+  Pandalus platyceros: Pandalus
+  Pannychia moseleyi: Pannychia
+  Paragorgia: Paragorgia
+  Paragorgia arborea: Paragorgia
+  Paralomis multispina: Paralomis
+  Parastenella: Parastenella
+  Peniagone: Peniagone
+  Pennatula phosphorea: Pennatula
+  Porifera: Porifera
+  Psathyrometra fragilis: Psathyrometra
+  Psolus squamatus: Psolus
+  Ptychogastria polaris: Ptychogastria
+  Pyrosoma atlanticum: Pyrosoma
+  Rathbunaster californicus: Rathbunaster
+  Scleractinia: Scleractinia
+  Scotoplanes: Scotoplanes
+  Scotoplanes globosa: Scotoplanes
+  Sebastes: Sebastes
+  Sebastes diploproa: Sebastes
+  Sebastolobus: Sebastolobus
+  Serpulidae: Serpulidae
+  Staurocalyptus: Staurocalyptus
+  Strongylocentrotus fragilis: Strongylocentrotus
+  Terebellidae: Terebellidae
+  Tunicata: Tunicata
+  Umbellula: Umbellula
+  Vesicomyidae: Vesicomyidae
+  Zoantharia: Zoantharia

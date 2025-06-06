@@ -1,0 +1,40 @@
+Genus Accuracy: 0.9555
+
+                    precision    recall  f1-score   support
+
+     Abyssocucumis       0.96      0.97      0.97      4143
+      Apostichopus       0.99      0.91      0.95        90
+      Asbestopluma       0.84      0.84      0.84        90
+       Benthocodon       0.97      0.98      0.97        90
+      Chionoecetes       0.98      0.90      0.94        90
+          Chorilia       0.93      0.94      0.94        90
+    Corallimorphus       0.98      0.98      0.98        90
+        Florometra       0.89      0.84      0.87        90
+          Gersemia       0.98      0.99      0.98        90
+       Heterochone       0.98      0.96      0.97        90
+     Heteropolypus       0.96      0.94      0.95        90
+          Isidella       0.90      0.94      0.92        90
+          Liponema       0.96      0.89      0.92        90
+         Mediaster       0.98      1.00      0.99        90
+        Merluccius       0.91      0.90      0.91        90
+         Metridium       0.97      0.93      0.95        90
+       Microstomus       1.00      0.99      0.99        90
+           Octopus       1.00      0.88      0.93        90
+      Paelopatides       0.97      0.95      0.96        63
+          Pandalus       0.93      0.99      0.96       180
+         Pannychia       0.92      0.81      0.86        89
+        Paragorgia       0.97      0.97      0.97        90
+         Paralomis       0.85      0.93      0.89        90
+         Pennatula       0.96      0.97      0.96        90
+     Psathyrometra       0.87      0.88      0.87        90
+            Psolus       0.91      0.92      0.92        90
+     Ptychogastria       0.97      0.96      0.96        90
+          Pyrosoma       0.98      0.99      0.98        90
+      Rathbunaster       0.99      0.92      0.95        90
+       Scotoplanes       0.91      0.93      0.92        90
+          Sebastes       0.85      0.97      0.91        90
+Strongylocentrotus       0.98      0.98      0.98        90
+
+          accuracy                           0.96      6995
+         macro avg       0.94      0.94      0.94      6995
+      weighted avg       0.96      0.96      0.96      6995

@@ -1,0 +1,28 @@
+Order Accuracy: 0.9605
+
+                   precision    recall  f1-score   support
+
+       Actiniaria       0.97      0.97      0.97      4245
+      Camarodonta       0.99      0.97      0.98        90
+       Comatulida       0.93      0.93      0.93       180
+ Corallimorpharia       0.98      0.98      0.98        90
+         Decapoda       0.93      0.96      0.95       450
+  Dendrochirotida       0.92      0.94      0.93       168
+      Elasipodida       0.91      0.88      0.90       179
+    Forcipulatida       0.99      0.92      0.95        90
+       Gadiformes       0.91      0.91      0.91        90
+  Malacalcyonacea       0.98      0.99      0.98        90
+         Octopoda       1.00      0.88      0.93        90
+      Perciformes       0.84      0.97      0.90        90
+Pleuronectiformes       1.00      0.99      0.99        90
+  Poecilosclerida       0.84      0.83      0.84        90
+     Pyrosomatida       0.98      0.99      0.98        90
+   Sceptrulophora       0.98      0.94      0.96        90
+  Scleralcyonacea       0.95      0.96      0.95       360
+     Synallactida       0.98      0.94      0.96       153
+    Trachymedusae       0.98      0.98      0.98       180
+        Valvatida       0.97      1.00      0.98        90
+
+         accuracy                           0.96      6995
+        macro avg       0.95      0.95      0.95      6995
+     weighted avg       0.96      0.96      0.96      6995
