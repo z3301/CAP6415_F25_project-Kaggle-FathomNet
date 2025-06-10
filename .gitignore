@@ -201,6 +201,11 @@ dist/
 *.egg
 *.whl
 
+# Images
+*.png
+*.jpg
+*.jpeg
+
 # Jupyter Notebook
 .ipynb_checkpoints/
 *.ipynb
