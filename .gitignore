@@ -9,10 +9,14 @@ __pycache__/
 # Ignore data and model weights
 data/
 datasets/
+data_artifacts/
+augment_dataset/
+combined/
 checkpoints/
 runs/
-outputs/
 logs/
+test/
+train/
 __pycache__/
 *.pt
 *.pth
