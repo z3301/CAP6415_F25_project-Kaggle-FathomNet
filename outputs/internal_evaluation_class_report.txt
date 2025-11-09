@@ -1,22 +1,29 @@
-Class Accuracy: 0.9593
+Class Accuracy: 0.9539
 
                 precision    recall  f1-score   support
 
-      Anthozoa       0.97      0.97      0.97      4065
-    Asteroidea       0.98      0.96      0.97       180
-   Cephalopoda       1.00      0.87      0.93        90
-     Crinoidea       0.94      0.93      0.93       180
-  Demospongiae       0.85      0.82      0.84        90
-    Echinoidea       0.98      0.99      0.98        90
-  Hexacorallia       0.97      0.94      0.96       270
-Hexactinellida       0.99      0.96      0.97        90
- Holothuroidea       0.94      0.93      0.94       500
-      Hydrozoa       0.98      0.98      0.98       180
-  Malacostraca       0.93      0.96      0.95       450
-  Octocorallia       0.95      0.96      0.96       450
-     Teleostei       0.92      0.95      0.93       270
-     Thaliacea       0.98      0.99      0.98        90
+Actinopterygii       0.95      0.81      0.87        90
+    Asteroidea       0.98      0.95      0.96       225
+      Bivalvia       0.92      0.94      0.93        90
+   Cephalopoda       0.95      0.93      0.94        45
+     Crinoidea       0.95      0.99      0.97       135
+  Demospongiae       0.91      0.96      0.93       135
+    Echinoidea       0.95      0.93      0.94        45
+    Gastropoda       0.86      0.93      0.89        45
+  Hexacorallia       0.97      0.96      0.97       450
+Hexactinellida       0.91      0.92      0.91       225
+ Holothuroidea       0.98      0.97      0.97       450
+      Hydrozoa       0.98      0.99      0.98        90
+  Malacostraca       0.96      0.98      0.97       450
+Multicrustacea       0.98      0.96      0.97        45
+  Octocorallia       0.98      0.96      0.97       540
+   Ophiuroidea       0.95      0.97      0.96        90
+    Polychaeta       0.97      0.99      0.98        90
+      Porifera       0.68      0.62      0.65        45
+     Teleostei       0.92      0.96      0.94       180
+     Thaliacea       1.00      1.00      1.00        45
+      Tunicata       0.95      0.84      0.89        45
 
-      accuracy                           0.96      6995
-     macro avg       0.96      0.94      0.95      6995
-  weighted avg       0.96      0.96      0.96      6995
+      accuracy                           0.95      3555
+     macro avg       0.94      0.93      0.93      3555
+  weighted avg       0.95      0.95      0.95      3555

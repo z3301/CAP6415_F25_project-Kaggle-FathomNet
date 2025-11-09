@@ -1,11 +1,52 @@
-*.ipynb filter=lfs diff=lfs merge=lfs -text
-*.csv filter=lfs diff=lfs merge=lfs -text
+# ------------------------------------------------------------------------------
+# Normalize text files (prevents CRLF issues across macOS/Linux/Windows)
+* text=auto eol=lf
+
+# Treat these file types as text for diffs and merges
+*.py text diff=python
+*.ipynb text diff=ipynb
+*.md text
+*.yaml text
+*.yml text
+*.json text
+*.txt text
+*.csv text
+*.ini text
+*.cfg text
+*.sh text eol=lf
+# Binary / large file handling via Git LFS
+# Common deep learning weights and binaries
 *.pt filter=lfs diff=lfs merge=lfs -text
-*.h5 filter=lfs diff=lfs merge=lfs -text
+*.pth filter=lfs diff=lfs merge=lfs -text
 *.onnx filter=lfs diff=lfs merge=lfs -text
-*.jpg filter=lfs diff=lfs merge=lfs -text
-*.png filter=lfs diff=lfs merge=lfs -text
-*.zip filter=lfs diff=lfs merge=lfs -text
+*.engine filter=lfs diff=lfs merge=lfs -text
+*.ckpt filter=lfs diff=lfs merge=lfs -text
+*.h5 filter=lfs diff=lfs merge=lfs -text
 *.tar filter=lfs diff=lfs merge=lfs -text
+*.tar.gz filter=lfs diff=lfs merge=lfs -text
+*.zip filter=lfs diff=lfs merge=lfs -text
 *.npz filter=lfs diff=lfs merge=lfs -text
 *.npy filter=lfs diff=lfs merge=lfs -text
+*.pkl filter=lfs diff=lfs merge=lfs -text
+*.parquet filter=lfs diff=lfs merge=lfs -text
+# Image and video data
+*.jpg filter=lfs diff=lfs merge=lfs -text
+*.jpeg filter=lfs diff=lfs merge=lfs -text
+*.png filter=lfs diff=lfs merge=lfs -text
+*.bmp filter=lfs diff=lfs merge=lfs -text
+*.gif filter=lfs diff=lfs merge=lfs -text
+*.tif filter=lfs diff=lfs merge=lfs -text
+*.tiff filter=lfs diff=lfs merge=lfs -text
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+*.avi filter=lfs diff=lfs merge=lfs -text
+*.mov filter=lfs diff=lfs merge=lfs -text
+# Ignore diffs for common binary artifacts (prevents Git from choking)
+*.pdf -diff
+*.bin -diff
+*.exe -diff
+*.so -diff
+*.dll -diff
+# Documentation and notebooks
+*.ipynb merge=union
+docs/** linguist-documentation
+notebooks/** linguist-documentation

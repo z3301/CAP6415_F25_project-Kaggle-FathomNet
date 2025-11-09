@@ -6,6 +6,37 @@ __pycache__/
 # C extensions
 *.so
 
+# Ignore data and model weights
+data/
+datasets/
+checkpoints/
+runs/
+outputs/
+logs/
+__pycache__/
+*.pt
+*.pth
+*.onnx
+*.engine
+*.h5
+*.ckpt
+*.zip
+*.tar
+*.tar.gz
+*.npz
+*.npy
+
+# Ignore notebooks checkpoints and system files
+.ipynb_checkpoints/
+.DS_Store
+*.swp
+*.tmp
+
+# Ignore cache and build artifacts
+*.egg-info/
+dist/
+build/
+
 # Distribution / packaging
 .Python
 build/
@@ -218,3 +249,46 @@ dist/
 # System files
 .DS_Store
 Thumbs.db
+
+# SLURM and job scheduler outputs
+slurm-*.out
+slurm-*.err
+*.sbatch
+*.srun
+*.sh.o*
+*.sh.e*
+
+# Temporary experiment outputs (DGX or Kaggle)
+wandb/
+tensorboard/
+lightning_logs/
+experiments/
+results/
+tmp/
+tmp_*/
+
+# Conda environment caches
+.conda/
+conda-env/
+conda-meta/
+envs/
+pkgs/
+
+# Docker-related
+*.bak
+*.old
+*.tmp
+*.log.*
+docker-compose.override.yml
+.envrc
+
+# Kaggle competition artifacts
+*.csv
+submission.csv
+*.json
+*.pkl
+*.parquet
+metadata/
+__results__/
+working/
+output/

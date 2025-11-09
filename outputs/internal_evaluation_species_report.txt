@@ -1,41 +1,87 @@
-Species Accuracy: 0.9551
+Species Accuracy: 0.8866
 
                              precision    recall  f1-score   support
 
-    Abyssocucumis abyssorum       0.97      0.97      0.97      4143
-    Apostichopus leukothele       0.99      0.91      0.95        90
-     Asbestopluma monticola       0.85      0.86      0.85        90
-    Benthocodon pedunculata       0.98      0.98      0.98        90
-       Chionoecetes tanneri       0.98      0.89      0.93        90
-          Chorilia longipes       0.92      0.94      0.93        90
-     Corallimorphus pilatus       0.98      0.98      0.98        90
-    Florometra serratissima       0.90      0.84      0.87        90
-    Gersemia juliepackardae       0.98      0.99      0.98        90
-          Heterochone calyx       0.98      0.96      0.97        90
-      Heteropolypus ritteri       0.96      0.94      0.95        90
-        Isidella tentaculum       0.90      0.94      0.92        90
-        Liponema brevicorne       0.96      0.89      0.92        90
-         Mediaster aequalis       0.98      1.00      0.99        90
-       Merluccius productus       0.90      0.91      0.91        90
-         Metridium farcimen       0.97      0.93      0.95        90
-      Microstomus pacificus       1.00      0.99      0.99        90
-          Octopus rubescens       1.00      0.88      0.93        90
-    Paelopatides confundens       0.97      0.97      0.97        63
-            Pandalus amplus       0.86      0.99      0.92        90
-        Pandalus platyceros       0.99      0.99      0.99        90
-         Pannychia moseleyi       0.90      0.81      0.85        89
-         Paragorgia arborea       0.96      0.97      0.96        90
-       Paralomis multispina       0.85      0.93      0.89        90
-       Pennatula phosphorea       0.96      0.97      0.96        90
-     Psathyrometra fragilis       0.87      0.89      0.88        90
-           Psolus squamatus       0.91      0.92      0.92        90
-      Ptychogastria polaris       0.97      0.96      0.96        90
-        Pyrosoma atlanticum       0.98      0.99      0.98        90
-  Rathbunaster californicus       0.99      0.92      0.95        90
-        Scotoplanes globosa       0.89      0.94      0.92        90
-         Sebastes diploproa       0.85      0.97      0.91        90
-Strongylocentrotus fragilis       0.98      0.99      0.98        90
+    Abyssocucumis abyssorum       0.80      0.96      0.87        45
+              Acanthascinae       0.79      0.84      0.82        45
+              Acanthoptilum       1.00      0.96      0.98        45
+                 Actinernus       0.89      0.87      0.88        45
+                 Actiniaria       0.66      0.60      0.63        45
+             Actinopterygii       0.88      0.62      0.73        45
+                  Amphipoda       0.98      0.93      0.95        45
+    Apostichopus leukothele       1.00      0.91      0.95        45
+               Asbestopluma       0.83      0.89      0.86        45
+     Asbestopluma monticola       0.93      0.96      0.95        45
+                 Asteroidea       0.85      0.87      0.86        45
+    Benthocodon pedunculata       0.96      1.00      0.98        45
+                 Brisingida       0.97      0.82      0.89        45
+                    Caridea       0.72      0.73      0.73        45
+               Ceriantharia       0.95      0.93      0.94        45
+       Chionoecetes tanneri       0.96      0.96      0.96        45
+          Chorilia longipes       0.93      0.96      0.95        45
+     Corallimorphus pilatus       0.98      0.91      0.94        45
+                  Crinoidea       0.83      0.84      0.84        45
+              Delectopecten       0.98      1.00      0.99        45
+                    Elpidia       0.93      0.93      0.93        45
+                     Farrea       0.88      0.93      0.90        45
+    Florometra serratissima       0.78      0.87      0.82        45
+                 Funiculina       0.97      0.82      0.89        45
+                 Gastropoda       0.86      0.93      0.89        45
+    Gersemia juliepackardae       1.00      0.98      0.99        45
+               Heterocarpus       0.87      0.89      0.88        45
+          Heterochone calyx       0.96      0.96      0.96        45
+      Heteropolypus ritteri       0.98      0.93      0.95        45
+             Hexactinellida       0.64      0.62      0.63        45
+                Hippasteria       0.98      0.96      0.97        45
+              Holothuroidea       0.78      0.69      0.73        45
+               Hormathiidae       0.84      0.80      0.82        45
+        Isidella tentaculum       0.82      0.89      0.85        45
+                   Isididae       0.81      0.64      0.72        45
+                Isosicyonis       0.90      0.96      0.92        45
+                 Keratoisis       0.79      0.76      0.77        45
+        Liponema brevicorne       0.93      0.84      0.88        45
+                 Lithodidae       0.70      0.73      0.72        45
+         Mediaster aequalis       1.00      0.98      0.99        45
+       Merluccius productus       0.80      0.89      0.84        45
+         Metridium farcimen       0.89      0.87      0.88        45
+      Microstomus pacificus       1.00      1.00      1.00        45
+                 Munidopsis       0.98      0.98      0.98        45
+                Munnopsidae       0.92      0.98      0.95        45
+                     Mycale       0.86      0.98      0.92        45
+          Octopus rubescens       0.91      0.96      0.93        45
+             Ophiacanthidae       0.95      0.93      0.94        45
+                Ophiuroidea       0.88      0.93      0.90        45
+    Paelopatides confundens       1.00      0.91      0.95        45
+            Pandalus amplus       0.78      0.89      0.83        45
+        Pandalus platyceros       0.98      0.96      0.97        45
+         Pannychia moseleyi       0.79      0.67      0.72        45
+                 Paragorgia       0.91      0.87      0.89        45
+         Paragorgia arborea       0.92      0.98      0.95        45
+       Paralomis multispina       0.80      0.80      0.80        45
+               Parastenella       0.94      1.00      0.97        45
+                  Peniagone       0.85      0.89      0.87        45
+       Pennatula phosphorea       1.00      0.96      0.98        45
+                   Porifera       0.64      0.64      0.64        45
+     Psathyrometra fragilis       0.80      0.82      0.81        45
+           Psolus squamatus       0.91      0.91      0.91        45
+      Ptychogastria polaris       1.00      1.00      1.00        45
+        Pyrosoma atlanticum       1.00      1.00      1.00        45
+  Rathbunaster californicus       0.91      0.96      0.93        45
+               Scleractinia       0.95      0.93      0.94        45
+                Scotoplanes       0.98      0.89      0.93        45
+        Scotoplanes globosa       0.88      0.96      0.91        45
+                   Sebastes       0.74      0.58      0.65        45
+         Sebastes diploproa       0.74      0.87      0.80        45
+               Sebastolobus       0.83      0.98      0.90        45
+                 Serpulidae       1.00      1.00      1.00        45
+             Staurocalyptus       0.90      0.84      0.87        45
+Strongylocentrotus fragilis       0.95      0.93      0.94        45
+               Terebellidae       0.90      0.98      0.94        45
+                   Tunicata       0.93      0.84      0.88        45
+                  Umbellula       0.83      0.96      0.89        45
+               Vesicomyidae       0.89      0.89      0.89        45
+                 Zoantharia       0.96      0.98      0.97        45
 
-                   accuracy                           0.96      6995
-                  macro avg       0.94      0.94      0.94      6995
-               weighted avg       0.96      0.96      0.96      6995
+                   accuracy                           0.89      3555
+                  macro avg       0.89      0.89      0.89      3555
+               weighted avg       0.89      0.89      0.89      3555

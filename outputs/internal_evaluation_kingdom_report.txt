@@ -2,8 +2,8 @@ Kingdom Accuracy: 1.0000
 
               precision    recall  f1-score   support
 
-    Animalia       1.00      1.00      1.00      6995
+    Animalia       1.00      1.00      1.00      3555
 
-    accuracy                           1.00      6995
-   macro avg       1.00      1.00      1.00      6995
-weighted avg       1.00      1.00      1.00      6995
+    accuracy                           1.00      3555
+   macro avg       1.00      1.00      1.00      3555
+weighted avg       1.00      1.00      1.00      3555
