@@ -2,7 +2,7 @@
 # ============================================================
 #  export_weekly_tasks.sh
 #  Exports all GitHub issue fields grouped by milestone
-#  and writes weekly logs to /docs/weekNlog.txt
+#  and writes weekly logs to /docs/weekNlog.txt in chronological order
 # ============================================================
 
 # --- CONFIGURATION ---
@@ -28,25 +28,22 @@ for MILESTONE in "${MILESTONES[@]}"; do
         echo "==================================================="
         echo "FathomNet 2025 Project — Weekly Log $WEEK"
         echo "Generated on: $(date)"
-        echo "===================================================\n"
+        echo "==================================================="
     } > "$OUTPUT_FILE"
 
-    # Export all issue fields
+    # Export all issue fields in chronological order (oldest → newest)
     gh issue list --repo "$REPO" --milestone "$MILESTONE" --state all \
       --json author,assignees,body,closedAt,createdAt,labels,milestone,number,state,title,updatedAt,url,comments \
-      --jq '.[] |
-        "• Title: \(.title)\n" +
-        "  Number: #\(.number)\n" +
+      --jq 'sort_by(.createdAt)[] |
+        "• Task: #\(.number) Title: \(.title)\n" +
         "  URL: \(.url)\n" +
         "  Author: \(.author.login // "unknown")\n" +
-        "  Assignees: \([.assignees[].login] | join(", "))\n" +
         "  Labels: \([.labels[].name] | join(", "))\n" +
         "  State: \(.state)\n" +
         "  Milestone: \(.milestone.title // "none")\n" +
-        "  Created At: \(.createdAt)\n" +
-        "  Updated At: \(.updatedAt)\n" +
-        "  Closed At: \(.closedAt // "still open")\n" +
-        "  Description:\n\(.body // "No description")\n" +
+        "  Closed At: \(.closedAt // "still open")\n\n" +
+        "  Description:\n\(.body // "No description")\n\n" +
+        "  Comments:\n\(.comments // "No comments")\n\n" +
         "------------------------------------------------------------\n"' \
       >> "$OUTPUT_FILE"
 
