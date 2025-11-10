@@ -1,0 +1,94 @@
+===================================================
+FathomNet 2025 Project — Weekly Log 1
+Generated on: Sun Nov  9 08:36:31 PM EST 2025
+===================================================\n
+• Title: Explore prior work and SotA
+  Number: #6
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/6
+  Author: z3301
+  Assignees: z3301
+  Labels: research
+  State: CLOSED
+  Milestone: Week 1
+  Created At: 2025-11-10T00:31:44Z
+  Updated At: 2025-11-10T01:05:02Z
+  Closed At: 2025-11-10T01:05:01Z
+  Description:
+Review FathomNet and related taxonomy-aware classification literature
+------------------------------------------------------------
+
+• Title: Create requirements.txt
+  Number: #5
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/5
+  Author: z3301
+  Assignees: z3301
+  Labels: setup, reproducibility
+  State: CLOSED
+  Milestone: Week 1
+  Created At: 2025-11-10T00:30:58Z
+  Updated At: 2025-11-10T01:09:25Z
+  Closed At: 2025-11-10T01:09:25Z
+  Description:
+Include verified dependencies
+------------------------------------------------------------
+
+• Title: Set up .gitignore & LFS
+  Number: #4
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/4
+  Author: z3301
+  Assignees: z3301
+  Labels: setup
+  State: CLOSED
+  Milestone: Week 1
+  Created At: 2025-11-10T00:30:22Z
+  Updated At: 2025-11-10T01:19:44Z
+  Closed At: 2025-11-10T01:19:44Z
+  Description:
+Add model/data ignores and configure Git LFS for large files
+------------------------------------------------------------
+
+• Title: Draft README.md
+  Number: #3
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/3
+  Author: z3301
+  Assignees: z3301
+  Labels: documentation
+  State: CLOSED
+  Milestone: Week 1
+  Created At: 2025-11-10T00:29:48Z
+  Updated At: 2025-11-10T01:15:56Z
+  Closed At: 2025-11-10T01:15:56Z
+  Description:
+Add abstract, Kaggle link, and model overview
+------------------------------------------------------------
+
+• Title: Write week1log.txt
+  Number: #2
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/2
+  Author: z3301
+  Assignees: z3301
+  Labels: documentation, setup
+  State: OPEN
+  Milestone: Week 1
+  Created At: 2025-11-10T00:28:47Z
+  Updated At: 2025-11-10T00:36:29Z
+  Closed At: still open
+  Description:
+Summarize all project activities for week 1
+------------------------------------------------------------
+
+• Title: Create GitHub repo
+  Number: #1
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/1
+  Author: z3301
+  Assignees: z3301
+  Labels: setup
+  State: CLOSED
+  Milestone: Week 1
+  Created At: 2025-11-10T00:28:13Z
+  Updated At: 2025-11-10T00:49:24Z
+  Closed At: 2025-11-10T00:49:24Z
+  Description:
+Create public repo CAP6415_F25_project-FathomNet2025 and send URL to instructor
+------------------------------------------------------------
+
