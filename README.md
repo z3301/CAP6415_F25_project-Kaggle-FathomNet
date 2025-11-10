@@ -37,7 +37,7 @@ This hierarchical approach improves consistency across taxonomic ranks while lev
 
 To reproduce the results:
  
-### 1. Clone the Repository  
+### 1. Clone the Repository
 ```bash
 git clone https://github.com/<your-username>/CAP6415_F25_project-Kaggle-FathomNet.git
 cd CAP6415_F25_project-Kaggle-FathomNet
