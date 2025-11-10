@@ -30,6 +30,7 @@ __pycache__/
 *.npz
 *.npy
 
+
 # Ignore notebooks checkpoints and system files
 .ipynb_checkpoints/
 .DS_Store
