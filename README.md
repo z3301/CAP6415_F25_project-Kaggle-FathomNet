@@ -1,52 +1,104 @@
-# Solution to the CVPR'2025 FGVC Challenge
-This repository provides the solution(code and checkpoint) of the CVPR'2025 FathomNet-FGVC challenge.
-[[FathomNet 2025 @ CVPR-FGVC]](https://www.kaggle.com/competitions/fathomnet-2025/overview). 
-
-## Our Model 
-![Figure1.jpg](figure/Figure1.jpg)
-The proposed model is a visual recognition model designed to classify marine animals by considering not only the target object itself but also its surrounding habitat. As illustrated, the model takes as input both the region-of-interest (ROI) image of the marine animal extracted from the original image and additional context region images defined as 3×, 5×, and full-image scales centered on the ROI. Each input image is transformed into an embedding using a Vision Transformer (ViT). The marine animal ROI is represented by a global embedding derived from the [CLS] token, while the context region images are represented by patch embeddings.
-These embeddings are then processed by the Multi-Context Environmental Attention Module (MCEAM), which infers attention-based interactions between the object and its surrounding environment at the context level. The resulting interactions are integrated to form a unified representation that captures both object-specific features and object-environment relationships. This integrated embedding is passed to a classifier to predict the marine animal's label.
-To enhance semantic consistency in the model’s predictions, a Hierarchical Auxiliary Classification module is introduced during training. This auxiliary module performs classification across biological taxonomy levels (e.g., order, family, species), supporting the main classification task with a biologically informed hierarchical structure.
+![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?logo=PyTorch&logoColor=white) ![PyTorch Lightning](https://img.shields.io/badge/Lightning-%23792EE5.svg?logo=Lightning&logoColor=white) ![Kaggle](https://img.shields.io/badge/Kaggle_Competition-FathomNet_2025-blue) ![Rank](https://img.shields.io/badge/Rank-8th_/_79_teams-success)
 
 
-## Note
-#### 2025.06.04
-We deprecated experiment-final06.yaml and replaced it with our best-performing model configuration, experiment-final14.yaml.
+# FathomNet 2025 Hierarchical Classification Project
 
-## Installation
-(1) PyTorch. See https://pytorch.org/ for instruction. For example,
+## Overview
+
+This repository contains my submission for the **[Kaggle FathomNet 2025 Competition](https://www.kaggle.com/competitions/fathomnet-2025)** — a challenge focused on advancing machine learning models for **underwater image classification** across diverse marine species.
+
+The competition aimed to develop algorithms capable of classifying underwater organisms using the **FathomNet** open-access image repository, which provides annotated imagery from oceanographic research institutions.
+
+My solution placed **8th out of 79 teams**, achieving a **final public leaderboard score of 2.30** (lower is better).
+
+---
+
+## Model Architecture
+
+My solution implements a **taxonomy-aware hierarchical classifier** built with **PyTorch Lightning**.  
+Instead of predicting species independently, the model learns **seven interconnected taxonomic ranks**:
+
 ```
-pip install torch==2.6.0 torchvision==0.21.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cu124
+kingdom → phylum → class → order → family → genus → species
 ```
-(2) Requirements
-```python
+
+### Key Components
+- **Backbone:** Pretrained **ConvNeXtV2-Base** from **timm**, fine-tuned for underwater imagery.
+- **Multi-head architecture:** Separate linear heads for each taxonomic rank, sharing a common feature encoder.
+- **Loss weighting:** Cross-entropy losses combined with hierarchical weighting to emphasize correct lineage predictions.
+- **Optimizer & Scheduler:** AdamW with cosine annealing and early stopping.
+- **Framework:** PyTorch Lightning for reproducibility, checkpointing, and GPU management.
+
+This hierarchical approach improves consistency across taxonomic ranks while leveraging relationships between species and higher-order classes.
+
+---
+
+## Reproducing the Experiment
+
+To reproduce the results:
+ 
+### 1. Clone the Repository
+```bash
+git clone https://github.com/<your-username>/CAP6415_F25_project-Kaggle-FathomNet.git
+cd CAP6415_F25_project-Kaggle-FathomNet
+```
+
+### 2. Install Dependencies
+Ensure you are using **Python ≥ 3.9** and have **CUDA-enabled GPUs** configured.
+
+```bash
 pip install -r requirements.txt
 ```
 
-## Data
-The dataset can be downloaded from the official challenge page on [[FathomNet 2025 @ CVPR-FGVC Data]](https://www.kaggle.com/competitions/fathomnet-2025/data).
+### 3. Configure Data Path
+Open `hierarchical-classifier.ipynb` and edit the following line to point to your local dataset:
+```python
+DATA_ROOT = "/path/to/your/local/data"
+```
 
-## Data Preprocessing
-```python
-python A0.data_preprocess.py --data_path Path/to/dataset_train.json
-```
-The script generates the following files:
-| File | Description |
-|------|-------------|
-| dist_categories.csv | Taxonomic distance matrix between categories based on the biological tree |
-| hierarchical_label.csv | Hierarchical labels (Phylum to Species) for each class |
+### 4. Command-line Workflow (New)
+The project now mirrors the CVPR'25 winning repo by separating configuration, model code, and CLI entrypoints:
 
-## Quick Start
-## Train
-To train the model from scratch, run the following command:
-```python
-python B1.BuildModel.py --config ./config/experiment-final14.yaml
+```bash
+# Train and validate
+python train.py --config config/experiment-default.yaml
+
+# Evaluate any split (train / val / eval)
+python evaluate.py --config config/experiment-default.yaml \
+                   --checkpoint path/to/best.ckpt \
+                   --split eval
+
+# Produce a Kaggle submission
+python predict.py --config config/experiment-default.yaml \
+                  --checkpoint path/to/best.ckpt
 ```
-## Checkpoint
-Download the pretrained checkpoint of the winning model from the competition using the Google Drive link below.   
-[Model_link](https://drive.google.com/drive/u/1/folders/1JF5B51CRUr-J_S2GoC-i5D-UmYCXClDk).
-## Test
-To evaluate the model or run inference on new data, use:
-```python
-python C1.TestModel.py --config ./config/experiment-final14.yaml
-```
+
+Edit `config/experiment-default.yaml` (or clone it) to customise dataset paths, augmentation strength, backbone selection, optimizer settings, and hierarchy-loss weights. The scripts will automatically create the configured `outputs/` directory, write checkpoints, metrics, and confusion matrices, and store the final `submission.csv`.
+
+### 5. Notebook (Legacy)
+The original `hierarchical-classifier.ipynb` still ships for interactive exploration, but the scripted workflow above is the preferred, reproducible path for experiments.
+
+---
+
+## Dependencies
+All required packages are listed in `requirements.txt`.  
+This includes:
+- PyTorch  
+- torchvision  
+- pytorch-lightning  
+- timm  
+- scikit-learn  
+- pandas, numpy, matplotlib, seaborn  
+
+Make sure your PyTorch and torchvision builds are compatible with your CUDA version.
+
+---
+
+## Results Summary
+
+| Metric | Score |
+|:--------|:------:|
+| **Final Leaderboard Score** | **2.30 (lower is better)** |
+| **Competition Rank** | **8 / 79 teams** |
+| **Framework** | PyTorch Lightning |
+| **Backbone** | ConvNeXtV2-Base (timm) |

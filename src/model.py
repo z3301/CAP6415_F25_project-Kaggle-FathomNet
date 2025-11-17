@@ -1,349 +1,201 @@
+from typing import Dict
+
 import pytorch_lightning as pl
+import timm
 import torch
 import torch.nn as nn
-import torch.optim as optim
-from transformers import AutoModel, AutoConfig
-from torch.optim.lr_scheduler import LRScheduler
-import math
-import numpy as np
-import torch.nn.functional as F
-from torch.nn.utils.rnn import pad_sequence
-from typing import Tuple
-import matplotlib.pyplot as plt
-import pickle
-import pandas as pd
-from src.eval import biological_distance, BiologicalTree
+from omegaconf import DictConfig
 
-class WarmupStepLR(LRScheduler):
-    def __init__(self, optimizer, warmup_steps, step_size, gamma=0.1, base_lr=1e-3, last_epoch=-1):
-        self.warmup_steps = warmup_steps
-        self.step_size = step_size
-        self.gamma = gamma
-        self.base_lr = base_lr
-        super(WarmupStepLR, self).__init__(optimizer, last_epoch)
 
-    def get_lr(self):
-        if self.last_epoch < self.warmup_steps:
-            # Warmup phase
-            return [self.base_lr * (self.last_epoch + 1) / self.warmup_steps for _ in self.base_lrs]
-        else:
-            # StepLR phase
-            steps_since_warmup = self.last_epoch - self.warmup_steps
-            factor = self.gamma ** (steps_since_warmup // self.step_size)
-            return [base_lr * factor for base_lr in self.base_lrs]
-
-class MLP_ProjModel(torch.nn.Module):
-
-    def __init__(self, in_dim, hidden_dim, out_dim, dropout=0.):
+class TaxonomyAwareClassifier(pl.LightningModule):
+    def __init__(self, cfg: DictConfig, class_counts: Dict[str, int]):
         super().__init__()
-
-        self.net = nn.Sequential(
-            nn.LayerNorm(in_dim),
-            nn.Linear(in_dim, hidden_dim),
+        self.save_hyperparameters(ignore=["cfg"])
+        self.cfg = cfg
+        self.class_counts = class_counts
+        self.levels = list(class_counts.keys())
+        backbone_name = cfg.model.backbone
+        self.feature_extractor = timm.create_model(
+            backbone_name,
+            pretrained=True,
+            num_classes=0,
+        )
+        in_features = self.feature_extractor.num_features
+        hidden_dim = cfg.model.hidden_dim
+        head_dim = cfg.model.head_dim
+        self.shared_features = nn.Sequential(
+            nn.LayerNorm(in_features),
+            nn.Linear(in_features, hidden_dim),
             nn.GELU(),
-            nn.Dropout(dropout),
-            nn.Linear(hidden_dim, out_dim),
+            nn.Dropout(0.2),
         )
+        self._build_heads(hidden_dim, head_dim)
+        self.criterion = nn.CrossEntropyLoss(label_smoothing=cfg.training.label_smoothing)
+        self.hierarchy_weights = dict(cfg.loss.hierarchy_weights)
+        self.val_outputs = []
 
-    def forward(self, x):
-        return self.net(x)
+    def _build_heads(self, hidden_dim: int, head_dim: int):
+        def block(out_dim: int):
+            return nn.Linear(hidden_dim + head_dim, out_dim)
 
-class ConcatEmb_ProjModel(torch.nn.Module):
+        self.kingdom_head = nn.Linear(hidden_dim, self.class_counts["kingdom"])
+        self.kingdom_to_phylum = nn.Linear(self.class_counts["kingdom"], head_dim)
+        self.phylum_features = nn.Linear(hidden_dim, head_dim)
+        self.phylum_head = block(self.class_counts["phylum"])
 
-    def __init__(self, in_dim, hidden_dim, out_dim, dropout=0.):
-        super().__init__()
+        self.phylum_to_class = nn.Linear(self.class_counts["phylum"], head_dim)
+        self.class_features = nn.Linear(hidden_dim, head_dim)
+        self.class_head = block(self.class_counts["class"])
 
-        self.net = nn.Sequential(
-            nn.Linear(in_dim, hidden_dim),
-            nn.GELU(),
-            nn.LayerNorm(hidden_dim),
-            nn.Dropout(dropout),
-            nn.Linear(hidden_dim, out_dim),
-            nn.GELU(),
-            nn.LayerNorm(out_dim),
-            nn.Dropout(dropout),
-        )
+        self.class_to_order = nn.Linear(self.class_counts["class"], head_dim)
+        self.order_features = nn.Linear(hidden_dim, head_dim)
+        self.order_head = block(self.class_counts["order"])
 
-    def forward(self, x):
-        return self.net(x)
+        self.order_to_family = nn.Linear(self.class_counts["order"], head_dim)
+        self.family_features = nn.Linear(hidden_dim, head_dim)
+        self.family_head = block(self.class_counts["family"])
 
-class classifier(torch.nn.Module):
+        self.family_to_genus = nn.Linear(self.class_counts["family"], head_dim)
+        self.genus_features = nn.Linear(hidden_dim, head_dim)
+        self.genus_head = block(self.class_counts["genus"])
 
-    def __init__(self, in_dim, hidden_dim, out_dim, dropout=0.):
-        super().__init__()
+        self.genus_to_species = nn.Linear(self.class_counts["genus"], head_dim)
+        self.species_features = nn.Linear(hidden_dim, head_dim)
+        self.species_head = block(self.class_counts["species"])
 
-        self.net = nn.Sequential(
-            nn.Linear(in_dim, hidden_dim),
-            nn.GELU(),
-            nn.Dropout(dropout),
-            nn.LayerNorm(hidden_dim),
-            nn.Linear(hidden_dim, out_dim),
-        )
+    def forward(self, images):
+        feats = self.feature_extractor(images)
+        shared = self.shared_features(feats)
+        kingdom_logits = self.kingdom_head(shared)
+        kingdom_probs = torch.softmax(kingdom_logits, dim=1)
 
-    def forward(self, x):
-        return self.net(x)
+        phylum_input = self.kingdom_to_phylum(kingdom_probs)
+        phylum_feats = self.phylum_features(shared)
+        phylum_logits = self.phylum_head(torch.cat([phylum_input, phylum_feats], dim=1))
+        phylum_probs = torch.softmax(phylum_logits, dim=1)
 
-class hierarchical_classifier(torch.nn.Module):
+        class_input = self.phylum_to_class(phylum_probs)
+        class_feats = self.class_features(shared)
+        class_logits = self.class_head(torch.cat([class_input, class_feats], dim=1))
+        class_probs = torch.softmax(class_logits, dim=1)
 
-    def __init__(self, in_dim, hidden_dim, out_dim_list, dropout=0.):
-        super(hierarchical_classifier, self).__init__()
-        self.h_modules = nn.ModuleList([
-            classifier(in_dim, hidden_dim, out_dim, dropout)
-            for out_dim in out_dim_list
-        ])
+        order_input = self.class_to_order(class_probs)
+        order_feats = self.order_features(shared)
+        order_logits = self.order_head(torch.cat([order_input, order_feats], dim=1))
+        order_probs = torch.softmax(order_logits, dim=1)
 
-    def forward(self, x):
-        out = []
-        for module in self.h_modules:
-            out.append(module(x))
-        return out
+        family_input = self.order_to_family(order_probs)
+        family_feats = self.family_features(shared)
+        family_logits = self.family_head(torch.cat([family_input, family_feats], dim=1))
+        family_probs = torch.softmax(family_logits, dim=1)
 
-class AttentionLayer(nn.Module):
-    def __init__(self, input_dim, embed_dim, num_heads=4, dropout=0.0):
-        super(AttentionLayer, self).__init__()
-        self.query_proj = nn.Linear(input_dim, embed_dim)
-        self.key_proj = nn.Linear(input_dim, embed_dim)
-        self.value_proj = nn.Linear(input_dim, embed_dim)
+        genus_input = self.family_to_genus(family_probs)
+        genus_feats = self.genus_features(shared)
+        genus_logits = self.genus_head(torch.cat([genus_input, genus_feats], dim=1))
+        genus_probs = torch.softmax(genus_logits, dim=1)
 
-        self.attn = nn.MultiheadAttention(embed_dim, num_heads, dropout, batch_first=True)
-        self.norm1 = nn.LayerNorm(embed_dim)
-        self.norm2 = nn.LayerNorm(embed_dim)
+        species_input = self.genus_to_species(genus_probs)
+        species_feats = self.species_features(shared)
+        species_logits = self.species_head(torch.cat([species_input, species_feats], dim=1))
 
-        self.mlp = nn.Sequential(
-            nn.Linear(embed_dim, embed_dim),
-            nn.ReLU(),
-            nn.Linear(embed_dim, embed_dim)
-        )
+        return {
+            "kingdom": kingdom_logits,
+            "phylum": phylum_logits,
+            "class": class_logits,
+            "order": order_logits,
+            "family": family_logits,
+            "genus": genus_logits,
+            "species": species_logits,
+        }
 
-    def forward(self, x, kv, mask=None):
-        # (B, N), bool
-        # 2. Projection
-        q = self.query_proj(x)
-        k = self.key_proj(kv)
-        v = self.value_proj(kv)
-        # 3. Attention with masking
-        attn_output, attn_weights = self.attn(q, k, v, key_padding_mask=mask)
-        # 4. Residual + MLP
-        x = self.norm1(attn_output + q)
-        mlp_output = self.mlp(x)
-        x = self.norm2(mlp_output + x)
-        return x, attn_weights
-
-
-class MultiLayerAttentionModel(nn.Module):
-    def __init__(self, query_dim, embed_dim, num_heads=4, num_blocks=3, dropout=0.0):
-        super(MultiLayerAttentionModel, self).__init__()
-
-        self.layers = nn.ModuleList([
-            AttentionLayer(query_dim if i == 0 else embed_dim, embed_dim, num_heads, dropout)
-            for i in range(num_blocks)
-        ])
-
-    def forward(self, q, kv, mask=None):
-        for layer in self.layers:
-            q, attn_weights = layer(q, kv, mask)
-        return q
-
-class FathomnetModel(pl.LightningModule):
-    def __init__(self, args):
-        super().__init__()
-        self.save_hyperparameters(args)
-        local_files_only = getattr(self.hparams, 'hf_local_files_only', False)
-
-        # assert self.hparams.temperature > 0.0, "The temperature must be a positive float!"
-        self.img_vit_region_encoders = nn.ModuleDict()
-        for scales in self.hparams.img_encoder_size:
-            for crop_scale in self.hparams.env_img_crop_scale_list:
-                self.img_vit_region_encoders[str(scales[0])+'_'+str(crop_scale)] = AutoModel.from_pretrained(
-                    self.hparams.img_vit_encoder_path,
-                    local_files_only=local_files_only
-                )
-
-        self.obj_vit_region_encoder  = AutoModel.from_pretrained(
-            self.hparams.obj_vit_encoder_path,
-            local_files_only=local_files_only
-        )
-
-        self.classifier = classifier(in_dim=self.hparams.feature_dim,
-                                               hidden_dim=self.hparams.feature_dim,
-                                               out_dim=self.hparams.nclass, dropout=0.3)
-
-        n_concat = 1
-        if self.hparams.intra_env_attn:
-            self.intra_env_attn_module = nn.ModuleDict()
-            self.obj_proj_module = nn.ModuleDict()
-            for scales in self.hparams.img_encoder_size:
-                for crop_scale in self.hparams.env_img_crop_scale_list:
-                    n_concat += 1
-                    _name = str(scales[0]) + '_' + str(crop_scale)
-                    self.intra_env_attn_module[_name] = MultiLayerAttentionModel(query_dim=self.hparams.feature_dim,
-                                                                               embed_dim=self.hparams.feature_dim,
-                                                                               num_heads=8,
-                                                                               num_blocks=4,
-                                                                               dropout=0.3)
-
-                    self.obj_proj_module[_name] = MLP_ProjModel(in_dim=self.hparams.feature_dim,
-                                                          hidden_dim=self.hparams.feature_dim,
-                                                          out_dim=self.hparams.feature_dim, dropout=0.3)
-
-
-
-        if self.hparams.hierarchical_loss:
-            self.hierarchical_target = pd.read_csv(self.hparams.hierarchical_label_path, index_col=0)
-            with open(self.hparams.hierachical_labelencoder_path, 'rb') as f:
-                self.hierachical_labelencoder = pickle.load(f)
-
-            self.rank = self.hparams.hierarchical_node_rank
-            self.hierarchical_classifier = hierarchical_classifier(in_dim=self.hparams.feature_dim,
-                                                 hidden_dim=self.hparams.feature_dim,
-                                                 out_dim_list=self.hparams.hierarchical_node_cnt, dropout=0.3)
-
-        self.concat_proj = ConcatEmb_ProjModel(in_dim=self.hparams.feature_dim*n_concat,
-                                               hidden_dim=self.hparams.feature_dim,
-                                               out_dim=self.hparams.feature_dim, dropout=0.3)
-
-
-        # 거리 행렬 생성 (C x C)
-        category_names = list(self.hparams.category_name2id.keys())
-        self.label_distance = pd.read_csv(self.hparams.categories_path, index_col=0)
-        distance_matrix = self.label_distance.loc[category_names, category_names].values  # np.ndarray
-        self.label_distance_tensor = torch.tensor(distance_matrix, dtype=torch.float32)  # to torch.Tensor
-
-        self.crossentropy = nn.CrossEntropyLoss()
-
-
-    def configure_optimizers(self):
-        optimizer = optim.AdamW(self.parameters(),
-                                lr=self.hparams.lr,
-                                weight_decay=self.hparams.weight_decay)
-
-        #
-        lr_scheduler = WarmupStepLR(optimizer=optimizer,
-                                    warmup_steps=self.hparams.scheduler_t_up,
-                                    step_size=self.hparams.scheduler_step_size,
-                                    gamma=self.hparams.scheduler_gamma,
-                                    base_lr=self.hparams.scheduler_eta_max)
-
-        return [optimizer], [lr_scheduler]
-
-    def crossentropy_loss(self, logits, labels, type, mode):
-        """
-        Args:
-            logits: Tensor of shape [batch_size, num_classes]
-            labels: Tensor of shape [batch_size] with class indices (0 to num_classes - 1)
-
-        Returns:
-            loss: Cross-entropy loss (scalar tensor)
-            error: Classification error rate (float, 0.0 to 1.0)
-        """
-        loss = self.crossentropy(logits, labels)
-        with torch.no_grad():
-            preds = torch.argmax(logits, dim=1)
-            correct = (preds == labels).sum().item()
-            total = labels.size(0)
-            acc = (correct / total)
-        # Logging
-        if not self.hparams.disable_logger:
-            self.log(f"{mode}_{type}_celoss", loss)
-            self.log(f"{mode}_{type}_acc", acc)
-        return loss
-
-    def sub_h_crossentropy_loss(self, hierarchical_logits_list, target, mode):
-        h_target = self.hierarchical_target.loc[target.cpu().numpy(), :]
-        loss_list = []
-        for i in range(len(self.rank)):
-            level = self.rank[i]
-            _level_logit = hierarchical_logits_list[i].squeeze()
-            _level_target = torch.tensor(h_target.loc[:, level].values).to(_level_logit.device)
-            _loss = self.crossentropy(_level_logit, _level_target)
-            loss_list.append(_loss)
-            if not self.hparams.disable_logger:
-                with torch.no_grad():
-                    preds = torch.argmax(_level_logit, dim=1)
-                    correct = (preds == _level_target).sum().item()
-                    total = _level_target.size(0)
-                    acc = (correct / total)
-                self.log(f"{mode}_{level}_acc", acc)
-        return loss_list
-
-    def hierarchical_distance(self, logits, target, mode):
-        # 확률화
-        probs = torch.softmax(logits, dim=1)  # (B, C)
-        # target index → distance vector (C,)
-        target_idx = [self.hparams.category_name2id[self.hparams.category_id2name[int(i)]] for i in target.cpu()]
-        target_idx = torch.tensor(target_idx)
-        # 거리 행렬 중에서 target column만 추출 (B, C)
-        distance_targets = self.label_distance_tensor[target_idx, : ].to(logits.device) # (B, C)
-        # soft expectation: 각 샘플에 대해 확률 * 거리
-        loss_vec = (probs * distance_targets).sum(dim=1)  # (B,)
-        mean_h_score = torch.mean(loss_vec)
-        if not self.hparams.disable_logger:
-            self.log(f"{mode}_h_score", mean_h_score)
-        return mean_h_score
-
-    def run_step(self, batch, step_mode):
-
-        obj_processed_imgs = batch['obj_processed_img']
-
-        global_processed_imgs = {}
-        for scales in self.hparams.img_encoder_size:
-            scale = scales[0]
-            for crop_scale in self.hparams.env_img_crop_scale_list:
-                _name = str(scale) + '_' + str(crop_scale)
-                global_processed_imgs[_name] = batch['global_processed_img' + _name]
-        # obj_masks = batch['obj_mask']
-        target = batch['target']
-
-        obj_vit_enc_out = self.obj_vit_region_encoder(obj_processed_imgs)
-        obj_vit_embeddings = obj_vit_enc_out.last_hidden_state[:, :1, :]
-
-        batch_size, _, _ = obj_vit_embeddings.shape
-        concat_embs = obj_vit_embeddings.view(batch_size, -1)
-
-        if self.hparams.intra_env_attn:
-            # img_vit_g_embeddings = {}
-            img_vit_p_embeddings = {}
-            for scales in self.hparams.img_encoder_size:
-                for crop_scale in self.hparams.env_img_crop_scale_list:
-                    _name = str(scales[0])+'_'+str(crop_scale)
-                    img_vit_enc_out = self.img_vit_region_encoders[_name](global_processed_imgs[_name])
-                    img_vit_p_embeddings[_name] = img_vit_enc_out.last_hidden_state[:, 1:, :]
-
-            intra_env_embs_dict = {}
-            for scales in self.hparams.img_encoder_size:
-                for crop_scale in self.hparams.env_img_crop_scale_list:
-                    _name = str(scales[0])+'_'+str(crop_scale)
-                    obj_vit_embs = obj_vit_embeddings
-                    intra_env_embs_dict[_name] = self.intra_env_attn_module[_name](obj_vit_embs, img_vit_p_embeddings[_name]).view(batch_size, -1)
-            intra_env_embs = torch.concat(list(intra_env_embs_dict.values()), 1)
-            concat_embs = torch.concat((concat_embs, intra_env_embs), dim=-1)
-
-        embs = self.concat_proj(concat_embs)
-
-        sub_h_loss = 0
-        if self.hparams.hierarchical_loss:
-            hierarchical_logits_list = self.hierarchical_classifier(embs)
-            h_loss_list = self.sub_h_crossentropy_loss(hierarchical_logits_list, target, step_mode)
-            h_loss_arr = torch.stack(h_loss_list)
-            sub_h_loss = torch.mean(h_loss_arr)
-
-        logits = self.classifier(embs).squeeze()
-        ce_loss = self.crossentropy_loss(logits, target, 'class', step_mode)
-        h_loss = self.hierarchical_distance(logits, target, step_mode)
-        total_loss = (self.hparams.lambda_ce * ce_loss +
-                      self.hparams.lambda_sub_h * sub_h_loss
-                      )
-        if not self.hparams.disable_logger:
-            self.log(step_mode + "_loss", total_loss.float().mean())
-
-        return total_loss
+    def hierarchical_loss(self, outputs, targets):
+        total_loss = 0.0
+        level_losses = {}
+        weight_sum = 0.0
+        for level in self.levels:
+            if level not in outputs or level not in targets:
+                continue
+            loss = self.criterion(outputs[level], targets[level])
+            w = self.hierarchy_weights.get(level, 1.0)
+            total_loss += w * loss
+            weight_sum += w
+            level_losses[level] = loss
+        total_loss = total_loss / max(weight_sum, 1e-6)
+        return total_loss, level_losses
 
     def training_step(self, batch, batch_idx):
-        step_mode = 'train'
-        total_loss = self.run_step(batch, step_mode)
-        return total_loss
+        images, labels = batch
+        outputs = self(images)
+        loss, level_losses = self.hierarchical_loss(outputs, labels)
+        self.log("train_loss", loss, prog_bar=True)
+        for lvl, lvl_loss in level_losses.items():
+            self.log(f"train_{lvl}_loss", lvl_loss, prog_bar=False)
+        return loss
 
     def validation_step(self, batch, batch_idx):
-        step_mode = 'val'
-        total_loss = self.run_step(batch, step_mode)
-        return total_loss
+        images, labels = batch
+        outputs = self(images)
+        loss, level_losses = self.hierarchical_loss(outputs, labels)
+        self.log("val_loss", loss, prog_bar=True, sync_dist=True)
+        for lvl, lvl_loss in level_losses.items():
+            self.log(f"val_{lvl}_loss", lvl_loss, sync_dist=True)
+            preds = torch.argmax(outputs[lvl], dim=1)
+            acc = (preds == labels[lvl]).float().mean()
+            self.log(f"val_{lvl}_acc", acc, prog_bar=True, sync_dist=True)
+        self.val_outputs.append({"outputs": outputs, "labels": labels})
+        return loss
+
+    def on_validation_epoch_end(self):
+        self.val_outputs.clear()
+
+    def predict_step(self, batch, batch_idx):
+        images, annotation_ids = batch
+        outputs = self(images)
+        probs = {}
+        preds = {}
+        confidences = {}
+        for level in self.levels:
+            logits = outputs[level]
+            level_probs = torch.softmax(logits, dim=1)
+            level_preds = torch.argmax(level_probs, dim=1)
+            probs[level] = level_probs.detach().cpu()
+            preds[level] = level_preds.detach().cpu()
+            confidences[level] = (
+                torch.gather(level_probs, 1, level_preds.unsqueeze(1))
+                .squeeze(1)
+                .detach()
+                .cpu()
+            )
+        return {
+            "annotation_ids": annotation_ids,
+            "probs": probs,
+            "preds": preds,
+            "confidences": confidences,
+        }
+
+    def configure_optimizers(self):
+        backbone_params = []
+        other_params = []
+        for name, param in self.named_parameters():
+            if name.startswith("feature_extractor"):
+                backbone_params.append(param)
+            else:
+                other_params.append(param)
+        optimizer = torch.optim.AdamW(
+            [
+                {"params": backbone_params, "lr": self.cfg.training.learning_rate * self.cfg.training.backbone_lr_scale},
+                {"params": other_params, "lr": self.cfg.training.learning_rate},
+            ],
+            weight_decay=self.cfg.training.weight_decay,
+        )
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
+            optimizer, T_0=5, T_mult=2, eta_min=1e-6
+        )
+        return {
+            "optimizer": optimizer,
+            "lr_scheduler": {
+                "scheduler": scheduler,
+                "interval": "epoch",
+                "frequency": 1,
+            },
+        }
