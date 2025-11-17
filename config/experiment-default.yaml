@@ -3,7 +3,7 @@ project:
   seed: 42
 
 paths:
-  data_root: "./data"
+  data_root: "/mnt/beegfs/home/dzimmerman2021/data"
   taxonomy_csv: "${paths.data_root}/taxonomy.csv"
   train_annotations: "${paths.data_root}/train/annotations.csv"
   train_image_dir: "${paths.data_root}/train/rois"
