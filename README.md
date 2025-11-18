@@ -55,6 +55,7 @@ Open `hierarchical-classifier.ipynb` and edit the following line to point to you
 ```python
 DATA_ROOT = "/path/to/your/local/data"
 ```
+Make sure the image files are actually present (and not Git LFS pointer text files). If you copied the dataset from a Git LFS repo, run `git lfs pull` in the dataset location before training or inference.
 
 ### 4. Command-line Workflow (New)
 The project now mirrors the CVPR'25 winning repo by separating configuration, model code, and CLI entrypoints:

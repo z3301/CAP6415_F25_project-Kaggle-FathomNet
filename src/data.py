@@ -26,6 +26,34 @@ def load_annotations(csv_path: str, image_root: str) -> pd.DataFrame:
     return df
 
 
+def _is_git_lfs_pointer(path: str) -> bool:
+    """Check whether a file contains a Git LFS pointer instead of real image bytes."""
+    try:
+        with open(path, "rb") as f:
+            header = f.read(256)
+        return b"git-lfs" in header or b"git lfs" in header
+    except OSError:
+        # If the file can't be read, let the caller handle it.
+        return False
+
+
+def _ensure_real_image(path: str):
+    """Fail fast when the target is missing or still an unfetched Git LFS pointer."""
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"Image not found: {path}")
+    if _is_git_lfs_pointer(path):
+        raise RuntimeError(
+            f"Image at '{path}' is a Git LFS pointer. "
+            "Download or copy the actual files (e.g., run `git lfs pull` in the dataset source) before training or inference."
+        )
+
+
+def _validate_sample_images(frame: pd.DataFrame, sample_size: int = 5):
+    """Check a handful of rows early so we fail fast when the dataset is missing."""
+    for path in frame["image_path"].head(sample_size):
+        _ensure_real_image(path)
+
+
 def _resolve_image_path(path: str, image_root: str) -> str:
     """Normalize an image path and fall back to the provided root when needed."""
     path = os.path.normpath(path)
@@ -138,7 +166,11 @@ class FathomNetTaxonomyDataset(Dataset):
 
     def _load_image(self, path: str):
         try:
+            _ensure_real_image(path)
             image = Image.open(path).convert("RGB")
+        except (FileNotFoundError, RuntimeError):
+            # Propagate missing data and Git LFS pointer issues so the user can fix the dataset.
+            raise
         except Exception:
             image = Image.new("RGB", (self.image_size, self.image_size))
         return self.transform(image)
@@ -168,8 +200,13 @@ class FathomNetTestDataset(Dataset):
 
     def __getitem__(self, idx):
         row = self.frame.iloc[idx]
+        path = row["image_path"]
         try:
-            image = Image.open(row["image_path"]).convert("RGB")
+            _ensure_real_image(path)
+            image = Image.open(path).convert("RGB")
+        except (FileNotFoundError, RuntimeError):
+            # Make the root cause explicit instead of silently returning a dummy image.
+            raise
         except Exception:
             image = Image.new("RGB", (self.image_size, self.image_size))
         return {
@@ -228,6 +265,8 @@ def build_dataloaders(
     train_df = annotations.iloc[train_idx]
     val_df = annotations.iloc[val_idx]
     eval_df = annotations.iloc[eval_idx]
+    # Fail early if the dataset only contains Git LFS pointers or missing files.
+    _validate_sample_images(train_df)
     train_tfms, val_tfms = create_transforms(cfg)
     datasets = {
         "train": FathomNetTaxonomyDataset(train_df, taxonomy_df, cfg.data.taxonomy_levels, encoders, train_tfms, cfg.data.img_size),
@@ -257,6 +296,7 @@ def prepare_test_loader(cfg: DictConfig):
     df["image_path"] = df["path"].astype(str).str.strip().apply(
         lambda p: _resolve_image_path(p, cfg.paths.test_image_dir)
     )
+    _validate_sample_images(df)
     _, val_tfms = create_transforms(cfg)
     dataset = FathomNetTestDataset(df, val_tfms, cfg.data.img_size)
     loader = DataLoader(
