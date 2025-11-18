@@ -20,8 +20,27 @@ def load_annotations(csv_path: str, image_root: str) -> pd.DataFrame:
         raise ValueError(f"Annotations file {csv_path} missing columns: {missing}")
     df["path"] = df["path"].astype(str).str.strip()
     df["label"] = df["label"].astype(str).str.strip()
-    df["image_path"] = df["path"].apply(lambda p: os.path.join(image_root, p))
+    df["image_path"] = df["path"].apply(
+        lambda p: _resolve_image_path(p, image_root)
+    )
     return df
+
+
+def _resolve_image_path(path: str, image_root: str) -> str:
+    """Normalize an image path and fall back to the provided root when needed."""
+    path = os.path.normpath(path)
+    if os.path.exists(path):
+        return path
+    candidate = os.path.normpath(os.path.join(image_root, os.path.basename(path)))
+    if os.path.exists(candidate):
+        return candidate
+    parts = path.split(os.sep)
+    if "rois" in parts:
+        suffix = parts[parts.index("rois") + 1 :]
+        candidate = os.path.normpath(os.path.join(image_root, *suffix))
+        if os.path.exists(candidate):
+            return candidate
+    return path
 
 
 def load_and_encode_taxonomy(taxonomy_csv: str, levels: List[str]) -> Tuple[pd.DataFrame, Dict[str, LabelEncoder], Dict[str, int], Dict[str, Dict[int, str]]]:
@@ -97,13 +116,22 @@ class FathomNetTaxonomyDataset(Dataset):
         self.levels = levels
         self.encoders = encoders
         self.image_size = image_size
-        self.taxonomy_lookup = taxonomy_df.set_index("species")
+        self.name_to_row = self._build_name_lookup(taxonomy_df)
         self.default_ids = {
             level: int(np.where(encoder.classes_ == "unknown")[0][0])
             if "unknown" in encoder.classes_
             else 0
             for level, encoder in encoders.items()
         }
+
+    def _build_name_lookup(self, taxonomy_df: pd.DataFrame):
+        lookup = {}
+        for _, row in taxonomy_df.iterrows():
+            row_ids = {level: int(row[f"{level}_id"]) for level in self.levels}
+            for level in self.levels:
+                key = str(row[level]).strip().lower()
+                lookup.setdefault(key, row_ids)
+        return lookup
 
     def __len__(self):
         return len(self.frame)
@@ -118,13 +146,12 @@ class FathomNetTaxonomyDataset(Dataset):
     def __getitem__(self, idx):
         row = self.frame.iloc[idx]
         image = self._load_image(row["image_path"])
-        species = row["label"]
-        if species in self.taxonomy_lookup.index:
-            taxonomy_row = self.taxonomy_lookup.loc[species]
-        else:
-            taxonomy_row = {f"{level}_id": self.default_ids[level] for level in self.levels}
+        label = str(row["label"]).strip().lower()
+        taxonomy_row = self.name_to_row.get(label)
+        if taxonomy_row is None:
+            taxonomy_row = {level: self.default_ids[level] for level in self.levels}
         labels = {
-            level: int(taxonomy_row[f"{level}_id"])
+            level: int(taxonomy_row[level])
             for level in self.levels
         }
         return {"image": image, "labels": labels}
@@ -228,7 +255,7 @@ def prepare_test_loader(cfg: DictConfig):
     if "annotation_id" not in df.columns:
         df["annotation_id"] = np.arange(1, len(df) + 1)
     df["image_path"] = df["path"].astype(str).str.strip().apply(
-        lambda p: os.path.join(cfg.paths.test_image_dir, p)
+        lambda p: _resolve_image_path(p, cfg.paths.test_image_dir)
     )
     _, val_tfms = create_transforms(cfg)
     dataset = FathomNetTestDataset(df, val_tfms, cfg.data.img_size)

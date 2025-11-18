@@ -40,7 +40,7 @@ def evaluate_model(
         targets = torch.cat(all_targets[level])
         acc = (preds == targets).float().mean().item()
         print(f"{prefix} {level} accuracy: {acc:.4f}")
-        labels = sorted(set(targets.tolist()) | set(preds.tolist()))
+        labels = list(range(len(id_to_name[level])))
         names = [id_to_name[level].get(int(i), "unknown") for i in labels]
         report = classification_report(
             targets,

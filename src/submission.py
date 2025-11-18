@@ -27,12 +27,21 @@ def taxonomic_fallback(
     taxonomy_df: pd.DataFrame,
     cfg: DictConfig,
 ):
+    fallback_enabled = cfg.inference.get("enable_fallback", False)
+    threshold = cfg.inference.confidence_threshold
+
+    # If fallback is disabled or threshold <= 0, just map species ids to names directly.
+    if (not fallback_enabled) or threshold <= 0:
+        return [
+            id_to_name["species"].get(int(species_id), "UNKNOWN")
+            for species_id in preds["species"]
+        ]
+
     fallback_levels = ["genus", "family", "order", "class", "phylum", "kingdom"]
     fallback_maps = _build_fallback_maps(
         taxonomy_df, fallback_levels[::-1]
-    )  # create for each level present
+    )
     best_species = []
-    threshold = cfg.inference.confidence_threshold
     for idx in range(len(preds["species"])):
         species_id = preds["species"][idx]
         species_conf = confidences["species"][idx]

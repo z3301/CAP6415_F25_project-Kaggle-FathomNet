@@ -3,14 +3,14 @@ project:
   seed: 42
 
 paths:
-  data_root: "/mnt/beegfs/home/dzimmerman2021/data"
-  taxonomy_csv: "${paths.data_root}/taxonomy.csv"
-  train_annotations: "${paths.data_root}/train/annotations.csv"
-  train_image_dir: "${paths.data_root}/train/rois"
-  test_annotations: "${paths.data_root}/test/annotations.csv"
-  test_image_dir: "${paths.data_root}/test/rois"
-  output_dir: "${paths.data_root}/outputs"
-  submission_csv: "${paths.output_dir}/submission.csv"
+  data_root: "/mnt/beegfs/home/dzimmerman2021/Documents"
+  taxonomy_csv: "${paths.data_root}/data/taxonomy.csv"
+  train_annotations: "${paths.data_root}/data/train/annotations.csv"
+  train_image_dir: "${paths.data_root}/data/train/rois"
+  test_annotations: "${paths.data_root}/data/test/annotations.csv"
+  test_image_dir: "${paths.data_root}/data/test/rois"
+  output_dir: "${paths.data_root}/fathomnet/outputs"
+  submission_csv: "${paths.output_dir}/fathomnet/submission.csv"
 
 data:
   taxonomy_levels: ["kingdom", "phylum", "class", "order", "family", "genus", "species"]
@@ -61,4 +61,6 @@ loss:
     species: 2.5
 
 inference:
+  # Set to true to enable hierarchical fallback when species confidence is low.
+  enable_fallback: false
   confidence_threshold: 0.7

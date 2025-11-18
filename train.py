@@ -23,6 +23,11 @@ def main():
     args = parse_args()
     cfg = OmegaConf.load(args.config)
     os.makedirs(cfg.paths.output_dir, exist_ok=True)
+    checkpoint_dir = os.path.join(cfg.paths.output_dir, "checkpoints")
+    os.makedirs(checkpoint_dir, exist_ok=True)
+    if torch.cuda.is_available():
+        # Enable Tensor Core friendly matmul kernels on Ampere+ GPUs
+        torch.set_float32_matmul_precision("medium")
     pl.seed_everything(cfg.project.seed)
     taxonomy_df, encoders, class_counts, id_to_name = load_and_encode_taxonomy(
         cfg.paths.taxonomy_csv, cfg.data.taxonomy_levels
@@ -31,7 +36,7 @@ def main():
     model = TaxonomyAwareClassifier(cfg, class_counts)
 
     checkpoint_cb = ModelCheckpoint(
-        dirpath=cfg.paths.output_dir,
+        dirpath=checkpoint_dir,
         filename="fathomnet-{epoch:02d}-{val_loss:.4f}",
         monitor=cfg.callbacks.monitor_metric,
         mode=cfg.callbacks.monitor_mode,

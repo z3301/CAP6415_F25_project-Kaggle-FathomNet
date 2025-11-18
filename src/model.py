@@ -36,7 +36,7 @@ class TaxonomyAwareClassifier(pl.LightningModule):
 
     def _build_heads(self, hidden_dim: int, head_dim: int):
         def block(out_dim: int):
-            return nn.Linear(hidden_dim + head_dim, out_dim)
+            return nn.Linear(head_dim * 2, out_dim)
 
         self.kingdom_head = nn.Linear(hidden_dim, self.class_counts["kingdom"])
         self.kingdom_to_phylum = nn.Linear(self.class_counts["kingdom"], head_dim)
