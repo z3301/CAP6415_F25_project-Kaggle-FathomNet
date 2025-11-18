@@ -1,87 +1,87 @@
-Species Accuracy: 0.8866
+Species Accuracy: 0.8765
 
                              precision    recall  f1-score   support
 
-    Abyssocucumis abyssorum       0.80      0.96      0.87        45
-              Acanthascinae       0.79      0.84      0.82        45
-              Acanthoptilum       1.00      0.96      0.98        45
-                 Actinernus       0.89      0.87      0.88        45
-                 Actiniaria       0.66      0.60      0.63        45
-             Actinopterygii       0.88      0.62      0.73        45
-                  Amphipoda       0.98      0.93      0.95        45
-    Apostichopus leukothele       1.00      0.91      0.95        45
-               Asbestopluma       0.83      0.89      0.86        45
-     Asbestopluma monticola       0.93      0.96      0.95        45
-                 Asteroidea       0.85      0.87      0.86        45
+    Abyssocucumis abyssorum       0.88      0.98      0.93        45
+              Acanthascinae       0.90      0.78      0.83        45
+              Acanthoptilum       0.95      0.93      0.94        45
+                 Actinernus       0.93      0.87      0.90        45
+                 Actiniaria       0.67      0.67      0.67        45
+             Actinopterygii       0.86      0.71      0.78        45
+                  Amphipoda       0.98      0.91      0.94        45
+    Apostichopus leukothele       1.00      0.96      0.98        45
+               Asbestopluma       0.85      0.91      0.88        45
+     Asbestopluma monticola       0.91      0.91      0.91        45
+                 Asteroidea       0.88      0.84      0.86        45
     Benthocodon pedunculata       0.96      1.00      0.98        45
-                 Brisingida       0.97      0.82      0.89        45
+                 Brisingida       0.97      0.87      0.92        45
                     Caridea       0.72      0.73      0.73        45
-               Ceriantharia       0.95      0.93      0.94        45
-       Chionoecetes tanneri       0.96      0.96      0.96        45
-          Chorilia longipes       0.93      0.96      0.95        45
-     Corallimorphus pilatus       0.98      0.91      0.94        45
-                  Crinoidea       0.83      0.84      0.84        45
-              Delectopecten       0.98      1.00      0.99        45
-                    Elpidia       0.93      0.93      0.93        45
-                     Farrea       0.88      0.93      0.90        45
-    Florometra serratissima       0.78      0.87      0.82        45
-                 Funiculina       0.97      0.82      0.89        45
-                 Gastropoda       0.86      0.93      0.89        45
-    Gersemia juliepackardae       1.00      0.98      0.99        45
-               Heterocarpus       0.87      0.89      0.88        45
-          Heterochone calyx       0.96      0.96      0.96        45
-      Heteropolypus ritteri       0.98      0.93      0.95        45
-             Hexactinellida       0.64      0.62      0.63        45
-                Hippasteria       0.98      0.96      0.97        45
-              Holothuroidea       0.78      0.69      0.73        45
-               Hormathiidae       0.84      0.80      0.82        45
-        Isidella tentaculum       0.82      0.89      0.85        45
-                   Isididae       0.81      0.64      0.72        45
-                Isosicyonis       0.90      0.96      0.92        45
-                 Keratoisis       0.79      0.76      0.77        45
-        Liponema brevicorne       0.93      0.84      0.88        45
-                 Lithodidae       0.70      0.73      0.72        45
-         Mediaster aequalis       1.00      0.98      0.99        45
-       Merluccius productus       0.80      0.89      0.84        45
-         Metridium farcimen       0.89      0.87      0.88        45
-      Microstomus pacificus       1.00      1.00      1.00        45
-                 Munidopsis       0.98      0.98      0.98        45
-                Munnopsidae       0.92      0.98      0.95        45
-                     Mycale       0.86      0.98      0.92        45
-          Octopus rubescens       0.91      0.96      0.93        45
-             Ophiacanthidae       0.95      0.93      0.94        45
-                Ophiuroidea       0.88      0.93      0.90        45
+               Ceriantharia       0.91      0.91      0.91        45
+       Chionoecetes tanneri       0.91      0.96      0.93        45
+          Chorilia longipes       0.93      0.91      0.92        45
+     Corallimorphus pilatus       0.95      0.93      0.94        45
+                  Crinoidea       0.76      0.82      0.79        45
+              Delectopecten       1.00      0.98      0.99        45
+                    Elpidia       0.86      0.93      0.89        45
+                     Farrea       0.79      0.93      0.86        45
+    Florometra serratissima       0.81      0.78      0.80        45
+                 Funiculina       0.97      0.76      0.85        45
+                 Gastropoda       0.80      0.91      0.85        45
+    Gersemia juliepackardae       1.00      0.93      0.97        45
+               Heterocarpus       0.87      0.91      0.89        45
+          Heterochone calyx       0.98      0.96      0.97        45
+      Heteropolypus ritteri       0.93      0.91      0.92        45
+             Hexactinellida       0.58      0.64      0.61        45
+                Hippasteria       0.98      0.91      0.94        45
+              Holothuroidea       0.69      0.76      0.72        45
+               Hormathiidae       0.81      0.78      0.80        45
+        Isidella tentaculum       0.83      0.84      0.84        45
+                   Isididae       0.70      0.67      0.68        45
+                Isosicyonis       0.90      0.98      0.94        45
+                 Keratoisis       0.82      0.71      0.76        45
+        Liponema brevicorne       0.95      0.91      0.93        45
+                 Lithodidae       0.74      0.71      0.73        45
+         Mediaster aequalis       0.96      1.00      0.98        45
+       Merluccius productus       0.80      0.82      0.81        45
+         Metridium farcimen       0.91      0.89      0.90        45
+      Microstomus pacificus       0.98      1.00      0.99        45
+                 Munidopsis       0.96      0.98      0.97        45
+                Munnopsidae       0.96      0.96      0.96        45
+                     Mycale       0.94      0.98      0.96        45
+          Octopus rubescens       0.91      0.93      0.92        45
+             Ophiacanthidae       0.87      0.91      0.89        45
+                Ophiuroidea       0.89      0.91      0.90        45
     Paelopatides confundens       1.00      0.91      0.95        45
-            Pandalus amplus       0.78      0.89      0.83        45
-        Pandalus platyceros       0.98      0.96      0.97        45
-         Pannychia moseleyi       0.79      0.67      0.72        45
-                 Paragorgia       0.91      0.87      0.89        45
-         Paragorgia arborea       0.92      0.98      0.95        45
-       Paralomis multispina       0.80      0.80      0.80        45
-               Parastenella       0.94      1.00      0.97        45
-                  Peniagone       0.85      0.89      0.87        45
-       Pennatula phosphorea       1.00      0.96      0.98        45
-                   Porifera       0.64      0.64      0.64        45
-     Psathyrometra fragilis       0.80      0.82      0.81        45
-           Psolus squamatus       0.91      0.91      0.91        45
+            Pandalus amplus       0.77      0.89      0.82        45
+        Pandalus platyceros       1.00      0.93      0.97        45
+         Pannychia moseleyi       0.80      0.62      0.70        45
+                 Paragorgia       0.86      0.82      0.84        45
+         Paragorgia arborea       0.81      0.98      0.89        45
+       Paralomis multispina       0.80      0.78      0.79        45
+               Parastenella       0.96      1.00      0.98        45
+                  Peniagone       0.85      0.87      0.86        45
+       Pennatula phosphorea       0.93      0.93      0.93        45
+                   Porifera       0.55      0.58      0.57        45
+     Psathyrometra fragilis       0.71      0.67      0.69        45
+           Psolus squamatus       0.91      0.96      0.93        45
       Ptychogastria polaris       1.00      1.00      1.00        45
-        Pyrosoma atlanticum       1.00      1.00      1.00        45
-  Rathbunaster californicus       0.91      0.96      0.93        45
+        Pyrosoma atlanticum       1.00      0.98      0.99        45
+  Rathbunaster californicus       0.98      1.00      0.99        45
                Scleractinia       0.95      0.93      0.94        45
-                Scotoplanes       0.98      0.89      0.93        45
-        Scotoplanes globosa       0.88      0.96      0.91        45
-                   Sebastes       0.74      0.58      0.65        45
-         Sebastes diploproa       0.74      0.87      0.80        45
-               Sebastolobus       0.83      0.98      0.90        45
-                 Serpulidae       1.00      1.00      1.00        45
-             Staurocalyptus       0.90      0.84      0.87        45
-Strongylocentrotus fragilis       0.95      0.93      0.94        45
+                Scotoplanes       0.91      0.89      0.90        45
+        Scotoplanes globosa       0.88      0.93      0.90        45
+                   Sebastes       0.84      0.47      0.60        45
+         Sebastes diploproa       0.69      0.93      0.79        45
+               Sebastolobus       0.81      0.93      0.87        45
+                 Serpulidae       1.00      0.98      0.99        45
+             Staurocalyptus       0.91      0.91      0.91        45
+Strongylocentrotus fragilis       1.00      0.93      0.97        45
                Terebellidae       0.90      0.98      0.94        45
-                   Tunicata       0.93      0.84      0.88        45
-                  Umbellula       0.83      0.96      0.89        45
-               Vesicomyidae       0.89      0.89      0.89        45
-                 Zoantharia       0.96      0.98      0.97        45
+                   Tunicata       0.95      0.87      0.91        45
+                  Umbellula       0.82      0.89      0.85        45
+               Vesicomyidae       0.87      0.87      0.87        45
+                 Zoantharia       0.89      0.93      0.91        45
 
-                   accuracy                           0.89      3555
-                  macro avg       0.89      0.89      0.89      3555
-               weighted avg       0.89      0.89      0.89      3555
+                   accuracy                           0.88      3555
+                  macro avg       0.88      0.88      0.88      3555
+               weighted avg       0.88      0.88      0.88      3555
