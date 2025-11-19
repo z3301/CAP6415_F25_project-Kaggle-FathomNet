@@ -3,3 +3,5 @@
 /train
 *.pt
 *.ckpt
+__pycache__/
+*.pyc
