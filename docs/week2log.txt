@@ -1,0 +1,317 @@
+===================================================
+FathomNet 2025 Project — Weekly Log 2
+Generated on: Tue Nov 18 09:30:31 PM EST 2025
+===================================================
+• Task: #15 Title: Recreate competition winning entry
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/15
+  Author: z3301
+  Labels: evaluation, baseline
+  State: CLOSED
+  Milestone: Week 2
+  Closed At: 2025-11-11T03:10:45Z
+
+  Description:
+- Clone https://github.com/dhlee-project/fathomnet-cvpr2025-ssl into current repo.
+- Attempt to reproduce results.
+- Create new conda env to avoid conflicts with original env.
+- Install requirements and follow reproducibility guidelines provided by authors.
+- Debug missing dependencies (authors' `requirements.txt` incomplete).
+- Debug missing directories (authors' instructions incomplete).
+
+  Comments:
+[{"author":{"login":"z3301"},"authorAssociation":"OWNER","body":"- Successfully recreated and trained winning team's model.\n- Evaluated official test dataset on recreated model.\n- Submitted results to Kaggle for official scoring.\n- Results scored 1.44 (official winning result score was 1.45).\n- Note: decimal truncation and/or rounding possibility is noted on Kaggle site.\n\n<img width=\"898\" height=\"149\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/a9ba62af-73c2-4e62-ba9c-b49b9e46904e\" />","createdAt":"2025-11-11T03:10:12Z","id":"IC_kwDOQSbo5s7Rf87P","includesCreatedEdit":false,"isMinimized":false,"minimizedReason":"","reactionGroups":[],"url":"https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/15#issuecomment-3514814159","viewerDidAuthor":true}]
+
+------------------------------------------------------------
+
+• Task: #16 Title: Dissect winning entry to gain better understanding of their methodology
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/16
+  Author: z3301
+  Labels: research
+  State: CLOSED
+  Milestone: Week 2
+  Closed At: 2025-11-16T23:24:37Z
+
+  Description:
+* Data preprocessing (A0.data_preprocess.py) queries the FathomNet/WoRMS taxonomy via fathomnet.api.worms, builds a biological tree, exports a class-to-class distance matrix, encodes rank-wise labels (Phylum→Species), and pickles label encoders used later for hierarchical supervision.
+* Dataset pipeline (src/datautils.py) loads COCO-style annotations, crops ROI plus multi-scale context windows (3×, 5×, full frame), applies heavy augmentations (flip, jitter, rotations), optionally downsamples to simulate blur, and feeds each crop through HuggingFace AutoImageProcessor  configs tied to the ViT backbones defined in the config.
+* Model core (src/model.py) instantiates separate Dinov2 encoders for ROI and each context scale, projects embeddings with ConcatEmb_ProjModel, and optionally routes ROI features through per-scale MultiLayerAttentionModels to attend over patch embeddings in the Multi-Context Environmental Attention Module; a LightningModule wraps training, adds a WarmupStepLR, and, when hierarchical_loss is true, loads the taxonomy labels and attaches a multi-head classifier for every biological rank (src/model.py).
+* Training script (B1.BuildModel.py) consumes an OmegaConf config, remaps class ids to 0–78, optionally defines K-fold splits, builds Lightning dataloaders from Fathomnet_Dataset, wires WandB logging and checkpoints, and launches GPU training with mixed precision over the configured epochs.
+* Inference/evaluation (C1.TestModel.py (lines 1-189)) disables augmentations, restores each fold checkpoint, recomputes embeddings per scale, runs the same intra-environment attention + classifier stack, and ensembles folds via majority vote before writing a Kaggle submission CSV under results/.
+* Configurations such as config/experiment-final14.yaml  declare hardware setup, optimizer hyperparameters, ViT checkpoints (facebook/dinov2-large for both ROI and context), feature dimensionality, crop scales [3,5,-1], augmentation flags, and hierarchy metadata paths; swapping configs lets you recreate different experiments mentioned in the README note.
+* Dependencies stay lean (requirements.txt): PyTorch Lightning, Transformers, WandB, scikit-learn, OpenCV, Pandas, etc.; install them after desired CUDA PyTorch wheel per README instructions.
+
+  Comments:
+[]
+
+------------------------------------------------------------
+
+• Task: #17 Title: Rewrite jupyter notebook code as configurable command-line scripts with YAML configuration
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/17
+  Author: z3301
+  Labels: setup, reproducibility, evaluation, training, submission
+  State: CLOSED
+  Milestone: Week 2
+  Closed At: 2025-11-16T23:33:16Z
+
+  Description:
+- Added a reusable configuration + dependency definition so the whole workflow mirrors the winning repo setup (config/experiment-default.yaml, requirements.txt). Paths, augmentation knobs, optimizer settings, and hierarchy weights now live in YAML for reuse across scripts.
+- Rebuilt the notebook logic as importable modules: src/data.py handles taxonomy encoding, stratified splits, datasets, and dataloaders; src/model.py recreates the ConvNeXt-based hierarchical Lightning module with weighted losses; src/eval.py and src/submission.py centralize metric reporting and the confidence-aware taxonomic fallback.
+- Added CLI entrypoints that wrap the modules (train.py, evaluate.py, predict.py). Training now logs checkpoints/metadata, evaluation works on any split, and prediction emits a Kaggle-ready CSV via the fallback logic.
+- Updated the README to document the new scripted workflow and how to customize the YAML config before running (README.md).
+
+  Comments:
+[]
+
+------------------------------------------------------------
+
+• Task: #18 Title: Integrate COCO JSON Pipeline With ROI + Context Crops
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/18
+  Author: z3301
+  Labels: documentation, enhancement, research
+  State: CLOSED
+  Milestone: Week 2
+  Closed At: 2025-11-19T02:17:40Z
+
+  Description:
+Summary:
+Refactor the data pipeline to support COCO-format JSON annotation files, automatic ROI extraction, expanded context crops, and dual-tensor loader outputs for downstream models.
+
+Details:
+
+Implement on-the-fly region-of-interest crops from COCO bounding boxes
+
+Add expanded spatial context crops
+
+Improve LFS-aware path resolution for large images
+
+Update dataset loader to return both ROI and context tensors
+
+Code touched:
+
+`src/data.py:17–80, 111–140, 263–325, 352–426`
+
+Acceptance Criteria:
+
+[x] Dataloaders produce {"roi": tensor, "context": tensor} per sample
+
+[x] COCO JSON fully supported for train/val/test
+
+[x] Context crop expands bounding box by tunable ratio
+
+[x] LFS paths resolve correctly on any machine
+
+[x] Unit tests confirm ROI and context align with bounding boxes
+
+  Comments:
+[{"author":{"login":"z3301"},"authorAssociation":"OWNER","body":"Summary:\nRefactor the data pipeline to support COCO-format JSON annotation files, automatic ROI extraction, expanded context crops, and dual-tensor loader outputs for downstream models.\n\nDetails:\n\nImplement on-the-fly region-of-interest crops from COCO bounding boxes\n\nAdd expanded spatial context crops\n\nImprove LFS-aware path resolution for large images\n\nUpdate dataset loader to return both ROI and context tensors\n\nCode touched:\n\n`src/data.py:17–80, 111–140, 263–325, 352–426`\n\nAcceptance Criteria:\n\n[x] Dataloaders produce {\"roi\": tensor, \"context\": tensor} per sample\n\n[x] COCO JSON fully supported for train/val/test\n\n[x] Context crop expands bounding box by tunable ratio\n\n[x] LFS paths resolve correctly on any machine\n\n[x] Unit tests confirm ROI and context align with bounding boxes","createdAt":"2025-11-19T02:17:40Z","id":"IC_kwDOQSbo5s7Tnkhw","includesCreatedEdit":false,"isMinimized":false,"minimizedReason":"","reactionGroups":[],"url":"https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/18#issuecomment-3550365808","viewerDidAuthor":true}]
+
+------------------------------------------------------------
+
+• Task: #19 Title: Update Model & Inference to Consume ROI + Context via Twin Backbones
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/19
+  Author: z3301
+  Labels: documentation, enhancement, research
+  State: CLOSED
+  Milestone: Week 2
+  Closed At: 2025-11-19T02:20:36Z
+
+  Description:
+Summary:
+Extend the model architecture and inference code to accept dual inputs (ROI + context), process them through twin backbones, and propagate dictionary-based tensors through evaluation and submission.
+
+Details:
+
+Add twin-backbone input pathway
+
+Update forward pass to handle dict inputs
+
+Modify evaluation and submission pipeline to accept and propagate ROI+context
+
+Files updated:
+
+`src/model.py:10–88:195–207`
+
+`src/eval.py:13–105`
+
+`src/submission.py:76–84`
+
+Acceptance Criteria:
+
+[X] Model forward pass accepts dict with roi and context keys
+
+[X] Both backbones trained jointly
+
+[X] Eval pipeline computes metrics on new dict-based input format
+
+[X] Submission script works with ROI+context inference
+
+  Comments:
+[]
+
+------------------------------------------------------------
+
+• Task: #20 Title: Modernize Training CLI (Single GPU, Cleaner Logging, Explicit Setup)
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/20
+  Author: z3301
+  Labels: documentation, setup, reproducibility
+  State: CLOSED
+  Milestone: Week 2
+  Closed At: 2025-11-19T02:22:14Z
+
+  Description:
+Summary:
+Standardize and simplify the train.py CLI to default to single-GPU usage, provide clearer setup steps, cleaner logging cadence, and improved comments.
+
+Details:
+
+Remove legacy multi-GPU options unless explicitly enabled
+
+Add clearer CLI argument documentation
+
+Improve Trainer instantiation
+
+Clean up console logging and progress bars
+
+Code updated in:
+
+`train.py:15–120`
+
+Acceptance Criteria:
+
+[X] `train.py` runs cleanly on DGX/H1200 with no additional args
+
+[X] Logs at predictable cadence (per-epoch/per-N-steps)
+
+[X] Code comments document expected workflow
+
+[X] PL Trainer configuration is explicit and readable
+
+  Comments:
+[]
+
+------------------------------------------------------------
+
+• Task: #21 Title: Align Predict + Configs + README to New Experiment Structure
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/21
+  Author: z3301
+  Labels: documentation, enhancement, setup, reproducibility, research
+  State: CLOSED
+  Milestone: Week 2
+  Closed At: 2025-11-19T02:24:15Z
+
+  Description:
+Summary:
+Update prediction entry point, configs, and documentation to point to the new experiment layout and data folder conventions.
+
+Details:
+
+`predict.py` now loads `config/experiment-01.yaml`
+
+README documents expected dataset path at:
+`~/Documents/data/{train,test}/`
+
+`.gitignore` now ignores local `train/` and `test/` directories
+
+New experiment configs added: `experiment-01.yaml`, `experiment-02.yaml``
+
+Files updated:
+
+`predict.py:11–15`
+
+`README.md:53–75`
+
+`.gitignore:1–4`
+
+Acceptance Criteria:
+
+[X] Predict CLI references correct config path
+
+[X] README instructions match functional data layout
+
+[X] Git no longer tracks local training data dirs
+
+[X] Experiment 01/02 configs load cleanly via Hydra
+
+  Comments:
+[]
+
+------------------------------------------------------------
+
+• Task: #22 Title: Extend Dependencies and Add COCO Async Downloader + Cropper
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/22
+  Author: z3301
+  Labels: documentation, enhancement, setup, reproducibility, research
+  State: CLOSED
+  Milestone: Week 2
+  Closed At: 2025-11-19T02:25:30Z
+
+  Description:
+Summary:
+Add new dependencies to support COCO dataset downloads, image processing, and asynchronous batch crop extraction.
+
+Details:
+
+Update requirements with dataset + processing libs
+
+Introduce new script: `download.py` for async COCO download + crop generation
+
+Code path:
+
+`requirements.txt:12–14`
+
+`download.py:1–120`
+
+Acceptance Criteria:
+
+[X] `pip install -r requirements.txt` installs all required dataset tooling
+
+[X] `download.py` downloads COCO data and generates crops on the fly
+
+[X] Script handles train/test split correctly
+
+[X] Script supports parallel downloading and cropping
+
+  Comments:
+[]
+
+------------------------------------------------------------
+
+• Task: #23 Title: Add New Data and Artifacts (COCO, CSVs, Reports, Checkpoints, Logs)
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/23
+  Author: z3301
+  Labels: documentation, enhancement, setup, reproducibility, research
+  State: CLOSED
+  Milestone: Week 2
+  Closed At: 2025-11-19T02:26:46Z
+
+  Description:
+Summary:
+Commit new project artifacts including COCO-format annotations, evaluation outputs, and updated checkpoints.
+
+Details:
+
+Added `dataset_train.json` and `dataset_test.json` (COCO format)
+
+Added updated ground-truth and prediction CSVs
+
+New eval reports + confusion matrices
+
+Updated submission file
+
+New Lightning checkpoint versions v36–v44 with metadata
+
+Acceptance Criteria:
+
+[X] COCO JSON files load correctly via the new dataloader
+
+[X] Prediction CSVs format matches submission schema
+
+[X] CM + eval reports reproduce offline metrics
+
+[X] Checkpoints load without warning across train/eval/predict paths
+
+  Comments:
+[]
+
+------------------------------------------------------------
+
