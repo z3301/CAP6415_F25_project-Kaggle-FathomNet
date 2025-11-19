@@ -1,0 +1,76 @@
+project:
+  name: "convnext-hierarchical"
+  seed: 42
+
+paths:
+  repo_root: "/mnt/beegfs/home/dzimmerman2021/Documents/fathomnet"
+  # Images live inside the repo (main branch) under train/ and test/ directories.
+  data_root: "${paths.repo_root}"
+  taxonomy_csv: "${paths.repo_root}/taxonomy.csv"
+  train_coco_json: "${paths.repo_root}/dataset_train.json"
+  test_coco_json: "${paths.repo_root}/dataset_test.json"
+  train_annotations: "${paths.data_root}/train/annotations.csv"
+  train_image_dir: "${paths.data_root}/train/rois"   # Legacy fallback if COCO JSON isn't available
+  train_full_image_dir: "${paths.data_root}/train/images"
+  test_annotations: "${paths.data_root}/test/annotations.csv"
+  test_image_dir: "${paths.data_root}/test/rois"     # Legacy fallback if COCO JSON isn't available
+  test_full_image_dir: "${paths.data_root}/test/images"
+  output_dir: "${paths.repo_root}/outputs"
+  submission_csv: "${paths.output_dir}/submission.csv"
+
+data:
+  taxonomy_levels: ["kingdom", "phylum", "class", "order", "family", "genus", "species"]
+  train_ratio: 0.7
+  val_ratio: 0.15
+  eval_ratio: 0.15
+  num_workers: 8
+  batch_size: 32
+  img_size: 518  # DINOv3 large expects 518x518 inputs
+  roi_margin: 0.1       # Expand ROI by 10%
+  context_margin: 2.0   # 3x context crop
+
+augmentation:
+  random_resized_crop_scale: [0.5, 1.0]
+  rotation_degrees: 15
+  horizontal_flip: true
+  color_jitter:
+    brightness: 0.2
+    contrast: 0.2
+    saturation: 0.1
+    hue: 0.0
+
+model:
+  backbone: "vit_large_patch14_dinov2.lvd142m"  # DINOv2/DINOv3 large variant
+  hidden_dim: 1024
+  head_dim: 512
+
+training:
+  max_epochs: 50
+  learning_rate: 0.0003
+  weight_decay: 0.05
+  label_smoothing: 0.1
+  precision: 16
+  backbone_lr_scale: 0.1
+  accumulate_grad_batches: 1
+  devices: [1]
+  accelerator: "gpu"
+
+callbacks:
+  early_stopping_patience: 10
+  monitor_metric: "val_loss"
+  monitor_mode: "min"
+
+loss:
+  hierarchy_weights:
+    kingdom: 0.5
+    phylum: 0.75
+    class: 1.0
+    order: 1.25
+    family: 1.5
+    genus: 2.0
+    species: 2.5
+
+inference:
+  # Set to true to enable hierarchical fallback when species confidence is low.
+  enable_fallback: true
+  confidence_threshold: 0.7

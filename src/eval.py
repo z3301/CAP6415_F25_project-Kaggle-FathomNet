@@ -24,7 +24,10 @@ def evaluate_model(
     all_targets = defaultdict(list)
     with torch.no_grad():
         for images, targets in tqdm(dataloader, desc=f"{prefix} evaluation"):
-            images = images.to(device)
+            if isinstance(images, dict):
+                images = {k: v.to(device) for k, v in images.items()}
+            else:
+                images = images.to(device)
             outputs = model(images)
             for level in cfg.data.taxonomy_levels:
                 if level in outputs and level in targets:
@@ -85,7 +88,10 @@ def save_predictions(model, dataloader, id_to_name, cfg: DictConfig):
     annotation_id = 1
     with torch.no_grad():
         for images, _ in tqdm(dataloader, desc="Saving predictions"):
-            images = images.to(device)
+            if isinstance(images, dict):
+                images = {k: v.to(device) for k, v in images.items()}
+            else:
+                images = images.to(device)
             outputs = model(images)
             preds = torch.argmax(outputs["species"], dim=1).cpu().tolist()
             for pred in preds:

@@ -15,12 +15,18 @@ class TaxonomyAwareClassifier(pl.LightningModule):
         self.class_counts = class_counts
         self.levels = list(class_counts.keys())
         backbone_name = cfg.model.backbone
-        self.feature_extractor = timm.create_model(
+        self.backbone = timm.create_model(
             backbone_name,
             pretrained=True,
             num_classes=0,
         )
-        in_features = self.feature_extractor.num_features
+        self.backbone_ctx = timm.create_model(
+            backbone_name,
+            pretrained=True,
+            num_classes=0,
+        )
+        feature_dim = self.backbone.num_features
+        in_features = feature_dim * 2  # ROI + context features
         hidden_dim = cfg.model.hidden_dim
         head_dim = cfg.model.head_dim
         self.shared_features = nn.Sequential(
@@ -63,9 +69,22 @@ class TaxonomyAwareClassifier(pl.LightningModule):
         self.species_features = nn.Linear(hidden_dim, head_dim)
         self.species_head = block(self.class_counts["species"])
 
+    def _unpack_inputs(self, images):
+        if isinstance(images, dict):
+            roi_images = images.get("roi")
+            context_images = images.get("context")
+            if context_images is None:
+                context_images = roi_images
+        else:
+            roi_images = images
+            context_images = images
+        return roi_images, context_images
+
     def forward(self, images):
-        feats = self.feature_extractor(images)
-        shared = self.shared_features(feats)
+        roi_images, context_images = self._unpack_inputs(images)
+        roi_feats = self.backbone(roi_images)
+        ctx_feats = self.backbone_ctx(context_images)
+        shared = self.shared_features(torch.cat([roi_feats, ctx_feats], dim=1))
         kingdom_logits = self.kingdom_head(shared)
         kingdom_probs = torch.softmax(kingdom_logits, dim=1)
 
@@ -177,7 +196,7 @@ class TaxonomyAwareClassifier(pl.LightningModule):
         backbone_params = []
         other_params = []
         for name, param in self.named_parameters():
-            if name.startswith("feature_extractor"):
+            if name.startswith("backbone") or name.startswith("backbone_ctx"):
                 backbone_params.append(param)
             else:
                 other_params.append(param)

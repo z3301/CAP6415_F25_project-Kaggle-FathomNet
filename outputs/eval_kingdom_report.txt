@@ -1,0 +1,10 @@
+Accuracy: 1.0000
+
+              precision    recall  f1-score   support
+
+    Animalia       1.00      1.00      1.00      3555
+     unknown       0.00      0.00      0.00         0
+
+    accuracy                           1.00      3555
+   macro avg       0.50      0.50      0.50      3555
+weighted avg       1.00      1.00      1.00      3555

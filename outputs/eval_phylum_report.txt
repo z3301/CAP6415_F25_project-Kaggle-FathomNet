@@ -1,0 +1,16 @@
+Accuracy: 0.9733
+
+               precision    recall  f1-score   support
+
+     Annelida       0.96      0.97      0.96        90
+   Arthropoda       0.96      0.98      0.97       495
+     Chordata       0.99      0.94      0.96       360
+     Cnidaria       0.98      0.97      0.98      1080
+Echinodermata       0.98      0.98      0.98       945
+     Mollusca       0.98      0.97      0.97       180
+     Porifera       0.94      0.98      0.96       405
+      unknown       0.00      0.00      0.00         0
+
+     accuracy                           0.97      3555
+    macro avg       0.85      0.85      0.85      3555
+ weighted avg       0.97      0.97      0.97      3555

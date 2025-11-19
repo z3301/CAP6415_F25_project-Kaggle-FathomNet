@@ -10,7 +10,7 @@ from src.submission import generate_submission
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Generate Kaggle submission.")
-    parser.add_argument("--config", type=str, default="config/experiment-default.yaml")
+    parser.add_argument("--config", type=str, default="config/experiment-01.yaml")
     parser.add_argument("--checkpoint", type=str, required=True)
     return parser.parse_args()
 

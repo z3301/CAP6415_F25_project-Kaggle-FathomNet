@@ -1,0 +1,5 @@
+/legacy
+/test
+/train
+*.pt
+*.ckpt

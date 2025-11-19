@@ -1,0 +1,74 @@
+Accuracy: 0.9159
+
+                      precision    recall  f1-score   support
+
+       Actinernoidea       0.84      0.78      0.81        90
+          Actiniaria       0.00      0.00      0.00         0
+          Actiniidae       0.88      0.98      0.93        45
+      Actinopterygii       0.82      0.69      0.75        45
+         Alcyoniidae       0.98      0.98      0.98        45
+           Amphipoda       0.93      0.89      0.91        45
+        Antedonoidea       0.83      0.78      0.80        45
+    Aphrocallistidae       0.98      0.96      0.97        45
+          Asteriidae       0.98      0.98      0.98        45
+          Asteroidea       0.83      0.87      0.85        45
+          Brisingida       0.93      0.91      0.92        45
+             Caridea       0.67      0.69      0.68        45
+        Ceriantharia       0.87      0.91      0.89        45
+       Cladorhizidae       0.94      0.94      0.94        90
+         Coralliidae       0.94      0.95      0.94       135
+    Corallimorphidae       1.00      0.93      0.97        45
+           Crinoidea       0.73      0.84      0.78        45
+        Cucumariidae       0.76      0.78      0.77        90
+          Elpidiidae       0.97      0.99      0.98       180
+          Epialtidae       0.95      0.91      0.93        45
+           Farreidae       0.93      0.91      0.92        45
+       Funiculinidae       0.97      0.82      0.89        45
+        Galatheoidea       0.98      1.00      0.99        45
+          Gastropoda       0.90      0.98      0.94        45
+       Goniasteridae       0.97      0.97      0.97        90
+      Hexactinellida       0.00      0.00      0.00         0
+       Holothuroidea       0.00      0.00      0.00         0
+        Hormathiidae       0.87      0.89      0.88        45
+            Isididae       0.89      0.71      0.79        45
+      Keratoisididae       0.89      0.93      0.91        90
+       Laetmogonidae       0.71      0.67      0.69        45
+       Liponematidae       0.95      0.89      0.92        45
+          Lithodidae       0.91      0.93      0.92        90
+        Merlucciidae       0.80      0.87      0.83        45
+        Metridioidea       0.93      0.93      0.93        45
+         Munnopsidae       0.92      0.98      0.95        45
+           Mycalidae       0.88      0.98      0.93        45
+         Octopodidae       0.98      0.96      0.97        45
+      Ophiacanthidae       0.93      0.96      0.95        90
+         Ophiuroidea       0.00      0.00      0.00         0
+         Oregoniidae       0.95      0.93      0.94        45
+          Pandalidae       0.90      0.93      0.91       135
+        Pennatulidae       0.95      0.93      0.94        45
+      Pleuronectidae       1.00      1.00      1.00        45
+            Porifera       0.00      0.00      0.00         0
+          Primnoidae       0.90      0.96      0.92        45
+     Propeamussiidae       0.98      1.00      0.99        45
+            Psolidae       0.93      0.93      0.93        45
+    Ptychogastriidae       1.00      0.98      0.99        45
+       Pyrosomatidae       1.00      0.96      0.98        45
+    Rhopalonematidae       0.96      1.00      0.98        45
+         Rossellidae       0.88      0.95      0.91       180
+        Scleractinia       0.92      0.98      0.95        45
+          Sebastidae       0.98      0.96      0.97       135
+          Serpulidae       1.00      0.98      0.99        45
+       Stichopodidae       0.88      0.93      0.90        45
+Strongylocentrotidae       1.00      0.96      0.98        45
+       Synallactidae       0.93      0.96      0.95        45
+        Terebellidae       0.94      0.98      0.96        45
+            Tunicata       1.00      0.80      0.89        45
+        Umbellulidae       0.93      0.91      0.92        45
+        Vesicomyidae       0.98      0.89      0.93        45
+       Virgulariidae       0.98      0.96      0.97        45
+        Zenometridae       0.74      0.64      0.69        45
+          Zoantharia       0.98      0.96      0.97        45
+             unknown       0.00      0.00      0.00         0
+
+            accuracy                           0.92      3555
+           macro avg       0.83      0.83      0.83      3555
+        weighted avg       0.92      0.92      0.92      3555

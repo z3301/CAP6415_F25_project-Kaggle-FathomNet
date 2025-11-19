@@ -76,7 +76,10 @@ def generate_submission(
     with torch.no_grad():
         for batch in tqdm(dataloader, desc="Inference"):
             images, annotation_ids = batch
-            images = images.to(device)
+            if isinstance(images, dict):
+                images = {k: v.to(device) for k, v in images.items()}
+            else:
+                images = images.to(device)
             batch_ids = annotation_ids.cpu().tolist()
             outputs = model(images)
             all_annotation_ids.extend(batch_ids)
