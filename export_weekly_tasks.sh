@@ -6,7 +6,7 @@
 # ============================================================
 
 # --- CONFIGURATION ---
-REPO="z3301/CAP6415_F25_project-Kaggle-FathomNet"
+REPO="z3301/fathomnet"
 DOCS_DIR="./docs"
 MILESTONES=("Week 1" "Week 2" "Week 3" "Week 4" "Week 5")
 
