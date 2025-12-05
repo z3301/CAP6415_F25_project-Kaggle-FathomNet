@@ -1,0 +1,169 @@
+===================================================
+FathomNet 2025 Project — Weekly Log 5
+Generated on: Wed Dec  3 11:30:17 AM EST 2025
+===================================================
+• Task: #11 Title: Train Exp 3: Independent heads with multi-scale attention
+  URL: https://github.com/z3301/fathomnet/issues/11
+  Author: z3301
+  Labels: experiment
+  State: OPEN
+  Milestone: Week 5
+  Closed At: still open
+
+  Description:
+Train model with independent hierarchical heads (no conditioning).
+
+**Configuration:**
+- Use best multi-scale + attention architecture from Exp 2
+- Replace sequential heads with independent heads
+- Hierarchical loss with same rank weights as before
+- All other hyperparameters same as Exp 2
+
+**Success criteria:**
+- **Target score: < 2.35** (eliminate error propagation penalty)
+- Compare accuracy at each taxonomic rank vs. Exp 2
+- Analyze cases where conditioning helped vs. hurt
+
+**Deliverable:**
+- Checkpoint file
+- Per-rank accuracy comparison: sequential vs. independent
+- Error analysis: identify cases where error propagation was eliminated
+- Confusion matrices for all ranks
+
+  Comments:
+[]
+
+------------------------------------------------------------
+
+• Task: #12 Title: Ablation study: Scale contributions
+  URL: https://github.com/z3301/fathomnet/issues/12
+  Author: z3301
+  Labels: analysis
+  State: OPEN
+  Milestone: Week 5
+  Closed At: still open
+
+  Description:
+Systematic ablation to quantify contribution of each scale.
+
+**Experiments to run:**
+1. ROI only (baseline replication)
+2. ROI + 3× context
+3. ROI + 5× context (skip 3×)
+4. ROI + 3× + 5× context
+
+**Analysis questions:**
+- Which scale provides most value?
+- Does 5× add value beyond 3×?
+- Is there redundancy between scales?
+- Does optimal scale vary by organism type?
+
+**Deliverable:**
+- Ablation table with scores for each configuration
+- Per-rank accuracy breakdown for each
+- Cost-benefit analysis (params vs. performance)
+- Recommendation: which scales to use for production
+
+  Comments:
+[]
+
+------------------------------------------------------------
+
+• Task: #13 Title: Ablation study: Attention vs. concatenation
+  URL: https://github.com/z3301/fathomnet/issues/13
+  Author: z3301
+  Labels: analysis
+  State: OPEN
+  Milestone: Week 5
+  Closed At: still open
+
+  Description:
+Compare attention-based fusion vs. simple concatenation.
+
+**Experiments to compare:**
+1. Exp 1b: Multi-scale with concatenation (no attention)
+2. Exp 2: Multi-scale with cross-scale attention
+
+**Analysis questions:**
+- How much does attention improve over concatenation?
+- Is the computational cost worth the gain?
+- Does attention help more for certain organism types?
+- What patterns do attention weights reveal?
+
+**Deliverable:**
+- Performance comparison table
+- Computational cost analysis (FLOPs, memory, training time)
+- Attention pattern analysis by organism type
+- Recommendation: when is attention worth it?
+
+  Comments:
+[]
+
+------------------------------------------------------------
+
+• Task: #15 Title: Update research report with experimental results
+  URL: https://github.com/z3301/fathomnet/issues/15
+  Author: z3301
+  Labels: documentation
+  State: OPEN
+  Milestone: Week 5
+  Closed At: still open
+
+  Description:
+Incorporate all experimental findings into comprehensive research report.
+
+**Sections to complete:**
+1. Results summary table (all experiments)
+2. Analysis of multi-scale context impact
+3. Attention mechanism effectiveness
+4. Hierarchical conditioning trade-offs
+5. Ablation study findings
+6. Visualizations (attention maps, confusion matrices)
+7. Conclusions and recommendations
+
+**Files to update:**
+- `docs/dissertation_report.md`
+
+**Success criteria:**
+- All experiments documented with results
+- Clear tables and figures
+- Actionable recommendations for future work
+- Ready to share with advisor
+
+  Comments:
+[]
+
+------------------------------------------------------------
+
+• Task: #14 Title: Ablation study: Hierarchical conditioning impact
+  URL: https://github.com/z3301/fathomnet/issues/14
+  Author: z3301
+  Labels: analysis
+  State: OPEN
+  Milestone: Week 5
+  Closed At: still open
+
+  Description:
+Measure impact of sequential conditioning vs. independent heads.
+
+**Experiments to compare:**
+1. Exp 2: Sequential conditioning (genus→species)
+2. Exp 3: Independent heads (no conditioning)
+
+**Analysis questions:**
+- Does conditioning reduce or increase accuracy?
+- Which taxonomic ranks benefit from conditioning?
+- How often does error propagation hurt performance?
+- Are there organism types where conditioning helps?
+
+**Deliverable:**
+- Per-rank accuracy comparison table
+- Error propagation analysis (trace misclassifications through hierarchy)
+- Case studies: examples where conditioning helped/hurt
+- Recommendation: when to use conditioning vs. independent
+
+  Comments:
+[]
+
+------------------------------------------------------------
+

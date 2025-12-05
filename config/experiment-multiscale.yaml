@@ -1,0 +1,73 @@
+project:
+  name: "convnext-multiscale"
+  seed: 42
+
+paths:
+  data_root: "/mnt/beegfs/home/dzimmerman2021/Documents/fathomnet"
+  taxonomy_csv: "${paths.data_root}/taxonomy.csv"
+  # COCO-style annotations for multi-scale support
+  train_coco_json: "${paths.data_root}/dataset_train.json"
+  train_full_image_dir: "${paths.data_root}/train/images"
+  train_roi_root: "${paths.data_root}/train/rois"
+  test_coco_json: "${paths.data_root}/dataset_test.json"
+  test_full_image_dir: "${paths.data_root}/test/images"
+  test_roi_root: "${paths.data_root}/test/rois"
+  output_dir: "${paths.data_root}/outputs/multiscale"
+  submission_csv: "${paths.output_dir}/submission.csv"
+
+data:
+  taxonomy_levels: ["kingdom", "phylum", "class", "order", "family", "genus", "species"]
+  train_ratio: 0.8
+  val_ratio: 0.1
+  eval_ratio: 0.1
+  num_workers: 8
+  batch_size: 16
+  img_size: 224
+  # Multi-scale settings
+  use_multiscale: true
+  scales: ["1x", "3x", "5x"]
+
+augmentation:
+  random_resized_crop_scale: [0.7, 1.0]
+  rotation_degrees: 15
+  horizontal_flip: true
+  color_jitter:
+    brightness: 0.2
+    contrast: 0.2
+    saturation: 0.1
+    hue: 0.0
+
+model:
+  backbone: "convnextv2_base.fcmae_ft_in22k_in1k"
+  hidden_dim: 1024
+  head_dim: 512
+  # Multi-scale fusion method: concat, attention, or weighted
+  fusion_method: "concat"
+
+training:
+  max_epochs: 50
+  learning_rate: 0.0003
+  weight_decay: 0.05
+  label_smoothing: 0.1
+  precision: "16-mixed"
+  backbone_lr_scale: 0.1
+  accumulate_grad_batches: 2
+
+callbacks:
+  early_stopping_patience: 10
+  monitor_metric: "val_loss"
+  monitor_mode: "min"
+
+loss:
+  hierarchy_weights:
+    kingdom: 0.5
+    phylum: 0.75
+    class: 1.0
+    order: 1.25
+    family: 1.5
+    genus: 2.0
+    species: 2.5
+
+inference:
+  enable_fallback: true
+  confidence_threshold: 0.7

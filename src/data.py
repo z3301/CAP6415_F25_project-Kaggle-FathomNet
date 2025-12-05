@@ -323,6 +323,164 @@ def test_collate_fn(batch):
     return {"roi": roi_images, "context": context_images}, ids
 
 
+class MultiScalePrecroppedDataset(Dataset):
+    """
+    Dataset for loading pre-cropped multi-scale ROI images.
+
+    Expects images organized as:
+        roi_root/{scale}/{image_id}.png
+    where scale is one of: 1x, 3x, 5x
+    """
+
+    def __init__(
+        self,
+        frame: pd.DataFrame,
+        taxonomy_df: pd.DataFrame,
+        levels: List[str],
+        encoders: Dict[str, LabelEncoder],
+        transform,
+        roi_root: str,
+        scales: List[str] = ["1x", "3x", "5x"],
+    ):
+        self.frame = frame.reset_index(drop=True)
+        self.transform = transform
+        self.levels = levels
+        self.encoders = encoders
+        self.roi_root = roi_root
+        self.scales = scales
+        self.name_to_row = self._build_name_lookup(taxonomy_df)
+        self.default_ids = {
+            level: int(np.where(encoder.classes_ == "unknown")[0][0])
+            if "unknown" in encoder.classes_
+            else 0
+            for level, encoder in encoders.items()
+        }
+
+    def _build_name_lookup(self, taxonomy_df: pd.DataFrame):
+        lookup = {}
+        for _, row in taxonomy_df.iterrows():
+            row_ids = {level: int(row[f"{level}_id"]) for level in self.levels}
+            for level in self.levels:
+                key = str(row[level]).strip().lower()
+                lookup.setdefault(key, row_ids)
+        return lookup
+
+    def __len__(self):
+        return len(self.frame)
+
+    def _load_scale_image(self, image_id: int, annotation_id: int, scale: str) -> Image.Image:
+        """Load a pre-cropped image at a specific scale.
+
+        Images are named: {image_id}_{annotation_id}.png
+        """
+        filename = f"{image_id}_{annotation_id}.png"
+        path = os.path.join(self.roi_root, scale, filename)
+        if os.path.exists(path):
+            return Image.open(path).convert("RGB")
+        # Fallback: try annotation_id only
+        path_ann = os.path.join(self.roi_root, scale, f"{annotation_id}.png")
+        if os.path.exists(path_ann):
+            return Image.open(path_ann).convert("RGB")
+        raise FileNotFoundError(f"Multi-scale image not found: {path}")
+
+    def __getitem__(self, idx):
+        row = self.frame.iloc[idx]
+
+        # Get identifiers for finding images
+        annotation_id = int(row.get("annotation_id", idx + 1))
+        image_id = int(row.get("image_id", annotation_id))
+
+        # Load all scales
+        scale_tensors = {}
+        for scale in self.scales:
+            img = self._load_scale_image(image_id, annotation_id, scale)
+            scale_tensors[scale] = self.transform(img)
+
+        # Get taxonomy labels
+        label = str(row["label"]).strip().lower()
+        taxonomy_row = self.name_to_row.get(label)
+        if taxonomy_row is None:
+            taxonomy_row = {level: self.default_ids[level] for level in self.levels}
+        labels = {level: int(taxonomy_row[level]) for level in self.levels}
+
+        return {
+            "scales": scale_tensors,
+            "labels": labels,
+        }
+
+
+class MultiScaleTestDataset(Dataset):
+    """Test dataset for pre-cropped multi-scale images."""
+
+    def __init__(
+        self,
+        frame: pd.DataFrame,
+        transform,
+        roi_root: str,
+        scales: List[str] = ["1x", "3x", "5x"],
+    ):
+        self.frame = frame.reset_index(drop=True)
+        self.transform = transform
+        self.roi_root = roi_root
+        self.scales = scales
+
+    def __len__(self):
+        return len(self.frame)
+
+    def _load_scale_image(self, image_id: int, annotation_id: int, scale: str) -> Image.Image:
+        """Load a pre-cropped image at a specific scale."""
+        filename = f"{image_id}_{annotation_id}.png"
+        path = os.path.join(self.roi_root, scale, filename)
+        if os.path.exists(path):
+            return Image.open(path).convert("RGB")
+        # Fallback: try annotation_id only
+        path_ann = os.path.join(self.roi_root, scale, f"{annotation_id}.png")
+        if os.path.exists(path_ann):
+            return Image.open(path_ann).convert("RGB")
+        raise FileNotFoundError(f"Multi-scale image not found: {path}")
+
+    def __getitem__(self, idx):
+        row = self.frame.iloc[idx]
+
+        annotation_id = int(row.get("annotation_id", idx + 1))
+        image_id = int(row.get("image_id", annotation_id))
+
+        scale_tensors = {}
+        for scale in self.scales:
+            img = self._load_scale_image(image_id, annotation_id, scale)
+            scale_tensors[scale] = self.transform(img)
+
+        return {
+            "scales": scale_tensors,
+            "annotation_id": annotation_id,
+        }
+
+
+def multiscale_collate_fn(batch):
+    """Collate function for multi-scale datasets."""
+    scales = list(batch[0]["scales"].keys())
+    scale_images = {
+        scale: torch.stack([item["scales"][scale] for item in batch])
+        for scale in scales
+    }
+    labels = {
+        level: torch.tensor([item["labels"][level] for item in batch], dtype=torch.long)
+        for level in batch[0]["labels"]
+    }
+    return scale_images, labels
+
+
+def multiscale_test_collate_fn(batch):
+    """Collate function for multi-scale test datasets."""
+    scales = list(batch[0]["scales"].keys())
+    scale_images = {
+        scale: torch.stack([item["scales"][scale] for item in batch])
+        for scale in scales
+    }
+    ids = torch.tensor([item["annotation_id"] for item in batch], dtype=torch.long)
+    return scale_images, ids
+
+
 def stratified_splits(labels: List[str], cfg: DictConfig):
     train_ratio = float(cfg.data.train_ratio)
     val_ratio = float(cfg.data.val_ratio)
@@ -424,3 +582,64 @@ def prepare_test_loader(cfg: DictConfig):
         collate_fn=test_collate_fn,
     )
     return loader
+
+
+def build_multiscale_dataloaders(
+    cfg: DictConfig,
+    taxonomy_df: pd.DataFrame,
+    encoders: Dict[str, LabelEncoder],
+    scales: List[str] = ["1x", "3x", "5x"],
+):
+    """
+    Build dataloaders using pre-cropped multi-scale ROI images.
+
+    Expects:
+        cfg.paths.train_roi_root: path to train/rois/ containing 1x/, 3x/, 5x/
+        cfg.paths.train_annotations: CSV with columns [annotation_id, label] or similar
+    """
+    roi_root = getattr(cfg.paths, "train_roi_root", os.path.join(cfg.paths.data_root, "train", "rois"))
+
+    # Load annotations
+    if getattr(cfg.paths, "train_coco_json", None) and os.path.exists(cfg.paths.train_coco_json):
+        annotations = load_coco_annotations(
+            cfg.paths.train_coco_json,
+            cfg.paths.train_full_image_dir,
+            include_labels=True,
+        )
+    else:
+        annotations = load_annotations(
+            cfg.paths.train_annotations, cfg.paths.train_image_dir
+        )
+
+    train_idx, val_idx, eval_idx = stratified_splits(annotations["label"].tolist(), cfg)
+    train_df = annotations.iloc[train_idx]
+    val_df = annotations.iloc[val_idx]
+    eval_df = annotations.iloc[eval_idx]
+
+    train_tfms, val_tfms = create_transforms(cfg)
+
+    datasets = {
+        "train": MultiScalePrecroppedDataset(
+            train_df, taxonomy_df, cfg.data.taxonomy_levels, encoders, train_tfms, roi_root, scales
+        ),
+        "val": MultiScalePrecroppedDataset(
+            val_df, taxonomy_df, cfg.data.taxonomy_levels, encoders, val_tfms, roi_root, scales
+        ),
+        "eval": MultiScalePrecroppedDataset(
+            eval_df, taxonomy_df, cfg.data.taxonomy_levels, encoders, val_tfms, roi_root, scales
+        ),
+    }
+
+    dataloaders = {
+        split: DataLoader(
+            ds,
+            batch_size=cfg.data.batch_size,
+            shuffle=(split == "train"),
+            num_workers=cfg.data.num_workers,
+            pin_memory=True,
+            collate_fn=multiscale_collate_fn,
+        )
+        for split, ds in datasets.items()
+    }
+
+    return dataloaders, {"train": train_idx.tolist(), "val": val_idx.tolist(), "eval": eval_idx.tolist()}

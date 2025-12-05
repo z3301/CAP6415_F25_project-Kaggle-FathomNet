@@ -1,7 +1,45 @@
+# Data directories (download separately)
 /legacy
 /test
 /train
+train_corrupted/
+
+# Model checkpoints
 *.pt
 *.ckpt
+
+# Python
 __pycache__/
 *.pyc
+*.pyo
+.Python
+*.egg-info/
+
+# Training outputs (too large for git)
+outputs/
+!outputs/.gitkeep
+
+# Logs
+*.log
+nohup*.out
+*.out
+
+# Environment
+.env
+.venv/
+venv/
+
+# IDE/Tools
+.claude/
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Submissions (regenerate from checkpoints)
+submission*.csv
+predictions.csv
+
+# Misc
+.DS_Store
+Thumbs.db
