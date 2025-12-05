@@ -1,0 +1,141 @@
+===================================================
+FathomNet 2025 Project — Weekly Log 3
+Generated on: Wed Dec  3 11:30:16 AM EST 2025
+===================================================
+• Task: #3 Title: Create multi-scale dataset class
+  URL: https://github.com/z3301/fathomnet/issues/3
+  Author: z3301
+  Labels: enhancement
+  State: OPEN
+  Milestone: Week 3
+  Closed At: still open
+
+  Description:
+Implement MultiScaleFathomNetDataset that extracts ROI + 3× + 5× context windows from images.
+
+**Implementation details:**
+- Modify data pipeline to crop multiple scales from original frames
+- Handle cases where original frames aren't available (zoom simulation)
+- Implement multi-scale transforms and augmentation
+- Create custom collate function for multi-scale batches
+
+**Files to create:**
+- `src/data_multiscale.py`
+
+**Dependencies:**
+- Access to original full frames (or zoom-based approximation)
+
+**Success criteria:**
+- Dataset can load and return 3 crops per image
+- All crops properly transformed and batched
+- Visual inspection confirms crops contain environmental context
+
+  Comments:
+[]
+
+------------------------------------------------------------
+
+• Task: #5 Title: Train Exp 1a: ROI + 3× context (2 encoders)
+  URL: https://github.com/z3301/fathomnet/issues/5
+  Author: z3301
+  Labels: experiment
+  State: OPEN
+  Milestone: Week 3
+  Closed At: still open
+
+  Description:
+Baseline experiment with 2-scale context.
+
+**Configuration:**
+- Scales: ROI (1.0×) + 3× context
+- Backbone: ConvNeXtV2-Base × 2
+- Batch size: 16 (reduced due to 2× params)
+- Learning rate: 3e-4 with cosine annealing
+- Epochs: 50 with early stopping
+
+**Success criteria:**
+- Training completes without OOM errors
+- Validation score improves over baseline (< 2.74)
+- Model checkpoint saved
+
+**Deliverable:**
+- Checkpoint file
+- Training curves
+- Validation metrics per taxonomic rank
+
+  Comments:
+[]
+
+------------------------------------------------------------
+
+• Task: #4 Title: Implement multi-scale backbone architecture
+  URL: https://github.com/z3301/fathomnet/issues/4
+  Author: z3301
+  Labels: enhancement
+  State: OPEN
+  Milestone: Week 3
+  Closed At: still open
+
+  Description:
+Create MultiScaleBackbone with separate encoders for each scale.
+
+**Implementation details:**
+- 3 separate ConvNeXtV2-Base encoders (one per scale)
+- Projection layers to map each encoder output to shared dimension
+- Feature fusion via concatenation
+- Integration with existing hierarchical classifier heads
+
+**Files to create:**
+- `src/model_multiscale.py`
+
+**Key design decisions:**
+- Start with ConvNeXtV2-Base (88M params/encoder, 264M total)
+- Use concatenation fusion (attention comes in Week 4)
+- Keep existing hierarchical head architecture
+
+**Success criteria:**
+- Model can forward pass multi-scale inputs
+- Total params ~300M (reasonable for available GPU memory)
+- Gradient flow verified through all 3 encoders
+
+  Comments:
+[]
+
+------------------------------------------------------------
+
+• Task: #6 Title: Train Exp 1b: ROI + 3× + 5× context (3 encoders)
+  URL: https://github.com/z3301/fathomnet/issues/6
+  Author: z3301
+  Labels: experiment
+  State: OPEN
+  Milestone: Week 3
+  Closed At: still open
+
+  Description:
+Main multi-scale experiment with 3 scales.
+
+**Configuration:**
+- Scales: ROI (1.0×) + 3× + 5× context
+- Backbone: ConvNeXtV2-Base × 3
+- Batch size: 12-16 (test GPU memory)
+- Learning rate: 3e-4 with cosine annealing
+- Dropout: 0.3 (increased for more params)
+- Epochs: 50 with early stopping
+
+**Success criteria:**
+- **Target score: < 2.50** (close 30% of gap to 1st place)
+- Improved performance over Exp 1a
+- Per-rank accuracy improvements tracked
+
+**Deliverable:**
+- Checkpoint file
+- Training curves
+- Validation metrics
+- Comparison table: baseline vs 1a vs 1b
+- Confusion matrices for all taxonomic ranks
+
+  Comments:
+[]
+
+------------------------------------------------------------
+
