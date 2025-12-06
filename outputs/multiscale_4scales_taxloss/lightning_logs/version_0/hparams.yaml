@@ -1,0 +1,17 @@
+class_counts:
+  kingdom: 2
+  phylum: 8
+  class: 22
+  order: 43
+  family: 66
+  genus: 75
+  species: 80
+scales:
+- 1x
+- 3x
+- 5x
+- full
+distance_matrix_path: distance_matrix.csv
+loss_type: distance
+alpha: 0.3
+smoothing: 0.1

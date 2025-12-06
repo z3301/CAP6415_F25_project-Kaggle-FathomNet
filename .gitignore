@@ -1,45 +1,85 @@
-# Data directories (download separately)
-/legacy
-/test
-/train
-train_corrupted/
+# ===========================================
+# FathomNet 2025 - Final Branch .gitignore
+# ===========================================
+# This branch contains all code, checkpoints, and submissions
+# for reproducing the experiments. Datasets must be downloaded
+# separately using the provided scripts.
 
-# Model checkpoints
-*.pt
-*.ckpt
+# -------------------------------------------
+# DATA DIRECTORIES (download separately)
+# -------------------------------------------
+# Training/test images - use download.py to fetch
+/train/
+/test/
+/train_full/
+/train_corrupted/
 
-# Python
+# -------------------------------------------
+# REPORTS (excluded from this branch)
+# -------------------------------------------
+/report/
+
+# -------------------------------------------
+# PYTHON
+# -------------------------------------------
 __pycache__/
 *.pyc
 *.pyo
 .Python
 *.egg-info/
+.eggs/
 
-# Training outputs (too large for git)
-outputs/
-!outputs/.gitkeep
-
-# Logs
+# -------------------------------------------
+# LOGS (regenerated during training)
+# -------------------------------------------
 *.log
 nohup*.out
 *.out
 
-# Environment
+# -------------------------------------------
+# ENVIRONMENT
+# -------------------------------------------
 .env
 .venv/
 venv/
+env/
 
-# IDE/Tools
+# -------------------------------------------
+# IDE/TOOLS
+# -------------------------------------------
 .claude/
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
-# Submissions (regenerate from checkpoints)
-submission*.csv
-predictions.csv
-
-# Misc
+# -------------------------------------------
+# OS FILES
+# -------------------------------------------
 .DS_Store
 Thumbs.db
+
+# -------------------------------------------
+# LARGE INTERMEDIATE FILES
+# -------------------------------------------
+# These are auto-generated and can be recreated
+outputs/*/train.log
+outputs/lightning_logs/
+
+# -------------------------------------------
+# TEMP FILES
+# -------------------------------------------
+*.tmp
+*.temp
+
+# -------------------------------------------
+# LARGE CHECKPOINT FILES (>2GB, exceeds GitHub LFS limit)
+# -------------------------------------------
+# The main model checkpoints are too large for GitHub.
+# They can be downloaded from: [to be added]
+# Or train from scratch using the provided scripts.
+outputs/*/checkpoints/*.ckpt
+
+# Keep legacy checkpoint (under 2GB limit)
+!legacy/*.ckpt
