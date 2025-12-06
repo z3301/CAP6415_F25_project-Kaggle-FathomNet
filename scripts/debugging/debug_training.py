@@ -8,13 +8,19 @@ Tests:
 3. Weight updates
 """
 
+import os
+import sys
 import torch
 import torch.nn as nn
 from copy import deepcopy
 
+# Add project root to path for imports
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, PROJECT_ROOT)
+
 from src.config import Config
 from src.train import prepare_data
-from src.model_simple import SimpleTaxonomyClassifier
+from src.models.model_simple import SimpleTaxonomyClassifier
 
 print("="*80)
 print("COMPREHENSIVE TRAINING DEBUG")
