@@ -4,7 +4,7 @@ project:
 
 paths:
   data_root: "/mnt/beegfs/home/dzimmerman2021/Documents/fathomnet"
-  taxonomy_csv: "${paths.data_root}/taxonomy.csv"
+  taxonomy_csv: "${paths.data_root}/data/taxonomy.csv"
   # COCO-style annotations for multi-scale support
   train_coco_json: "${paths.data_root}/data/dataset_train.json"
   train_full_image_dir: "${paths.data_root}/train/images"

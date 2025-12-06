@@ -164,7 +164,7 @@ Examples:
     # Configuration
     parser.add_argument('--config', type=str, default='config/experiment-multiscale.yaml',
                         help='Path to YAML config file')
-    parser.add_argument('--distance-matrix', type=str, default='distance_matrix.csv',
+    parser.add_argument('--distance-matrix', type=str, default='data/distance_matrix.csv',
                         help='Path to taxonomic distance matrix CSV (80x80 symmetric)')
     parser.add_argument('--resume', type=str, default=None,
                         help='Path to checkpoint to resume training from')

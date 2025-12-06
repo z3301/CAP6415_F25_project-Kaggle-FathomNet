@@ -6,7 +6,7 @@ paths:
   repo_root: "/mnt/beegfs/home/dzimmerman2021/Documents/fathomnet"
   # Images live inside the repo (main branch) under train/ and test/ directories.
   data_root: "${paths.repo_root}"
-  taxonomy_csv: "${paths.repo_root}/taxonomy.csv"
+  taxonomy_csv: "${paths.repo_root}/data/taxonomy.csv"
   train_coco_json: "${paths.repo_root}/data/dataset_train.json"
   test_coco_json: "${paths.repo_root}/data/dataset_test.json"
   train_annotations: "${paths.data_root}/train/annotations.csv"

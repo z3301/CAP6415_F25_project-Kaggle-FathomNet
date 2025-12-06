@@ -87,7 +87,7 @@ def main():
     parser.add_argument(
         "--distance-matrix",
         type=str,
-        default="distance_matrix.csv",
+        default="data/distance_matrix.csv",
         help="Path to distance matrix",
     )
     parser.add_argument(
