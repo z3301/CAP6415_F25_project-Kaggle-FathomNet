@@ -1,40 +1,36 @@
 #!/usr/bin/env python3
 """
-Training Script for Multi-Context Environmental Attention Model
+Training Script for DINOv2 Multi-Context Patch Attention Model
 
-Trains the attention-based model with:
-- ROI (1×) + 3× context + 5× context + full image
-- Shared ViT encoder
-- Cross-attention from ROI to each context scale
+Trains the DINOv2-based attention model with:
+- ROI (1×): CLS token as Query (global embedding)
+- Context (3×, 5×): Patch tokens as Key/Value
+- Scaled dot-product cross-attention (Attention Is All You Need)
 - Hierarchical classification
 
 Usage:
-    python train_attention.py --epochs 30 --batch-size 12
+    python train_dinov2_attention.py --epochs 30 --batch-size 8
 """
 
 import argparse
 import os
-import sys
 import pandas as pd
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping, LearningRateMonitor
 from torch.utils.data import DataLoader
 from sklearn.model_selection import StratifiedShuffleSplit
 
-# Add project root to path for imports
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, PROJECT_ROOT)
 
 from src.config import Config, DATA_ROOT
 from data.data import create_transforms
 from data.data_multiscale import MultiScaleFathomNetDataset, collate_fn_multiscale
 from src.taxonomy import load_and_encode_taxonomy
-from src.models.model_attention import MultiContextAttentionClassifier
+from src.models.model_dinov2_attention import DINOv2PatchAttentionClassifier
 
 
-def prepare_data(batch_size=12, scales=[1.0, 3.0, 5.0]):
-    """Prepare multi-scale datasets for attention model."""
-    print("Preparing multi-scale datasets for attention model...")
+def prepare_data(batch_size=8, scales=[1.0, 3.0, 5.0]):
+    """Prepare multi-scale datasets for DINOv2 attention model."""
+    print("Preparing multi-scale datasets for DINOv2 attention model...")
 
     # Load annotations (1× ROI paths)
     annotations = pd.read_csv(Config.TRAIN_ANNOTATIONS)
@@ -101,17 +97,17 @@ def prepare_data(batch_size=12, scales=[1.0, 3.0, 5.0]):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Train Multi-Context Attention Model')
+    parser = argparse.ArgumentParser(description='Train DINOv2 Patch Attention Model')
     parser.add_argument('--epochs', type=int, default=30,
                        help='Maximum number of epochs (default: 30)')
     parser.add_argument('--lr', type=float, default=3e-4,
                        help='Learning rate (default: 3e-4)')
-    parser.add_argument('--batch-size', type=int, default=12,
-                       help='Batch size (default: 12)')
+    parser.add_argument('--batch-size', type=int, default=8,
+                       help='Batch size (default: 8, smaller due to ViT memory)')
     parser.add_argument('--patience', type=int, default=10,
                        help='Early stopping patience (default: 10)')
-    parser.add_argument('--backbone', type=str, default='convnextv2_base.fcmae_ft_in22k_in1k',
-                       help='Backbone model (default: convnextv2_base.fcmae_ft_in22k_in1k)')
+    parser.add_argument('--backbone', type=str, default='vit_base_patch14_dinov2.lvd142m',
+                       help='DINOv2 backbone (default: vit_base_patch14_dinov2.lvd142m)')
     parser.add_argument('--num-heads', type=int, default=8,
                        help='Number of attention heads (default: 8)')
     parser.add_argument('--scales', type=str, default='1.0,3.0,5.0',
@@ -124,7 +120,7 @@ def main():
     num_context_scales = len(scales) - 1  # Exclude ROI (1.0)
 
     print("=" * 60)
-    print("MULTI-CONTEXT ENVIRONMENTAL ATTENTION MODEL")
+    print("DINOV2 MULTI-CONTEXT PATCH ATTENTION MODEL")
     print("=" * 60)
     print(f"Configuration:")
     print(f"  - Epochs: {args.epochs}")
@@ -135,6 +131,11 @@ def main():
     print(f"  - Scales: {scales}")
     print(f"  - Context scales: {num_context_scales}")
     print()
+    print("Architecture:")
+    print("  - ROI (1×) -> CLS token (Query)")
+    print("  - Context (3×, 5×) -> Patch tokens (Key, Value)")
+    print("  - Cross-attention: softmax(Q·K^T / √d_k) · V")
+    print()
 
     # Prepare data
     train_loader, val_loader, eval_loader, taxonomy_df, encoders, class_counts, id_to_name, name_to_id = prepare_data(
@@ -142,8 +143,8 @@ def main():
     )
 
     # Create model
-    print("Creating Multi-Context Attention model...")
-    model = MultiContextAttentionClassifier(
+    print("Creating DINOv2 Patch Attention model...")
+    model = DINOv2PatchAttentionClassifier(
         class_counts=class_counts,
         lr=args.lr,
         num_context_scales=num_context_scales,
@@ -161,13 +162,13 @@ def main():
     print()
 
     # Setup output directory
-    output_dir = f'outputs/attention_{num_context_scales + 1}scales'
+    output_dir = f'outputs/dinov2_attention_{num_context_scales + 1}scales'
     os.makedirs(output_dir, exist_ok=True)
 
     # Callbacks
     checkpoint_callback = ModelCheckpoint(
         dirpath=output_dir,
-        filename=f'attention-{{epoch:02d}}-{{val_loss:.4f}}',
+        filename=f'dinov2_attn-{{epoch:02d}}-{{val_loss:.4f}}',
         monitor='val_loss',
         mode='min',
         save_top_k=3,

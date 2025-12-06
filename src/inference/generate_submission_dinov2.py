@@ -4,7 +4,6 @@ Generate Kaggle submission for FathomNet 2025 Competition using DINOv2 model
 """
 
 import os
-import sys
 import argparse
 import pandas as pd
 import torch
@@ -14,7 +13,6 @@ from PIL import Image
 import torchvision.transforms as T
 
 # Add src to path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from src.config import Config
 from src.model_dinov2 import DINOv2TaxonomyClassifier

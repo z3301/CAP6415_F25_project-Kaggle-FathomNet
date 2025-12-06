@@ -44,9 +44,13 @@ cd CAP6415_F25_project-Kaggle-FathomNet
 ```
 
 ### 2. Install Dependencies
-Ensure you are using **Python ≥ 3.9** and have **CUDA-enabled GPUs** configured.
+Ensure you are using **Python ≥ 3.10** and have **CUDA-enabled GPUs** configured.
 
 ```bash
+# Install as editable package (recommended)
+pip install -e .
+
+# Or install dependencies only
 pip install -r requirements.txt
 ```
 
@@ -69,50 +73,50 @@ fathomnet/
 │   ├── data_multiscale.py           # Multi-scale dataset classes
 │   ├── preprocessing.py             # ROI extraction scripts
 │   └── extract_multiscale_rois.py   # Multi-scale ROI extraction
-├── src/                             # Source code
-│   ├── config.py                    # Configuration utilities
-│   ├── eval.py                      # Evaluation functions
-│   ├── taxonomy.py                  # Taxonomy loading utilities
-│   ├── train.py                     # Training utilities
-│   └── models/                      # Model architectures
-│       ├── model.py                 # Base taxonomy classifier
-│       ├── model_multiscale.py      # Multi-scale ConvNeXtV2 model
-│       ├── model_multiscale_taxloss.py  # Taxonomic distance-aware loss model
-│       ├── model_multiscale_attention.py  # Cross-attention model
-│       ├── model_attention.py       # Attention-based classifier
-│       ├── model_dinov2.py          # DINOv2-based classifier
-│       └── model_simple.py          # Simple independent-head model
-├── scripts/                         # Training and inference scripts
+├── src/                             # Source code (installable package)
+│   ├── models/                      # Model architectures
+│   │   ├── model.py                 # Base taxonomy classifier
+│   │   ├── model_multiscale.py      # Multi-scale ConvNeXtV2 model
+│   │   └── model_multiscale_taxloss.py  # Taxonomic distance-aware loss
 │   ├── training/                    # Training scripts
 │   │   ├── train_multiscale.py      # Main multi-scale training
-│   │   ├── train_multiscale_taxloss.py  # Taxonomic loss training
-│   │   ├── train_multiscale_attention.py  # Attention model training
-│   │   └── ...
-│   └── inference/                   # Submission generation scripts
-│       ├── generate_submission_taxloss.py
-│       ├── generate_submission_multiscale.py
-│       └── generate_submission_attention.py
+│   │   └── train_multiscale_taxloss.py  # Taxonomic loss training
+│   ├── inference/                   # Submission generation scripts
+│   │   ├── generate_submission_taxloss.py
+│   │   └── generate_submission_multiscale.py
+│   ├── eval.py                      # Evaluation functions
+│   └── losses.py                    # Custom loss functions
+├── pyproject.toml                   # Package configuration
 └── outputs/                         # Training outputs (checkpoints, logs)
 ```
 
 ### 5. Command-line Workflow
 
+After installing with `pip install -e .`, you can use the CLI commands:
+
 ```bash
 # Train multi-scale model with taxonomic loss (best performing)
-python scripts/training/train_multiscale_taxloss.py \
+fathomnet-train-taxloss \
     --config config/experiment-multiscale.yaml \
     --scales 1x 3x 5x full \
     --exp-name taxloss_4scales
 
 # Train standard multi-scale model
-python scripts/training/train_multiscale.py \
+fathomnet-train \
     --config config/experiment-multiscale.yaml \
     --scales 1x 3x 5x
 
 # Generate submission
-python scripts/inference/generate_submission_taxloss.py \
+fathomnet-predict-taxloss \
     --checkpoint outputs/taxloss_4scales/checkpoints/best.ckpt \
     --output submission.csv
+```
+
+Or run the scripts directly:
+
+```bash
+python -m src.training.train_multiscale_taxloss --help
+python -m src.inference.generate_submission_taxloss --help
 ```
 
 Edit `config/experiment-multiscale.yaml` to customize dataset paths, augmentation strength, backbone selection, optimizer settings, and hierarchy-loss weights.

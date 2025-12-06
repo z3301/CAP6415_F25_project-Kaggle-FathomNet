@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 """
-Generate Kaggle submission for FathomNet 2025 using taxonomic loss model.
+Generate Kaggle submission for FathomNet 2025 using multi-scale model.
 """
 
 import argparse
 import json
 import os
-import sys
 
 import pandas as pd
 import torch
@@ -16,12 +15,9 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 from tqdm import tqdm
 
-# Add project root to path for imports
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, PROJECT_ROOT)
 
 from data.data import load_and_encode_taxonomy
-from src.models.model_multiscale_taxloss import MultiScaleTaxonomicClassifier
+from src.models.model_multiscale import MultiScaleTaxonomyClassifier
 
 
 class MultiScaleTestDataset(Dataset):
@@ -71,7 +67,7 @@ class MultiScaleTestDataset(Dataset):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate taxloss submission")
+    parser = argparse.ArgumentParser(description="Generate multi-scale submission")
     parser.add_argument(
         "--checkpoint",
         type=str,
@@ -85,15 +81,9 @@ def main():
         help="Path to config file",
     )
     parser.add_argument(
-        "--distance-matrix",
-        type=str,
-        default="data/distance_matrix.csv",
-        help="Path to distance matrix",
-    )
-    parser.add_argument(
         "--output",
         type=str,
-        default="submission_taxloss.csv",
+        default="submission_multiscale.csv",
         help="Output submission file",
     )
     parser.add_argument(
@@ -122,14 +112,11 @@ def main():
 
     # Load model
     print(f"Loading model from {args.checkpoint}...")
-    model = MultiScaleTaxonomicClassifier.load_from_checkpoint(
+    model = MultiScaleTaxonomyClassifier.load_from_checkpoint(
         args.checkpoint,
         cfg=cfg,
         class_counts=class_counts,
-        id_to_name=id_to_name,
         scales=args.scales,
-        distance_matrix_path=args.distance_matrix,
-        strict=False,
     )
     model.to(device)
     model.eval()
@@ -198,7 +185,7 @@ def main():
     submission_df = pd.DataFrame(
         {
             "annotation_id": all_annotation_ids,
-            "concept": concept_names,  # Kaggle expects 'concept', not 'concept_name'
+            "concept_name": concept_names,
         }
     )
 

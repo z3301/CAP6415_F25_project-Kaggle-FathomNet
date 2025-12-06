@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 """
-Generate Kaggle submission for FathomNet 2025 using cross-attention model.
+Generate Kaggle submission for FathomNet 2025 using taxonomic loss model.
 """
 
 import argparse
 import json
 import os
-import sys
 
 import pandas as pd
 import torch
@@ -16,12 +15,9 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 from tqdm import tqdm
 
-# Add project root to path for imports
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, PROJECT_ROOT)
 
 from data.data import load_and_encode_taxonomy
-from src.models.model_multiscale_attention import MultiScaleCrossAttentionClassifier
+from src.models.model_multiscale_taxloss import MultiScaleTaxonomicClassifier
 
 
 class MultiScaleTestDataset(Dataset):
@@ -71,7 +67,7 @@ class MultiScaleTestDataset(Dataset):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate attention model submission")
+    parser = argparse.ArgumentParser(description="Generate taxloss submission")
     parser.add_argument(
         "--checkpoint",
         type=str,
@@ -85,9 +81,15 @@ def main():
         help="Path to config file",
     )
     parser.add_argument(
+        "--distance-matrix",
+        type=str,
+        default="data/distance_matrix.csv",
+        help="Path to distance matrix",
+    )
+    parser.add_argument(
         "--output",
         type=str,
-        default="submission_attention.csv",
+        default="submission_taxloss.csv",
         help="Output submission file",
     )
     parser.add_argument(
@@ -96,18 +98,6 @@ def main():
         nargs="+",
         default=["1x", "3x", "5x"],
         help="Scales to use",
-    )
-    parser.add_argument(
-        "--roi-backbone",
-        type=str,
-        default=None,
-        help="ROI backbone name (for asymmetric models)",
-    )
-    parser.add_argument(
-        "--context-backbone",
-        type=str,
-        default=None,
-        help="Context backbone name (for asymmetric models)",
     )
     parser.add_argument("--batch-size", type=int, default=16, help="Batch size")
     args = parser.parse_args()
@@ -128,13 +118,13 @@ def main():
 
     # Load model
     print(f"Loading model from {args.checkpoint}...")
-    model = MultiScaleCrossAttentionClassifier.load_from_checkpoint(
+    model = MultiScaleTaxonomicClassifier.load_from_checkpoint(
         args.checkpoint,
         cfg=cfg,
         class_counts=class_counts,
+        id_to_name=id_to_name,
         scales=args.scales,
-        roi_backbone=args.roi_backbone,
-        context_backbone=args.context_backbone,
+        distance_matrix_path=args.distance_matrix,
         strict=False,
     )
     model.to(device)
@@ -204,7 +194,7 @@ def main():
     submission_df = pd.DataFrame(
         {
             "annotation_id": all_annotation_ids,
-            "concept_name": concept_names,
+            "concept": concept_names,  # Kaggle expects 'concept', not 'concept_name'
         }
     )
 
@@ -218,7 +208,7 @@ def main():
 
     # Show distribution
     print("\nPrediction distribution (top 10):")
-    for name, count in submission_df["concept_name"].value_counts().head(10).items():
+    for name, count in submission_df["concept"].value_counts().head(10).items():
         print(f"  {name}: {count} ({count/len(submission_df)*100:.1f}%)")
 
 

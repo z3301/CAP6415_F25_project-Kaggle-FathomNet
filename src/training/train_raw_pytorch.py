@@ -4,14 +4,10 @@ Pure PyTorch training (no Lightning) to test if model can learn.
 """
 
 import os
-import sys
 import torch
 import torch.nn as nn
 from tqdm import tqdm
 
-# Add project root to path for imports
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, PROJECT_ROOT)
 
 from src.config import Config
 from src.train import prepare_data

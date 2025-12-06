@@ -4,7 +4,6 @@ Generate Kaggle submission for FathomNet 2025 Competition
 """
 
 import os
-import sys
 import argparse
 import pandas as pd
 import torch
@@ -12,7 +11,6 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 # Add src to path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from src.config import Config
 from src.data import create_transforms

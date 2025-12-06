@@ -106,16 +106,12 @@ Course: CAP6415 - Computer Vision (Fall 2025)
 
 import argparse
 import os
-import sys
 
 import pytorch_lightning as pl
 from omegaconf import OmegaConf
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint, LearningRateMonitor
 from pytorch_lightning.loggers import TensorBoardLogger
 
-# Add project root to path for imports
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, PROJECT_ROOT)
 
 from data.data import (
     load_and_encode_taxonomy,

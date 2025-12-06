@@ -7,13 +7,9 @@ This will tell us if the conditioning is causing the collapse.
 
 import argparse
 import os
-import sys
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping, LearningRateMonitor
 
-# Add project root to path for imports
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, PROJECT_ROOT)
 
 from src.train import prepare_data
 from src.models.model_simple import SimpleTaxonomyClassifier

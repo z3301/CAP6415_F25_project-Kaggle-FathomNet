@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 """
-Generate Kaggle submission for FathomNet 2025 using multi-scale model.
+Generate Kaggle submission for FathomNet 2025 using cross-attention model.
 """
 
 import argparse
 import json
 import os
-import sys
 
 import pandas as pd
 import torch
@@ -16,12 +15,9 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 from tqdm import tqdm
 
-# Add project root to path for imports
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, PROJECT_ROOT)
 
 from data.data import load_and_encode_taxonomy
-from src.models.model_multiscale import MultiScaleTaxonomyClassifier
+from src.models.model_multiscale_attention import MultiScaleCrossAttentionClassifier
 
 
 class MultiScaleTestDataset(Dataset):
@@ -71,7 +67,7 @@ class MultiScaleTestDataset(Dataset):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate multi-scale submission")
+    parser = argparse.ArgumentParser(description="Generate attention model submission")
     parser.add_argument(
         "--checkpoint",
         type=str,
@@ -87,7 +83,7 @@ def main():
     parser.add_argument(
         "--output",
         type=str,
-        default="submission_multiscale.csv",
+        default="submission_attention.csv",
         help="Output submission file",
     )
     parser.add_argument(
@@ -96,6 +92,18 @@ def main():
         nargs="+",
         default=["1x", "3x", "5x"],
         help="Scales to use",
+    )
+    parser.add_argument(
+        "--roi-backbone",
+        type=str,
+        default=None,
+        help="ROI backbone name (for asymmetric models)",
+    )
+    parser.add_argument(
+        "--context-backbone",
+        type=str,
+        default=None,
+        help="Context backbone name (for asymmetric models)",
     )
     parser.add_argument("--batch-size", type=int, default=16, help="Batch size")
     args = parser.parse_args()
@@ -116,11 +124,14 @@ def main():
 
     # Load model
     print(f"Loading model from {args.checkpoint}...")
-    model = MultiScaleTaxonomyClassifier.load_from_checkpoint(
+    model = MultiScaleCrossAttentionClassifier.load_from_checkpoint(
         args.checkpoint,
         cfg=cfg,
         class_counts=class_counts,
         scales=args.scales,
+        roi_backbone=args.roi_backbone,
+        context_backbone=args.context_backbone,
+        strict=False,
     )
     model.to(device)
     model.eval()
@@ -203,7 +214,7 @@ def main():
 
     # Show distribution
     print("\nPrediction distribution (top 10):")
-    for name, count in submission_df["concept"].value_counts().head(10).items():
+    for name, count in submission_df["concept_name"].value_counts().head(10).items():
         print(f"  {name}: {count} ({count/len(submission_df)*100:.1f}%)")
 
 

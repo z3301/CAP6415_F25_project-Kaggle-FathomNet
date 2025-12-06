@@ -10,16 +10,12 @@ Usage:
 
 import argparse
 import os
-import sys
 import pandas as pd
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping, LearningRateMonitor
 from torch.utils.data import DataLoader
 from sklearn.model_selection import StratifiedShuffleSplit
 
-# Add project root to path for imports
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, PROJECT_ROOT)
 
 from src.config import Config, DATA_ROOT
 from data.data import FathomNetTaxonomyDataset, collate_fn, create_transforms
