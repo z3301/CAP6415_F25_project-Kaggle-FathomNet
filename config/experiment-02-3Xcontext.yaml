@@ -7,8 +7,8 @@ paths:
   # Images live inside the repo (main branch) under train/ and test/ directories.
   data_root: "${paths.repo_root}"
   taxonomy_csv: "${paths.repo_root}/taxonomy.csv"
-  train_coco_json: "${paths.repo_root}/dataset_train.json"
-  test_coco_json: "${paths.repo_root}/dataset_test.json"
+  train_coco_json: "${paths.repo_root}/data/dataset_train.json"
+  test_coco_json: "${paths.repo_root}/data/dataset_test.json"
   train_annotations: "${paths.data_root}/train/annotations.csv"
   train_image_dir: "${paths.data_root}/train/rois"   # Legacy fallback if COCO JSON isn't available
   train_full_image_dir: "${paths.data_root}/train/images"

@@ -135,7 +135,7 @@ def main():
     parser.add_argument(
         "--dataset-json",
         type=Path,
-        default=Path("dataset_train.json"),
+        default=Path("data/dataset_train.json"),
         help="Path to the COCO dataset JSON file"
     )
     parser.add_argument(
