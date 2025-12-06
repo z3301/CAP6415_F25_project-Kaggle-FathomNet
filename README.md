@@ -57,26 +57,67 @@ DATA_ROOT = "/path/to/your/local/data"
 ```
 Make sure the image files are actually present (and not Git LFS pointer text files). If you copied the dataset from a Git LFS repo, run `git lfs pull` in the dataset location before training or inference. The default CLI config expects data under `~/Documents/data/{train,test}/`.
 
-### 4. Command-line Workflow (New)
-The project now mirrors the CVPR'25 winning repo by separating configuration, model code, and CLI entrypoints:
+### 4. Repository Structure
 
-```bash
-# Train and validate
-python train.py --config config/experiment-default.yaml
-
-# Evaluate any split (train / val / eval)
-python evaluate.py --config config/experiment-default.yaml \
-                   --checkpoint path/to/best.ckpt \
-                   --split eval
-
-# Produce a Kaggle submission
-python predict.py --config config/experiment-default.yaml \
-                  --checkpoint path/to/best.ckpt
+```
+fathomnet/
+├── config/                          # Experiment configurations
+│   ├── experiment-default.yaml      # Base single-scale config
+│   └── experiment-multiscale.yaml   # Multi-scale training config
+├── data/                            # Data loading and preprocessing
+│   ├── data.py                      # Main data loading utilities
+│   ├── data_multiscale.py           # Multi-scale dataset classes
+│   ├── preprocessing.py             # ROI extraction scripts
+│   └── extract_multiscale_rois.py   # Multi-scale ROI extraction
+├── src/                             # Source code
+│   ├── config.py                    # Configuration utilities
+│   ├── eval.py                      # Evaluation functions
+│   ├── taxonomy.py                  # Taxonomy loading utilities
+│   ├── train.py                     # Training utilities
+│   └── models/                      # Model architectures
+│       ├── model.py                 # Base taxonomy classifier
+│       ├── model_multiscale.py      # Multi-scale ConvNeXtV2 model
+│       ├── model_multiscale_taxloss.py  # Taxonomic distance-aware loss model
+│       ├── model_multiscale_attention.py  # Cross-attention model
+│       ├── model_attention.py       # Attention-based classifier
+│       ├── model_dinov2.py          # DINOv2-based classifier
+│       └── model_simple.py          # Simple independent-head model
+├── scripts/                         # Training and inference scripts
+│   ├── training/                    # Training scripts
+│   │   ├── train_multiscale.py      # Main multi-scale training
+│   │   ├── train_multiscale_taxloss.py  # Taxonomic loss training
+│   │   ├── train_multiscale_attention.py  # Attention model training
+│   │   └── ...
+│   └── inference/                   # Submission generation scripts
+│       ├── generate_submission_taxloss.py
+│       ├── generate_submission_multiscale.py
+│       └── generate_submission_attention.py
+└── outputs/                         # Training outputs (checkpoints, logs)
 ```
 
-Edit `config/experiment-default.yaml` (or clone it) to customise dataset paths, augmentation strength, backbone selection, optimizer settings, and hierarchy-loss weights. The scripts will automatically create the configured `outputs/` directory, write checkpoints, metrics, and confusion matrices, and store the final `submission.csv`.
+### 5. Command-line Workflow
 
-### 5. Notebook (Legacy)
+```bash
+# Train multi-scale model with taxonomic loss (best performing)
+python scripts/training/train_multiscale_taxloss.py \
+    --config config/experiment-multiscale.yaml \
+    --scales 1x 3x 5x full \
+    --exp-name taxloss_4scales
+
+# Train standard multi-scale model
+python scripts/training/train_multiscale.py \
+    --config config/experiment-multiscale.yaml \
+    --scales 1x 3x 5x
+
+# Generate submission
+python scripts/inference/generate_submission_taxloss.py \
+    --checkpoint outputs/taxloss_4scales/checkpoints/best.ckpt \
+    --output submission.csv
+```
+
+Edit `config/experiment-multiscale.yaml` to customize dataset paths, augmentation strength, backbone selection, optimizer settings, and hierarchy-loss weights.
+
+### 6. Notebook (Legacy)
 The original `hierarchical-classifier.ipynb` still ships for interactive exploration, but the scripted workflow above is the preferred, reproducible path for experiments.
 
 ---

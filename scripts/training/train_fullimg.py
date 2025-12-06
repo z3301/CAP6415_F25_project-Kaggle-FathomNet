@@ -10,16 +10,21 @@ Usage:
 
 import argparse
 import os
+import sys
 import pandas as pd
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping, LearningRateMonitor
 from torch.utils.data import DataLoader
 from sklearn.model_selection import StratifiedShuffleSplit
 
+# Add project root to path for imports
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, PROJECT_ROOT)
+
 from src.config import Config, DATA_ROOT
-from src.data import FathomNetTaxonomyDataset, collate_fn, create_transforms
+from data.data import FathomNetTaxonomyDataset, collate_fn, create_transforms
 from src.taxonomy import load_and_encode_taxonomy
-from src.model import TaxonomyAwareClassifier
+from src.models.model import TaxonomyAwareClassifier
 
 
 def prepare_fullimg_data(batch_size=32):

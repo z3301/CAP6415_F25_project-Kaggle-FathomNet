@@ -128,14 +128,15 @@ from omegaconf import OmegaConf
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint, LearningRateMonitor
 from pytorch_lightning.loggers import TensorBoardLogger
 
-# Add project root to path for src imports
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# Add project root to path for imports
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, PROJECT_ROOT)
 
-from src.data import (
+from data.data import (
     load_and_encode_taxonomy,
     build_multiscale_dataloaders,
 )
-from src.model_multiscale_attention import (
+from src.models.model_multiscale_attention import (
     MultiScaleCrossAttentionClassifier,
     MultiScaleCrossAttentionWithROIPatches,
 )

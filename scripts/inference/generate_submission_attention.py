@@ -16,10 +16,12 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 from tqdm import tqdm
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# Add project root to path for imports
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, PROJECT_ROOT)
 
-from src.data import load_and_encode_taxonomy
-from src.model_multiscale_attention import MultiScaleCrossAttentionClassifier
+from data.data import load_and_encode_taxonomy
+from src.models.model_multiscale_attention import MultiScaleCrossAttentionClassifier
 
 
 class MultiScaleTestDataset(Dataset):

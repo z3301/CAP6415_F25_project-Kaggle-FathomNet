@@ -1,15 +1,20 @@
 import argparse
 import json
 import os
+import sys
 
 import pytorch_lightning as pl
 import torch
 from omegaconf import OmegaConf
 from pytorch_lightning.callbacks import EarlyStopping, LearningRateMonitor, ModelCheckpoint
 
-from src.data import build_dataloaders, load_and_encode_taxonomy
+# Add project root to path for imports
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, PROJECT_ROOT)
+
+from data.data import build_dataloaders, load_and_encode_taxonomy
 from src.eval import evaluate_model
-from src.model import TaxonomyAwareClassifier
+from src.models.model import TaxonomyAwareClassifier
 
 
 def parse_args():
