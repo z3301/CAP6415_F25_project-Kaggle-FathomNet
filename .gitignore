@@ -77,7 +77,11 @@ outputs/lightning_logs/
 # LARGE CHECKPOINT FILES (>2GB, exceeds GitHub LFS limit)
 # -------------------------------------------
 # The main model checkpoints are too large for GitHub.
-# They can be downloaded from: [to be added]
+# Download from Google Drive:
+#   - multiscale_4scales (val_loss=0.864):
+#     https://drive.google.com/open?id=1F147aOE3cvgQWTHeNhx4CE2eAmOacDim
+#   - multiscale_4scales_taxloss (val_tax_score=0.531, Private LB: 1.94):
+#     https://drive.google.com/open?id=1roOwrSRXP93tZRiLqb4paKrmBnT4Jw1y
 # Or train from scratch using the provided scripts.
 outputs/*/checkpoints/*.ckpt
 
