@@ -154,3 +154,25 @@ Make sure your PyTorch and torchvision builds are compatible with your CUDA vers
 | **ROI Backbone** | ConvNeXtV2-Large (197M) |
 | **Context Backbones** | ConvNeXtV2-Base (88M × 3) |
 | **Total Parameters** | 461M |
+
+---
+
+## References
+
+[1] Kaggle, "FathomNet 2025 Competition," 2025. [Online]. Available: https://www.kaggle.com/competitions/fathomnet-2025
+
+[2] K. Katija *et al.*, "FathomNet: A global image database for enabling artificial intelligence in the ocean," *Scientific Reports*, vol. 12, no. 15914, 2022. doi: 10.1038/s41598-022-19939-2
+
+[3] 1st Place Solution, "FathomNet 2025 - 1st Place Solution," Kaggle Discussion, 2025. [Online]. Available: https://www.kaggle.com/competitions/fathomnet-2025/discussion/561618
+
+[4] Z. Liu, H. Mao, C.-Y. Wu, C. Feichtenhofer, T. Darrell, and S. Xie, "A ConvNet for the 2020s," in *Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recognit. (CVPR)*, 2022, pp. 11976–11986.
+
+[5] S. Woo *et al.*, "ConvNeXt V2: Co-designing and Scaling ConvNets with Masked Autoencoders," in *Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recognit. (CVPR)*, 2023, pp. 16133–16142.
+
+[6] A. Vaswani *et al.*, "Attention is all you need," in *Proc. Adv. Neural Inf. Process. Syst. (NeurIPS)*, vol. 30, 2017, pp. 5998–6008.
+
+[7] Paper Review AI, "AI-assisted feedback on research writing," 2025. [Online]. Available: https://www.paperreview.ai/
+
+[8] Anthropic, "Claude," 2025. [Online]. Available: https://www.anthropic.com/claude. Repository organization and code refactoring assistance.
+
+[9] GitHub, "GitHub Copilot," 2025. [Online]. Available: https://github.com/features/copilot. Git workflow and version control assistance.
