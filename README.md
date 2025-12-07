@@ -25,7 +25,7 @@ Our best-performing model uses **asymmetric multi-scale context** with a **confi
 - **Inference Fallback**: If species confidence < 70%, fall back through taxonomy (S→G→F→O→C→P)
 
 **Total Parameters**: 461M
-**Result**: Private LB score of 1.94 (27% improvement over baseline)
+**Result**: Private LB score of 1.94 (27% improvement over baseline) 
 
 ---
 
