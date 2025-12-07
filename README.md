@@ -13,7 +13,7 @@ This report presents a comprehensive analysis of approaches to the FathomNet 202
 
 ## Architecture
 
-📄 **[View Architecture Diagram (PDF)](report/architecture.pdf)**
+![Multi-Scale FathomNet Architecture](report/architecture.png)
 
 Our best-performing model uses **asymmetric multi-scale context** with a **confidence-based taxonomic fallback**:
 

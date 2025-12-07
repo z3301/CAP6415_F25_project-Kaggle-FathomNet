@@ -87,7 +87,8 @@
       "Bash(/usr/bin/pdflatex:*)",
       "Bash(module avail texlive)",
       "Bash(~/miniconda/envs/fathomnet/bin/tectonic:*)",
-      "Bash(convert --version:*)"
+      "Bash(convert --version:*)",
+      "Bash(~/miniconda/envs/fathomnet/bin/pdftoppm:*)"
     ],
     "deny": [],
     "ask": []
