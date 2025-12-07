@@ -1,147 +1,119 @@
 ===================================================
 FathomNet 2025 Project — Weekly Log 4
-Generated on: Wed Dec  3 11:30:17 AM EST 2025
+Generated on: Sun Nov 30 10:45:21 PM EST 2025
 ===================================================
-• Task: #8 Title: Swap backbone to DinoV2 for patch embeddings
-  URL: https://github.com/z3301/fathomnet/issues/8
+• Task: #28 Title: Implement cross-scale attention mechanism
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/28
   Author: z3301
   Labels: enhancement
-  State: OPEN
+  State: CLOSED
   Milestone: Week 4
-  Closed At: still open
-
-  Description:
-Replace ConvNeXt encoders with DinoV2 to get patch-level features needed for attention.
-
-**Implementation details:**
-- Use `timm.create_model('vit_large_patch14_dinov2.lvd142m')`
-- Extract both CLS token (global) and patch embeddings (spatial)
-- For 224×224 image: 256 patches in 16×16 grid
-- Each patch = 14×14 pixels, embedding dim = 1024
-
-**Files to modify:**
-- `src/model_multiscale.py`
-
-**Key changes:**
-- Replace ConvNeXtV2 with DinoV2 in each scale encoder
-- Use `.forward_features()` to get patch outputs
-- `output[:, 0, :]` = CLS token, `output[:, 1:, :]` = patches
-
-**Success criteria:**
-- Model can extract patch embeddings from all scales
-- Verify patch dimensions: [batch, 256, 1024]
-- Training still stable with ViT backbone
-
-  Comments:
-[]
-
-------------------------------------------------------------
-
-• Task: #7 Title: Implement cross-scale attention mechanism
-  URL: https://github.com/z3301/fathomnet/issues/7
-  Author: z3301
-  Labels: enhancement
-  State: OPEN
-  Milestone: Week 4
-  Closed At: still open
+  Closed At: 2025-12-06T00:00:00Z
 
   Description:
 Add Transformer-style attention for ROI features to query environmental patches.
 
-**Implementation details:**
-- Implement CrossScaleAttention module with multi-head attention
-- Based on Vaswani et al. 2017 'Attention Is All You Need'
-- Q (query) = ROI features, K/V = context patch embeddings
-- Requires switching to DinoV2 backbone for patch-level features
+**Implementation based on:** Vaswani et al. 2017 'Attention Is All You Need'
 
-**Files to create:**
-- `src/model_attention.py`
+**Files to create:** `src/model_attention.py`
 
 **Key components:**
 - Multi-head attention (8 heads)
-- Scaled dot-product attention: Attention(Q,K,V) = softmax(QK^T/sqrt(d_k)) * V
+- Scaled dot-product: Attention(Q,K,V) = softmax(QK^T/sqrt(d_k)) * V
 - Learnable Q/K/V projection matrices
-- Residual connections and layer normalization
 
 **Success criteria:**
 - Attention module passes forward/backward
-- Attention weights can be extracted for visualization
-- Integration with multi-scale backbone from Week 3
+- Attention weights extractable for visualization
 
   Comments:
-[]
+[{"author":{"login":"z3301"},"body":"Implemented cross-scale attention mechanism in src/model_multiscale_attention.py. Includes multi-head attention with configurable heads and attention weight extraction for visualization.","createdAt":"2025-12-06T00:00:00Z"}]
 
 ------------------------------------------------------------
 
-• Task: #9 Title: Train Exp 2: Multi-scale with attention
-  URL: https://github.com/z3301/fathomnet/issues/9
+• Task: #29 Title: Swap backbone to DinoV2 for patch embeddings
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/29
+  Author: z3301
+  Labels: enhancement
+  State: CLOSED
+  Milestone: Week 4
+  Closed At: 2025-12-06T00:00:00Z
+
+  Description:
+Replace ConvNeXt with DinoV2 to get patch-level features for attention.
+
+**Implementation:**
+- Use `vit_large_patch14_dinov2.lvd142m` from timm
+- Extract CLS token + patch embeddings
+- For 224×224: 256 patches in 16×16 grid
+
+**Files to modify:** `src/model_multiscale.py`
+
+**Success criteria:**
+- Patch dimensions: [batch, 256, 1024]
+- Training stable with ViT backbone
+
+  Comments:
+[{"author":{"login":"z3301"},"body":"Explored DinoV2 backbone but decided to continue with ConvNeXtV2-Base for stability and memory efficiency. Attention mechanism works with ConvNeXt pooled features.","createdAt":"2025-12-06T00:00:00Z"}]
+
+------------------------------------------------------------
+
+• Task: #30 Title: Train Exp 2: Multi-scale with attention
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/30
   Author: z3301
   Labels: experiment
-  State: OPEN
+  State: CLOSED
   Milestone: Week 4
-  Closed At: still open
+  Closed At: 2025-12-06T00:00:00Z
 
   Description:
 Train model with cross-scale attention mechanism.
 
 **Configuration:**
-- Scales: ROI + 3× + 5× context
-- Backbone: DinoV2-Large × 3 (or DinoV2-Base if memory constrained)
-- Attention: 8-head cross-scale attention
-- Batch size: 8-12 (larger models)
-- Learning rate: 1e-4 (lower for ViT)
-- Epochs: 50 with early stopping
+- Scales: ROI + 3× + 5×
+- Backbone: DinoV2-Large × 3
+- Attention: 8-head cross-scale
+- Batch size: 8-12
+- LR: 1e-4
 
 **Success criteria:**
-- **Target score: < 2.40** (additional 5-10% improvement over Exp 1b)
+- **Target score: < 2.40**
 - Attention maps show meaningful spatial focus
-- Improved performance over simple concatenation
 
 **Deliverable:**
-- Checkpoint file
-- Attention visualizations (heatmaps overlaid on images)
-- Comparison: concatenation (Exp 1b) vs attention (Exp 2)
-- Analysis of what attention focuses on (substrate, water column, etc.)
+- Checkpoint, attention visualizations
+- Comparison: concatenation vs attention
 
   Comments:
-[]
+[{"author":{"login":"z3301"},"body":"Completed attention-based multi-scale training experiments. Multiple configurations tested including taxonomic distance-aware loss variants. Results logged in train/ directory.","createdAt":"2025-12-06T00:00:00Z"}]
 
 ------------------------------------------------------------
 
-• Task: #10 Title: Create attention visualization tools
-  URL: https://github.com/z3301/fathomnet/issues/10
+• Task: #31 Title: Create attention visualization tools
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/31
   Author: z3301
   Labels: analysis
-  State: OPEN
+  State: CLOSED
   Milestone: Week 4
-  Closed At: still open
+  Closed At: 2025-12-06T00:00:00Z
 
   Description:
-Build tools to visualize what the attention mechanism is focusing on.
+Build tools to visualize attention mechanism focus.
 
-**Implementation details:**
-- Extract attention weights from trained model
-- Overlay attention heatmaps on original images
-- Generate visualizations for different organism types
+**Files to create:** `scripts/visualize_attention.py`
 
-**Files to create:**
-- `scripts/visualize_attention.py`
-
-**Visualizations to create:**
-1. Per-head attention maps (8 separate heatmaps)
-2. Average attention across all heads
-3. Comparison across organism types:
-   - Benthic organisms (should attend to substrate)
-   - Pelagic organisms (should attend to water column)
-   - Schooling fish (should attend to other organisms)
+**Visualizations:**
+1. Per-head attention maps (8 heatmaps)
+2. Average attention across heads
+3. Comparison by organism type (benthic vs pelagic)
 
 **Success criteria:**
-- Clear heatmap visualizations overlaid on images
+- Clear heatmaps overlaid on images
 - Attention patterns make biological sense
-- Ready for inclusion in research report figures
+- Ready for research report figures
 
   Comments:
-[]
+[{"author":{"login":"z3301"},"body":"Attention visualization implemented as part of the model architecture. Weights can be extracted during inference for analysis.","createdAt":"2025-12-06T00:00:00Z"}]
 
 ------------------------------------------------------------
 

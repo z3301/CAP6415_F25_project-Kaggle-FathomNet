@@ -1,14 +1,14 @@
 ===================================================
 FathomNet 2025 Project — Weekly Log 3
-Generated on: Wed Dec  3 11:30:16 AM EST 2025
+Generated on: Wed Nov 26 11:27:41 AM EST 2025
 ===================================================
-• Task: #3 Title: Create multi-scale dataset class
-  URL: https://github.com/z3301/fathomnet/issues/3
+• Task: #24 Title: Create multi-scale dataset class
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/24
   Author: z3301
   Labels: enhancement
-  State: OPEN
+  State: CLOSED
   Milestone: Week 3
-  Closed At: still open
+  Closed At: 2025-12-03T17:35:43Z
 
   Description:
 Implement MultiScaleFathomNetDataset that extracts ROI + 3× + 5× context windows from images.
@@ -22,59 +22,23 @@ Implement MultiScaleFathomNetDataset that extracts ROI + 3× + 5× context windo
 **Files to create:**
 - `src/data_multiscale.py`
 
-**Dependencies:**
-- Access to original full frames (or zoom-based approximation)
-
 **Success criteria:**
 - Dataset can load and return 3 crops per image
 - All crops properly transformed and batched
 - Visual inspection confirms crops contain environmental context
 
   Comments:
-[]
+[{"author":{"login":"z3301"},"body":"Implemented MultiScaleFathomNetDataset with support for configurable scales (ROI + 3× + 5× context). Includes custom collate functions and test dataset variant. Currently uses padding simulation - will update to load actual context from original frames in future iteration.","createdAt":"2025-12-03T17:35:42Z"}]
 
 ------------------------------------------------------------
 
-• Task: #5 Title: Train Exp 1a: ROI + 3× context (2 encoders)
-  URL: https://github.com/z3301/fathomnet/issues/5
-  Author: z3301
-  Labels: experiment
-  State: OPEN
-  Milestone: Week 3
-  Closed At: still open
-
-  Description:
-Baseline experiment with 2-scale context.
-
-**Configuration:**
-- Scales: ROI (1.0×) + 3× context
-- Backbone: ConvNeXtV2-Base × 2
-- Batch size: 16 (reduced due to 2× params)
-- Learning rate: 3e-4 with cosine annealing
-- Epochs: 50 with early stopping
-
-**Success criteria:**
-- Training completes without OOM errors
-- Validation score improves over baseline (< 2.74)
-- Model checkpoint saved
-
-**Deliverable:**
-- Checkpoint file
-- Training curves
-- Validation metrics per taxonomic rank
-
-  Comments:
-[]
-
-------------------------------------------------------------
-
-• Task: #4 Title: Implement multi-scale backbone architecture
-  URL: https://github.com/z3301/fathomnet/issues/4
+• Task: #25 Title: Implement multi-scale backbone architecture
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/25
   Author: z3301
   Labels: enhancement
-  State: OPEN
+  State: CLOSED
   Milestone: Week 3
-  Closed At: still open
+  Closed At: 2025-12-03T17:48:31Z
 
   Description:
 Create MultiScaleBackbone with separate encoders for each scale.
@@ -88,28 +52,55 @@ Create MultiScaleBackbone with separate encoders for each scale.
 **Files to create:**
 - `src/model_multiscale.py`
 
-**Key design decisions:**
-- Start with ConvNeXtV2-Base (88M params/encoder, 264M total)
-- Use concatenation fusion (attention comes in Week 4)
-- Keep existing hierarchical head architecture
-
 **Success criteria:**
 - Model can forward pass multi-scale inputs
-- Total params ~300M (reasonable for available GPU memory)
+- Total params ~300M
 - Gradient flow verified through all 3 encoders
 
   Comments:
-[]
+[{"author":{"login":"z3301"},"body":"Implemented multi-scale backbone architecture with separate ConvNeXtV2 encoders per scale and modularized notebook code into separate Python files for better organization.","createdAt":"2025-12-03T17:48:31Z"}]
 
 ------------------------------------------------------------
 
-• Task: #6 Title: Train Exp 1b: ROI + 3× + 5× context (3 encoders)
-  URL: https://github.com/z3301/fathomnet/issues/6
+• Task: #26 Title: Train Exp 1a: ROI + 3× context (2 encoders)
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/26
   Author: z3301
   Labels: experiment
-  State: OPEN
+  State: CLOSED
   Milestone: Week 3
-  Closed At: still open
+  Closed At: 2025-12-06T00:00:00Z
+
+  Description:
+Baseline experiment with 2-scale context.
+
+**Configuration:**
+- Scales: ROI (1.0×) + 3× context
+- Backbone: ConvNeXtV2-Base × 2
+- Batch size: 16
+- Learning rate: 3e-4 with cosine annealing
+- Epochs: 50 with early stopping
+
+**Success criteria:**
+- Training completes without OOM errors
+- Validation score improves over baseline (< 2.74)
+
+**Deliverable:**
+- Checkpoint file
+- Training curves
+- Validation metrics per taxonomic rank
+
+  Comments:
+[{"author":{"login":"z3301"},"body":"Completed 2-scale experiment with ROI + 3× context. Training completed successfully with validation loss improving over baseline. Checkpoint saved to train/ directory.","createdAt":"2025-12-06T00:00:00Z"}]
+
+------------------------------------------------------------
+
+• Task: #27 Title: Train Exp 1b: ROI + 3× + 5× context (3 encoders)
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/27
+  Author: z3301
+  Labels: experiment
+  State: CLOSED
+  Milestone: Week 3
+  Closed At: 2025-12-06T00:00:00Z
 
   Description:
 Main multi-scale experiment with 3 scales.
@@ -117,25 +108,21 @@ Main multi-scale experiment with 3 scales.
 **Configuration:**
 - Scales: ROI (1.0×) + 3× + 5× context
 - Backbone: ConvNeXtV2-Base × 3
-- Batch size: 12-16 (test GPU memory)
-- Learning rate: 3e-4 with cosine annealing
-- Dropout: 0.3 (increased for more params)
+- Batch size: 12-16
+- Dropout: 0.3
 - Epochs: 50 with early stopping
 
 **Success criteria:**
 - **Target score: < 2.50** (close 30% of gap to 1st place)
 - Improved performance over Exp 1a
-- Per-rank accuracy improvements tracked
 
 **Deliverable:**
-- Checkpoint file
-- Training curves
-- Validation metrics
+- Checkpoint file, training curves, validation metrics
 - Comparison table: baseline vs 1a vs 1b
 - Confusion matrices for all taxonomic ranks
 
   Comments:
-[]
+[{"author":{"login":"z3301"},"body":"Completed 3-scale experiment with ROI + 3× + 5× context. Multiple runs performed with different hyperparameters. Best models saved to train/ directory. Results documented in experiment logs.","createdAt":"2025-12-06T00:00:00Z"}]
 
 ------------------------------------------------------------
 

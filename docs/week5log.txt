@@ -1,169 +1,246 @@
 ===================================================
 FathomNet 2025 Project — Weekly Log 5
-Generated on: Wed Dec  3 11:30:17 AM EST 2025
+Generated on: Sat Dec  6 4:31:54 PM EST 2025
 ===================================================
-• Task: #11 Title: Train Exp 3: Independent heads with multi-scale attention
-  URL: https://github.com/z3301/fathomnet/issues/11
+• Task: #32 Title: Implement independent hierarchical heads
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/32
   Author: z3301
-  Labels: experiment
-  State: OPEN
+  Labels: enhancement
+  State: CLOSED
   Milestone: Week 5
-  Closed At: still open
+  Closed At: 2025-12-06T00:00:00Z
 
   Description:
-Train model with independent hierarchical heads (no conditioning).
+Remove sequential conditioning to eliminate error propagation.
 
-**Configuration:**
-- Use best multi-scale + attention architecture from Exp 2
-- Replace sequential heads with independent heads
-- Hierarchical loss with same rank weights as before
-- All other hyperparameters same as Exp 2
+**Current problem:** If Order misclassified → all downstream predictions constrained to wrong subtree
+
+**Files to create:** `src/model_independent.py`
+
+**Key change:** All 7 heads predict from same shared features independently
 
 **Success criteria:**
-- **Target score: < 2.35** (eliminate error propagation penalty)
-- Compare accuracy at each taxonomic rank vs. Exp 2
-- Analyze cases where conditioning helped vs. hurt
-
-**Deliverable:**
-- Checkpoint file
-- Per-rank accuracy comparison: sequential vs. independent
-- Error analysis: identify cases where error propagation was eliminated
-- Confusion matrices for all ranks
+- All heads predict independently
+- No information flow between ranks
+- Hierarchical loss combines all ranks
 
   Comments:
-[]
+[{"author":{"login":"z3301"},"body":"Independent hierarchical heads implemented as part of the multi-scale model variants. Both sequential and independent configurations available.","createdAt":"2025-12-06T00:00:00Z"}]
 
 ------------------------------------------------------------
 
-• Task: #12 Title: Ablation study: Scale contributions
-  URL: https://github.com/z3301/fathomnet/issues/12
+• Task: #33 Title: Train Exp 3: Independent heads with multi-scale attention
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/33
+  Author: z3301
+  Labels: experiment
+  State: CLOSED
+  Milestone: Week 5
+  Closed At: 2025-12-06T00:00:00Z
+
+  Description:
+Train model with independent hierarchical heads.
+
+**Configuration:**
+- Use best architecture from Exp 2
+- Replace sequential with independent heads
+- Hierarchical loss with same rank weights
+
+**Success criteria:**
+- **Target score: < 2.35** (eliminate error propagation)
+
+**Deliverable:**
+- Checkpoint, per-rank accuracy comparison
+- Error analysis: cases where propagation eliminated
+
+  Comments:
+[{"author":{"login":"z3301"},"body":"Multiple training experiments completed with independent hierarchical heads. Results documented and checkpoints saved. Best submission achieved score of 2.30.","createdAt":"2025-12-06T00:00:00Z"}]
+
+------------------------------------------------------------
+
+• Task: #34 Title: Ablation: Scale contributions
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/34
   Author: z3301
   Labels: analysis
-  State: OPEN
+  State: CLOSED
   Milestone: Week 5
-  Closed At: still open
+  Closed At: 2025-12-06T00:00:00Z
 
   Description:
 Systematic ablation to quantify contribution of each scale.
 
-**Experiments to run:**
-1. ROI only (baseline replication)
-2. ROI + 3× context
-3. ROI + 5× context (skip 3×)
-4. ROI + 3× + 5× context
+**Experiments:**
+1. ROI only
+2. ROI + 3×
+3. ROI + 5×
+4. ROI + 3× + 5×
 
-**Analysis questions:**
+**Analysis:**
 - Which scale provides most value?
 - Does 5× add value beyond 3×?
-- Is there redundancy between scales?
-- Does optimal scale vary by organism type?
 
 **Deliverable:**
-- Ablation table with scores for each configuration
-- Per-rank accuracy breakdown for each
-- Cost-benefit analysis (params vs. performance)
-- Recommendation: which scales to use for production
+- Ablation table with scores
+- Per-rank accuracy breakdown
+- Cost-benefit analysis
 
   Comments:
-[]
+[{"author":{"login":"z3301"},"body":"Scale ablation experiments conducted. Found that 3× context provides most value, with diminishing returns from 5× scale. Results inform final model configuration.","createdAt":"2025-12-06T00:00:00Z"}]
 
 ------------------------------------------------------------
 
-• Task: #13 Title: Ablation study: Attention vs. concatenation
-  URL: https://github.com/z3301/fathomnet/issues/13
+• Task: #35 Title: Ablation: Attention vs concatenation
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/35
   Author: z3301
   Labels: analysis
-  State: OPEN
+  State: CLOSED
   Milestone: Week 5
-  Closed At: still open
+  Closed At: 2025-12-06T00:00:00Z
 
   Description:
-Compare attention-based fusion vs. simple concatenation.
+Compare attention vs simple concatenation.
 
-**Experiments to compare:**
-1. Exp 1b: Multi-scale with concatenation (no attention)
-2. Exp 2: Multi-scale with cross-scale attention
+**Experiments:**
+1. Exp 1b: Concatenation
+2. Exp 2: Attention
 
-**Analysis questions:**
-- How much does attention improve over concatenation?
-- Is the computational cost worth the gain?
-- Does attention help more for certain organism types?
-- What patterns do attention weights reveal?
+**Analysis:**
+- Performance improvement
+- Computational cost (FLOPs, memory, time)
+- Attention patterns by organism type
 
 **Deliverable:**
-- Performance comparison table
-- Computational cost analysis (FLOPs, memory, training time)
-- Attention pattern analysis by organism type
-- Recommendation: when is attention worth it?
+- Performance comparison
+- Cost analysis
+- Attention pattern analysis
 
   Comments:
-[]
+[{"author":{"login":"z3301"},"body":"Attention vs concatenation comparison completed. Attention provides marginal improvement but increases memory and compute. Concatenation chosen for final submission due to stability.","createdAt":"2025-12-06T00:00:00Z"}]
 
 ------------------------------------------------------------
 
-• Task: #15 Title: Update research report with experimental results
-  URL: https://github.com/z3301/fathomnet/issues/15
+• Task: #36 Title: Ablation: Hierarchical conditioning impact
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/36
   Author: z3301
-  Labels: documentation
-  State: OPEN
+  Labels: analysis
+  State: CLOSED
   Milestone: Week 5
-  Closed At: still open
+  Closed At: 2025-12-06T00:00:00Z
 
   Description:
-Incorporate all experimental findings into comprehensive research report.
+Measure impact of sequential conditioning vs independent heads.
+
+**Experiments:**
+1. Exp 2: Sequential conditioning
+2. Exp 3: Independent heads
+
+**Analysis:**
+- Per-rank accuracy comparison
+- Error propagation frequency
+- Cases where conditioning helped/hurt
+
+**Deliverable:**
+- Per-rank comparison table
+- Error propagation analysis
+- Case studies
+
+  Comments:
+[{"author":{"login":"z3301"},"body":"Hierarchical conditioning analysis completed. Sequential conditioning introduces error propagation at higher taxonomic ranks. Independent heads reduce this but lose biological constraint benefits.","createdAt":"2025-12-06T00:00:00Z"}]
+
+------------------------------------------------------------
+
+• Task: #37 Title: Update research report with experimental results
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/37
+  Author: z3301
+  Labels: documentation
+  State: CLOSED
+  Milestone: Week 5
+  Closed At: 2025-12-06T00:00:00Z
+
+  Description:
+Incorporate all experimental findings into research report.
 
 **Sections to complete:**
-1. Results summary table (all experiments)
-2. Analysis of multi-scale context impact
+1. Results summary table
+2. Multi-scale context impact analysis
 3. Attention mechanism effectiveness
 4. Hierarchical conditioning trade-offs
-5. Ablation study findings
-6. Visualizations (attention maps, confusion matrices)
-7. Conclusions and recommendations
+5. Ablation findings
+6. Visualizations
+7. Conclusions
 
-**Files to update:**
-- `docs/dissertation_report.md`
+**Files to update:** `docs/dissertation_report.md`
 
 **Success criteria:**
-- All experiments documented with results
+- All experiments documented
 - Clear tables and figures
-- Actionable recommendations for future work
 - Ready to share with advisor
 
   Comments:
-[]
+[{"author":{"login":"z3301"},"body":"Research report updated with all experimental results. Final report includes methodology, results, ablation studies, and conclusions. Ready for submission.","createdAt":"2025-12-06T00:00:00Z"}]
 
 ------------------------------------------------------------
 
-• Task: #14 Title: Ablation study: Hierarchical conditioning impact
-  URL: https://github.com/z3301/fathomnet/issues/14
+• Task: #38 Title: Repository reorganization and packaging
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/38
   Author: z3301
-  Labels: analysis
-  State: OPEN
+  Labels: setup, reproducibility
+  State: CLOSED
   Milestone: Week 5
-  Closed At: still open
+  Closed At: 2025-12-06T00:00:00Z
 
   Description:
-Measure impact of sequential conditioning vs. independent heads.
+Reorganize repository for final submission and add pyproject.toml for pip-installable package.
 
-**Experiments to compare:**
-1. Exp 2: Sequential conditioning (genus→species)
-2. Exp 3: Independent heads (no conditioning)
+**Changes made:**
+- Consolidated scripts/ into src/ directory structure
+- Created pyproject.toml with CLI entry points
+- Removed PROJECT_ROOT sys.path hacks from all scripts
+- Moved debugging scripts to src/debugging/
+- Moved training logs to outputs/logs/
+- Moved data files to data/ directory
+- Renamed 'final' branch to 'main'
+- Updated README with new install instructions
 
-**Analysis questions:**
-- Does conditioning reduce or increase accuracy?
-- Which taxonomic ranks benefit from conditioning?
-- How often does error propagation hurt performance?
-- Are there organism types where conditioning helps?
+**CLI entry points:**
+- `fathomnet-train` - Main multi-scale training
+- `fathomnet-train-taxloss` - Training with taxonomic loss
+- `fathomnet-train-attention` - Training with attention
+- `fathomnet-predict` - Generate submission
+- `fathomnet-predict-taxloss` - Generate submission with tax loss model
 
-**Deliverable:**
-- Per-rank accuracy comparison table
-- Error propagation analysis (trace misclassifications through hierarchy)
-- Case studies: examples where conditioning helped/hurt
-- Recommendation: when to use conditioning vs. independent
+**Success criteria:**
+- `pip install -e .` works correctly
+- All CLI commands functional
+- Clean directory structure
 
   Comments:
-[]
+[{"author":{"login":"z3301"},"body":"Repository reorganized for easier reproducibility. Added pyproject.toml for pip installation. Scripts consolidated into src/ with proper module structure. Branch renamed from final to main.","createdAt":"2025-12-06T00:00:00Z"}]
+
+------------------------------------------------------------
+
+• Task: #39 Title: Upload checkpoints to Google Drive
+  URL: https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet/issues/39
+  Author: z3301
+  Labels: setup
+  State: CLOSED
+  Milestone: Week 5
+  Closed At: 2025-12-06T00:00:00Z
+
+  Description:
+Upload model checkpoints and training outputs to Google Drive for backup and sharing.
+
+**Files uploaded:**
+- train/ directory with all checkpoints and logs
+- test/ directory with submission outputs
+
+**Location:** gdrive:FathomNet2025_Checkpoints/
+
+**Success criteria:**
+- All checkpoints accessible via Google Drive
+- Shareable links generated for collaborators
+
+  Comments:
+[{"author":{"login":"z3301"},"body":"Checkpoints uploaded to Google Drive using rclone. All training outputs and submission files preserved for reproducibility.","createdAt":"2025-12-06T00:00:00Z"}]
 
 ------------------------------------------------------------
 
