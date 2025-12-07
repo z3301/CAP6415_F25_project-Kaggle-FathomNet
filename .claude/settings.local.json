@@ -82,7 +82,12 @@
       "Bash(git filter-branch:*)",
       "Bash(git rm:*)",
       "Bash(git restore:*)",
-      "Bash(git fetch:*)"
+      "Bash(git fetch:*)",
+      "Bash(~/miniconda/envs/fathomnet/bin/fmtutil-user:*)",
+      "Bash(/usr/bin/pdflatex:*)",
+      "Bash(module avail texlive)",
+      "Bash(~/miniconda/envs/fathomnet/bin/tectonic:*)",
+      "Bash(convert --version:*)"
     ],
     "deny": [],
     "ask": []

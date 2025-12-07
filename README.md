@@ -1,35 +1,30 @@
-![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?logo=PyTorch&logoColor=white) ![PyTorch Lightning](https://img.shields.io/badge/Lightning-%23792EE5.svg?logo=Lightning&logoColor=white) ![Kaggle](https://img.shields.io/badge/Kaggle_Competition-FathomNet_2025-blue) ![Rank](https://img.shields.io/badge/Rank-8th_/_79_teams-success)
+![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?logo=PyTorch&logoColor=white) ![PyTorch Lightning](https://img.shields.io/badge/Lightning-%23792EE5.svg?logo=Lightning&logoColor=white) ![Kaggle](https://img.shields.io/badge/Kaggle_Competition-FathomNet_2025-blue) ![Rank](https://img.shields.io/badge/Private_LB-1.94-success)
 
 
-# FathomNet 2025 Hierarchical Classification Project
+# Multi-Scale Context and Taxonomic Distance Learning for Marine Species Classification
 
-## Overview
+**CAP6415 Computer Vision — Fall 2025 — University of Central Florida**
 
-This repository contains my submission for the **[Kaggle FathomNet 2025 Competition](https://www.kaggle.com/competitions/fathomnet-2025)** — a challenge focused on advancing machine learning models for **underwater image classification** across diverse marine species.
+## Abstract
 
-The competition aimed to develop algorithms capable of classifying underwater organisms using the **FathomNet** open-access image repository, which provides annotated imagery from oceanographic research institutions.
-
-My solution placed **8th out of 79 teams**, achieving a **final public leaderboard score of 2.30** (lower is better).
+This report presents a comprehensive analysis of approaches to the FathomNet 2025 marine species classification competition at CVPR-FGVC. We describe the progression from adapting an 8th place Kaggle notebook solution to a modular Python training pipeline, enabling systematic experimentation with architectures and hyperparameters. We explore the winning solution's architecture, experiment with DINOv2 backbones, and develop multi-scale context models using ConvNeXtV2. Our experiments demonstrate that adding full-image context (4-scale) combined with taxonomic distance-aware loss achieves our best performance (**private score 1.94**), representing a **27% improvement** over baseline approaches. We find that aligning training objectives with the evaluation metric provides greater benefit than architectural complexity.
 
 ---
 
-## Model Architecture
+## Architecture
 
-My solution implements a **taxonomy-aware hierarchical classifier** built with **PyTorch Lightning**.  
-Instead of predicting species independently, the model learns **seven interconnected taxonomic ranks**:
+📄 **[View Architecture Diagram (PDF)](report/architecture.pdf)**
 
-```
-kingdom → phylum → class → order → family → genus → species
-```
+Our best-performing model uses **asymmetric multi-scale context** with a **confidence-based taxonomic fallback**:
 
-### Key Components
-- **Backbone:** Pretrained **ConvNeXtV2-Base** from **timm**, fine-tuned for underwater imagery.
-- **Multi-head architecture:** Separate linear heads for each taxonomic rank, sharing a common feature encoder.
-- **Loss weighting:** Cross-entropy losses combined with hierarchical weighting to emphasize correct lineage predictions.
-- **Optimizer & Scheduler:** AdamW with cosine annealing and early stopping.
-- **Framework:** PyTorch Lightning for reproducibility, checkpointing, and GPU management.
+- **ROI Encoder**: ConvNeXtV2-Large (197M params) → 1536-d features
+- **Context Encoders**: 3× ConvNeXtV2-Base (88M each) for 3×, 5×, and full-image scales → 1024-d each
+- **Feature Fusion**: Concatenation → 4608-d fused representation
+- **Hierarchical Heads**: 7 classification heads (Kingdom → Species)
+- **Taxonomic Distance Loss**: $\mathcal{L} = (1-\alpha)\cdot\text{CE} + \alpha\cdot\sum_i p_i \cdot d(i,y)$ with $\alpha=0.3$
+- **Inference Fallback**: If species confidence < 70%, fall back through taxonomy (S→G→F→O→C→P)
 
-This hierarchical approach improves consistency across taxonomic ranks while leveraging relationships between species and higher-order classes.
+**Total Parameters**: 461M
 
 ---
 
@@ -142,9 +137,20 @@ Make sure your PyTorch and torchvision builds are compatible with your CUDA vers
 
 ## Results Summary
 
-| Metric | Score |
-|:--------|:------:|
-| **Final Leaderboard Score** | **2.30 (lower is better)** |
-| **Competition Rank** | **8 / 79 teams** |
+| Model | Public LB | Private LB |
+|:------|:---------:|:----------:|
+| Baseline (ROI-only ConvNeXtV2-Base) | 2.77 | 2.65 |
+| 3-scale multi-scale | 2.11 | 2.12 |
+| 4-scale multi-scale | 2.18 | 2.05 |
+| 3-scale + taxonomic loss | 2.27 | 2.00 |
+| **4-scale + taxonomic loss** | 2.65 | **1.94** |
+| 1st place solution (reference) | 1.65 | 1.44 |
+
+**Best Result**: Private LB score of **1.94** (27% improvement over baseline)
+
+| Metric | Value |
+|:-------|:-----:|
 | **Framework** | PyTorch Lightning |
-| **Backbone** | ConvNeXtV2-Base (timm) |
+| **ROI Backbone** | ConvNeXtV2-Large (197M) |
+| **Context Backbones** | ConvNeXtV2-Base (88M × 3) |
+| **Total Parameters** | 461M |
