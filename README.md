@@ -26,7 +26,38 @@ Our best-performing model uses **asymmetric multi-scale context** with a **confi
 
 **Total Parameters**: 461M
 
-**Result**: Private LB score of 1.94 (27% improvement over baseline) 
+**Result**: Private LB score of 1.94 (27% improvement over baseline)
+
+---
+
+## Competition Metric
+
+The FathomNet 2025 competition uses **taxonomic distance** as the evaluation metric, which measures how far a prediction is from the ground truth in the biological taxonomy tree:
+
+| Relationship | Distance |
+|:-------------|:--------:|
+| Same species | 0 |
+| Same genus, different species | 1 |
+| Same family, different genus | 2 |
+| Same order, different family | 3 |
+| Same class, different order | 4 |
+| Same phylum, different class | 5 |
+| Same kingdom, different phylum | 6 |
+| Different kingdom | 7 |
+
+**Lower scores are better.** This metric motivated our taxonomic distance-aware loss function, which directly optimizes for the evaluation criterion rather than standard cross-entropy.
+
+---
+
+## Key Findings
+
+1. **Loss function alignment matters more than architecture**: Adding taxonomic distance to the loss (0.71 improvement) outperformed adding attention mechanisms or larger backbones.
+
+2. **Multi-scale context helps at higher taxonomic ranks**: Environmental context (substrate, depth cues) disambiguates species that look similar in isolation but inhabit different habitats.
+
+3. **Diminishing returns from additional scales**: 3× context provided the largest gain; 5× and full-image added smaller incremental improvements.
+
+4. **Confidence-based fallback reduces catastrophic errors**: When the model is uncertain at species level, predicting at genus or family level incurs smaller penalties than guessing wrong species.
 
 ---
 
