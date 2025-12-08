@@ -88,7 +88,9 @@
       "Bash(module avail texlive)",
       "Bash(~/miniconda/envs/fathomnet/bin/tectonic:*)",
       "Bash(convert --version:*)",
-      "Bash(~/miniconda/envs/fathomnet/bin/pdftoppm:*)"
+      "Bash(~/miniconda/envs/fathomnet/bin/pdftoppm:*)",
+      "Bash(git -C /mnt/beegfs/home/dzimmerman2021/Documents/fathomnet log --all --full-history -- **/species_79*)",
+      "Bash(export PATH=\"$HOME/miniconda/envs/fathomnet/bin:$PATH\")"
     ],
     "deny": [],
     "ask": []

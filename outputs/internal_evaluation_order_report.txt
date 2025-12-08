@@ -1,0 +1,50 @@
+Order Accuracy: 0.9193
+
+                   precision    recall  f1-score   support
+
+       Actiniaria       0.95      0.95      0.95       270
+   Actinopterygii       0.84      0.69      0.76        45
+        Amphipoda       0.98      0.89      0.93        45
+       Asteroidea       0.92      0.80      0.86        45
+       Brisingida       0.97      0.82      0.89        45
+      Camarodonta       0.98      0.96      0.97        45
+     Ceriantharia       0.91      0.91      0.91        45
+       Comatulida       0.89      0.94      0.92        90
+ Corallimorpharia       1.00      0.91      0.95        45
+        Crinoidea       0.82      0.71      0.76        45
+         Decapoda       0.94      0.97      0.96       360
+  Dendrochirotida       0.86      0.93      0.89        90
+      Elasipodida       0.91      0.93      0.92       225
+         Eucarida       1.00      0.93      0.97        45
+   Forcipulatacea       0.96      0.98      0.97        45
+       Gadiformes       0.83      0.84      0.84        45
+       Gastropoda       0.84      0.93      0.88        45
+   Hexactinellida       0.58      0.58      0.58        45
+    Holothuroidea       0.82      0.62      0.71        45
+          Isopoda       0.92      0.98      0.95        45
+    Lyssacinosida       0.89      0.86      0.87        90
+  Malacalcyonacea       0.83      0.79      0.81        90
+         Octopoda       0.91      0.87      0.89        45
+    Ophiacanthida       0.93      0.96      0.95        45
+      Ophiuroidea       0.91      0.89      0.90        45
+        Pectinida       1.00      1.00      1.00        45
+      Perciformes       0.95      0.97      0.96       135
+Pleuronectiformes       0.98      1.00      0.99        45
+  Poecilosclerida       0.92      0.97      0.94       135
+         Porifera       0.59      0.64      0.62        45
+     Pyrosomatida       0.98      0.98      0.98        45
+        Sabellida       0.98      1.00      0.99        45
+   Sceptrulophora       0.88      0.92      0.90        90
+     Scleractinia       0.98      0.89      0.93        45
+  Scleralcyonacea       0.94      0.94      0.94       450
+     Synallactida       0.98      0.91      0.94        90
+      Terebellida       0.85      0.98      0.91        45
+    Trachymedusae       0.98      1.00      0.99        90
+         Tunicata       0.97      0.87      0.92        45
+        Valvatida       0.98      0.98      0.98        90
+         Venerida       0.93      0.93      0.93        45
+       Zoantharia       0.94      0.98      0.96        45
+
+         accuracy                           0.92      3555
+        macro avg       0.91      0.90      0.90      3555
+     weighted avg       0.92      0.92      0.92      3555

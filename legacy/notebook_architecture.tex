@@ -1,0 +1,311 @@
+
+\documentclass[border=8pt, multi, tikz]{standalone}
+\usepackage{import}
+\subimport{/mnt/beegfs/home/dzimmerman2021/miniconda/envs/fathomnet/lib/python3.10/site-packages/PlotNeuralNet/Layers/}{init}
+\usetikzlibrary{positioning}
+\usetikzlibrary{3d} %for including external image
+
+\def\ConvColor{rgb:yellow,5;red,2.5;white,5}
+\def\ConvReluColor{rgb:yellow,5;red,5;white,5}
+\def\PoolColor{rgb:red,1;black,0.3}
+\def\UnpoolColor{rgb:blue,2;green,1;black,0.3}
+\def\FcColor{rgb:blue,5;red,2.5;white,5}
+\def\FcReluColor{rgb:blue,5;red,5;white,4}
+\def\SoftmaxColor{rgb:magenta,5;black,7}
+\def\SumColor{rgb:blue,5;green,15}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+
+\newcommand{\copymidarrow}{\tikz \draw[-Stealth,line width=0.8mm,draw={rgb:blue,4;red,1;green,1;black,3}] (-0.3,0) -- ++(0.3,0);}
+
+\begin{document}
+\begin{tikzpicture}
+\tikzstyle{connection}=[ultra thick,every node/.style={sloped,allow upside down},draw=\edgecolor,opacity=0.7]
+\tikzstyle{copyconnection}=[ultra thick,every node/.style={sloped,allow upside down},draw={rgb:blue,4;red,1;green,1;black,3},opacity=0.7]
+
+\node[canvas is zy plane at x=0] (input_img) at (-3,0,0) {\includegraphics[width=2.5cm,height=2.5cm]{/mnt/beegfs/home/dzimmerman2021/Documents/fathomnet/legacy/sample_roi.png}};
+\node[below, font=\scriptsize] at (input_img.south) {ROI (1x)};
+
+\pic[shift={(0,0,0)}] at (0,0,0) {
+    RightBandedBox={
+        name=stem,
+        caption=ConvNeXtV2-B,
+        xlabel={ 3, 3 },
+        zlabel=224,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=18,
+        width={ 1, 1 },
+        depth=18
+    }
+};
+\draw [connection] (input_img.east) -- node {\midarrow} (stem-west);
+\pic[shift={(2.5,0,0)}] at (stem-east) {
+    RightBandedBox={
+        name=stage1,
+        caption=Stage 1,
+        xlabel={ 128, 128 },
+        zlabel=56,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=14,
+        width={ 2, 2 },
+        depth=14
+    }
+};
+
+\draw [connection]  (stem-east) -- node {\midarrow} (stage1-west);
+
+\pic[shift={(2.5,0,0)}] at (stage1-east) {
+    RightBandedBox={
+        name=stage2,
+        caption=Stage 2,
+        xlabel={ 256, 256 },
+        zlabel=28,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=11,
+        width={ 2, 2 },
+        depth=11
+    }
+};
+
+\draw [connection]  (stage1-east) -- node {\midarrow} (stage2-west);
+
+\pic[shift={(2.5,0,0)}] at (stage2-east) {
+    RightBandedBox={
+        name=stage3,
+        caption=Stage 3,
+        xlabel={ 512, 512 },
+        zlabel=14,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=8,
+        width={ 3, 3 },
+        depth=8
+    }
+};
+
+\draw [connection]  (stage2-east) -- node {\midarrow} (stage3-west);
+
+\pic[shift={(2.5,0,0)}] at (stage3-east) {
+    RightBandedBox={
+        name=stage4,
+        caption=Stage 4,
+        xlabel={ 1024, 1024 },
+        zlabel=7,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=5,
+        width={ 4, 4 },
+        depth=5
+    }
+};
+
+\draw [connection]  (stage3-east) -- node {\midarrow} (stage4-west);
+
+\pic[shift={(1.5,0,0)}] at (stage4-east) {
+    Box={
+        name=gap,
+        caption=GAP,
+        fill=\PoolColor,
+        opacity=0.8,
+        height=3,
+        width=1,
+        depth=3
+    }
+};
+
+\draw [connection]  (stage4-east) -- node {\midarrow} (gap-west);
+
+\pic[shift={(2,0,0)}] at (gap-east) {
+    Box={
+        name=shared,
+        caption=Shared\\Features,
+        xlabel={" ","dummy"},
+        zlabel=1024,
+        fill=\FcColor,
+        height=3,
+        width=2,
+        depth=20
+    }
+};
+
+\draw [connection]  (gap-east) -- node {\midarrow} (shared-west);
+
+\pic[shift={(4,9,0)}] at (shared-east) {
+    Box={
+        name=kingdom,
+        caption=Kingdom,
+        xlabel={" ","dummy"},
+        zlabel=2,
+        fill=\SoftmaxColor,
+        opacity=0.8,
+        height=2,
+        width=1,
+        depth=2
+    }
+};
+
+\pic[shift={(4,6,0)}] at (shared-east) {
+    Box={
+        name=phylum,
+        caption=Phylum,
+        xlabel={" ","dummy"},
+        zlabel=8,
+        fill=\SoftmaxColor,
+        opacity=0.8,
+        height=2,
+        width=1,
+        depth=4
+    }
+};
+
+\pic[shift={(4,3,0)}] at (shared-east) {
+    Box={
+        name=class_head,
+        caption=Class,
+        xlabel={" ","dummy"},
+        zlabel=22,
+        fill=\SoftmaxColor,
+        opacity=0.8,
+        height=2,
+        width=1,
+        depth=6
+    }
+};
+
+\pic[shift={(4,0,0)}] at (shared-east) {
+    Box={
+        name=order,
+        caption=Order,
+        xlabel={" ","dummy"},
+        zlabel=43,
+        fill=\SoftmaxColor,
+        opacity=0.8,
+        height=2,
+        width=1,
+        depth=8
+    }
+};
+
+\pic[shift={(4,-3,0)}] at (shared-east) {
+    Box={
+        name=family,
+        caption=Family,
+        xlabel={" ","dummy"},
+        zlabel=66,
+        fill=\SoftmaxColor,
+        opacity=0.8,
+        height=2,
+        width=1,
+        depth=10
+    }
+};
+
+\pic[shift={(4,-6,0)}] at (shared-east) {
+    Box={
+        name=genus,
+        caption=Genus,
+        xlabel={" ","dummy"},
+        zlabel=75,
+        fill=\SoftmaxColor,
+        opacity=0.8,
+        height=2,
+        width=1,
+        depth=12
+    }
+};
+
+\pic[shift={(4,-9,0)}] at (shared-east) {
+    Box={
+        name=species,
+        caption=Species,
+        xlabel={" ","dummy"},
+        zlabel=79,
+        fill=\SoftmaxColor,
+        opacity=0.8,
+        height=2,
+        width=1,
+        depth=14
+    }
+};
+
+\draw [connection]  (shared-east) -- node {\midarrow} (kingdom-west);
+
+\draw [connection]  (shared-east) -- node {\midarrow} (phylum-west);
+
+\draw [connection]  (shared-east) -- node {\midarrow} (class_head-west);
+
+\draw [connection]  (shared-east) -- node {\midarrow} (order-west);
+
+\draw [connection]  (shared-east) -- node {\midarrow} (family-west);
+
+\draw [connection]  (shared-east) -- node {\midarrow} (genus-west);
+
+\draw [connection]  (shared-east) -- node {\midarrow} (species-west);
+
+\path (kingdom-southeast) -- (kingdom-northeast) coordinate[pos=1.25] (kingdom-top);
+\path (phylum-south) -- (phylum-north) coordinate[pos=1.25] (phylum-top);
+\draw [copyconnection]  (kingdom-northeast)
+    -- node {\copymidarrow} (kingdom-top)
+    -- node {\copymidarrow} (phylum-top)
+    -- node {\copymidarrow} (phylum-north);
+
+\path (phylum-southeast) -- (phylum-northeast) coordinate[pos=1.25] (phylum-top);
+\path (class_head-south) -- (class_head-north) coordinate[pos=1.25] (class_head-top);
+\draw [copyconnection]  (phylum-northeast)
+    -- node {\copymidarrow} (phylum-top)
+    -- node {\copymidarrow} (class_head-top)
+    -- node {\copymidarrow} (class_head-north);
+
+\path (class_head-southeast) -- (class_head-northeast) coordinate[pos=1.25] (class_head-top);
+\path (order-south) -- (order-north) coordinate[pos=1.25] (order-top);
+\draw [copyconnection]  (class_head-northeast)
+    -- node {\copymidarrow} (class_head-top)
+    -- node {\copymidarrow} (order-top)
+    -- node {\copymidarrow} (order-north);
+
+\path (order-southeast) -- (order-northeast) coordinate[pos=1.25] (order-top);
+\path (family-south) -- (family-north) coordinate[pos=1.25] (family-top);
+\draw [copyconnection]  (order-northeast)
+    -- node {\copymidarrow} (order-top)
+    -- node {\copymidarrow} (family-top)
+    -- node {\copymidarrow} (family-north);
+
+\path (family-southeast) -- (family-northeast) coordinate[pos=1.25] (family-top);
+\path (genus-south) -- (genus-north) coordinate[pos=1.25] (genus-top);
+\draw [copyconnection]  (family-northeast)
+    -- node {\copymidarrow} (family-top)
+    -- node {\copymidarrow} (genus-top)
+    -- node {\copymidarrow} (genus-north);
+
+\path (genus-southeast) -- (genus-northeast) coordinate[pos=1.25] (genus-top);
+\path (species-south) -- (species-north) coordinate[pos=1.25] (species-top);
+\draw [copyconnection]  (genus-northeast)
+    -- node {\copymidarrow} (genus-top)
+    -- node {\copymidarrow} (species-top)
+    -- node {\copymidarrow} (species-north);
+
+\node[draw, rounded corners, fill=red!20, minimum width=3cm, minimum height=1.2cm, align=center]
+    (celoss) at ([xshift=4cm, yshift=-6cm]species-east) {
+    \textbf{Cross-Entropy Loss}\\[2pt]
+    $\mathcal{L} = -\sum_i y_i \log(p_i)$
+};
+\draw [->, thick, dashed, red!60] (species-south) |- (celoss.west);
+\node[draw, rounded corners, fill=blue!15, minimum width=2.5cm, minimum height=1cm, align=center]
+    (fallback) at ([xshift=4cm, yshift=4cm]species-east) {
+    \textbf{Confidence Fallback}\\[2pt]
+    If conf $< 70\%$:\\
+    S $\to$ G $\to$ F $\to$ O $\to$ C $\to$ P
+};
+\draw [->, thick, dashed, blue!60] (species-east) |- (fallback.west);
+\node[align=center, font=\Large\bfseries] at (8, 14) {
+    Single-Scale Baseline Architecture\\[4pt]
+    \normalfont\normalsize Total Parameters: 88M (ConvNeXtV2-Base)
+};
+
+\end{tikzpicture}
+\end{document}

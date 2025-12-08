@@ -1,0 +1,29 @@
+Class Accuracy: 0.9530
+
+                precision    recall  f1-score   support
+
+Actinopterygii       0.95      0.86      0.90        90
+    Asteroidea       0.98      0.93      0.96       225
+      Bivalvia       0.96      0.97      0.96        90
+   Cephalopoda       0.91      0.87      0.89        45
+     Crinoidea       0.97      0.97      0.97       135
+  Demospongiae       0.92      0.96      0.94       135
+    Echinoidea       0.96      0.96      0.96        45
+    Gastropoda       0.88      0.93      0.90        45
+  Hexacorallia       0.97      0.96      0.96       450
+Hexactinellida       0.91      0.93      0.92       225
+ Holothuroidea       0.98      0.97      0.98       450
+      Hydrozoa       0.98      0.99      0.98        90
+  Malacostraca       0.95      0.98      0.96       450
+Multicrustacea       1.00      0.91      0.95        45
+  Octocorallia       0.97      0.97      0.97       540
+   Ophiuroidea       0.92      0.96      0.94        90
+    Polychaeta       0.92      0.99      0.95        90
+      Porifera       0.62      0.62      0.62        45
+     Teleostei       0.94      0.96      0.95       180
+     Thaliacea       1.00      0.98      0.99        45
+      Tunicata       0.95      0.87      0.91        45
+
+      accuracy                           0.95      3555
+     macro avg       0.93      0.93      0.93      3555
+  weighted avg       0.95      0.95      0.95      3555

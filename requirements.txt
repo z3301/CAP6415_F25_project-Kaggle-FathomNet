@@ -12,4 +12,4 @@ tqdm>=4.66.0
 httpx
 pillow
 coco-lib
-
+dotenv
