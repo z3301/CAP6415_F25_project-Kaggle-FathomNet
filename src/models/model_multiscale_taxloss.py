@@ -197,7 +197,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from omegaconf import DictConfig
 
-from .losses import TaxonomicDistanceLoss, TaxonomicLabelSmoothing
+from ..losses import TaxonomicDistanceLoss, TaxonomicLabelSmoothing
 
 
 class MultiScaleTaxonomicClassifier(pl.LightningModule):

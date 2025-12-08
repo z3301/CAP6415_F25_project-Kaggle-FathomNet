@@ -6,6 +6,7 @@ Generate Kaggle submission for FathomNet 2025 using taxonomic loss model.
 import argparse
 import json
 import os
+import subprocess
 
 import pandas as pd
 import torch
@@ -15,9 +16,115 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 from tqdm import tqdm
 
+# Load environment variables from .env
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # dotenv not installed, rely on environment variables
 
 from data.data import load_and_encode_taxonomy
 from src.models.model_multiscale_taxloss import MultiScaleTaxonomicClassifier
+
+
+def get_kaggle_env():
+    """Get Kaggle credentials from environment."""
+    kaggle_username = os.environ.get("KAGGLE_USERNAME")
+    kaggle_key = os.environ.get("KAGGLE_KEY") or os.environ.get("KAGGLE_API_TOKEN")
+    if kaggle_username and kaggle_key:
+        return {**os.environ, "KAGGLE_USERNAME": kaggle_username, "KAGGLE_KEY": kaggle_key}
+    return None
+
+
+def get_latest_submission_score(env, max_wait: int = 60, poll_interval: int = 5):
+    """Poll Kaggle for the latest submission score (private LB)."""
+    import re
+    import time
+
+    print(f"\nWaiting for score (up to {max_wait}s)...", end="", flush=True)
+
+    for _ in range(max_wait // poll_interval):
+        time.sleep(poll_interval)
+        print(".", end="", flush=True)
+
+        try:
+            result = subprocess.run(
+                ["kaggle", "competitions", "submissions", "-c", "fathomnet-2025"],
+                capture_output=True,
+                text=True,
+                env=env
+            )
+
+            if result.returncode == 0:
+                lines = result.stdout.strip().split("\n")
+                # Skip header and separator lines, get first data line
+                for line in lines[2:]:
+                    if not line.strip() or line.startswith("-"):
+                        continue
+                    # Parse whitespace-separated format
+                    # Format: fileName  date  description  status  publicScore  privateScore
+                    parts = re.split(r'\s{2,}', line.strip())
+                    if len(parts) >= 4:
+                        status = parts[3].strip() if len(parts) > 3 else ""
+                        private_score = parts[-1].strip() if len(parts) > 4 else ""
+
+                        if "COMPLETE" in status.upper() and private_score:
+                            print(f"\n\n{'='*50}")
+                            print(f"✓ KAGGLE PRIVATE SCORE: {private_score}")
+                            print(f"{'='*50}")
+                            return private_score
+                        elif "ERROR" in status.upper():
+                            print(f"\n✗ Submission error")
+                            return None
+                    break  # Only check the latest submission
+        except Exception as e:
+            pass
+
+    print("\n⚠ Timed out waiting for score. Check Kaggle manually.")
+    return None
+
+
+def submit_to_kaggle(submission_file: str, message: str = "4-scale taxloss submission", wait_for_score: bool = True):
+    """Submit to Kaggle using credentials from environment."""
+    env = get_kaggle_env()
+
+    if not env:
+        print("\n⚠ Kaggle credentials not found in environment.")
+        print("  Set KAGGLE_USERNAME and KAGGLE_KEY (or KAGGLE_API_TOKEN) in .env or environment.")
+        return False
+
+    kaggle_username = os.environ.get("KAGGLE_USERNAME")
+    print(f"\nSubmitting to Kaggle as {kaggle_username}...")
+
+    try:
+        result = subprocess.run(
+            [
+                "kaggle", "competitions", "submit",
+                "-c", "fathomnet-2025",
+                "-f", submission_file,
+                "-m", message
+            ],
+            capture_output=True,
+            text=True,
+            env=env
+        )
+
+        if result.returncode == 0:
+            print("✓ Submission successful!")
+            if result.stdout.strip():
+                print(result.stdout)
+
+            # Wait for and display score
+            if wait_for_score:
+                get_latest_submission_score(env)
+
+            return True
+        else:
+            print(f"✗ Submission failed: {result.stderr}")
+            return False
+    except FileNotFoundError:
+        print("✗ Kaggle CLI not found. Install with: pip install kaggle")
+        return False
 
 
 class MultiScaleTestDataset(Dataset):
@@ -71,8 +178,8 @@ def main():
     parser.add_argument(
         "--checkpoint",
         type=str,
-        required=True,
-        help="Path to model checkpoint",
+        default="outputs/multiscale_4scales_taxloss/checkpoints/best-epoch=02-val_tax_score=0.531.ckpt",
+        help="Path to model checkpoint (default: 4-scale taxloss best checkpoint)",
     )
     parser.add_argument(
         "--config",
@@ -96,11 +203,32 @@ def main():
         "--scales",
         type=str,
         nargs="+",
-        default=["1x", "3x", "5x"],
-        help="Scales to use",
+        default=["1x", "3x", "5x", "full"],
+        help="Scales to use (default: 1x 3x 5x full for best results)",
     )
     parser.add_argument("--batch-size", type=int, default=16, help="Batch size")
+    parser.add_argument(
+        "--submit",
+        action="store_true",
+        default=True,
+        help="Submit to Kaggle after generating (default: True)",
+    )
+    parser.add_argument(
+        "--no-submit",
+        action="store_true",
+        help="Don't submit to Kaggle, just generate CSV",
+    )
+    parser.add_argument(
+        "--message",
+        type=str,
+        default="4-scale multiscale + taxonomic distance loss",
+        help="Submission message for Kaggle",
+    )
     args = parser.parse_args()
+
+    # Handle --no-submit flag
+    if args.no_submit:
+        args.submit = False
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
@@ -194,7 +322,7 @@ def main():
     submission_df = pd.DataFrame(
         {
             "annotation_id": all_annotation_ids,
-            "concept": concept_names,  # Kaggle expects 'concept', not 'concept_name'
+            "concept_name": concept_names,
         }
     )
 
@@ -208,8 +336,12 @@ def main():
 
     # Show distribution
     print("\nPrediction distribution (top 10):")
-    for name, count in submission_df["concept"].value_counts().head(10).items():
+    for name, count in submission_df["concept_name"].value_counts().head(10).items():
         print(f"  {name}: {count} ({count/len(submission_df)*100:.1f}%)")
+
+    # Submit to Kaggle if requested
+    if args.submit:
+        submit_to_kaggle(args.output, args.message)
 
 
 if __name__ == "__main__":

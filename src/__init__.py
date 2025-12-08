@@ -1,1 +1,4 @@
-# Empty file to mark src as a Python package.
+# FathomNet 2025 Source Package
+from . import models
+from . import losses
+from .config import Config

@@ -98,24 +98,31 @@ fathomnet/
 ├── config/                          # Experiment configurations
 │   ├── experiment-default.yaml      # Base single-scale config
 │   └── experiment-multiscale.yaml   # Multi-scale training config
-├── data/                            # Data loading and preprocessing
-│   ├── data.py                      # Main data loading utilities
-│   ├── data_multiscale.py           # Multi-scale dataset classes
-│   ├── preprocessing.py             # ROI extraction scripts
-│   └── extract_multiscale_rois.py   # Multi-scale ROI extraction
+├── data/                            # Data loading and preprocessing (Python package)
+│   ├── __init__.py                  # Package exports
+│   ├── data.py                      # Datasets, dataloaders, transforms
+│   ├── create_multiscale_rois.py    # Multi-scale ROI extraction script
+│   ├── taxonomy.csv                 # Taxonomic hierarchy
+│   └── distance_matrix.csv          # Taxonomic distance matrix
 ├── src/                             # Source code (installable package)
+│   ├── __init__.py                  # Package exports
+│   ├── config.py                    # Default configuration values
+│   ├── losses.py                    # Custom loss functions (TaxonomicDistanceLoss)
 │   ├── models/                      # Model architectures
-│   │   ├── model.py                 # Base taxonomy classifier
-│   │   ├── model_multiscale.py      # Multi-scale ConvNeXtV2 model
-│   │   └── model_multiscale_taxloss.py  # Taxonomic distance-aware loss
+│   │   ├── __init__.py              # Model exports
+│   │   ├── model.py                 # TaxonomyAwareClassifier (baseline)
+│   │   ├── model_multiscale.py      # MultiScaleTaxonomyClassifier
+│   │   └── model_multiscale_taxloss.py  # MultiScaleTaxonomicClassifier
 │   ├── training/                    # Training scripts
-│   │   ├── train_multiscale.py      # Main multi-scale training
+│   │   ├── train_multiscale.py      # Multi-scale training
 │   │   └── train_multiscale_taxloss.py  # Taxonomic loss training
-│   ├── inference/                   # Submission generation scripts
-│   │   ├── generate_submission_taxloss.py
-│   │   └── generate_submission_multiscale.py
-│   ├── eval.py                      # Evaluation functions
-│   └── losses.py                    # Custom loss functions
+│   └── inference/                   # Submission generation scripts
+│       ├── generate_submission_taxloss.py
+│       └── generate_submission_multiscale.py
+├── legacy/                          # Original notebook and diagrams
+│   ├── hierarchical-classifier-8th-place.ipynb
+│   ├── notebook_architecture.png    # Single-scale architecture diagram
+│   └── multiscale_architecture.png  # Multi-scale architecture diagram
 ├── pyproject.toml                   # Package configuration
 └── outputs/                         # Training outputs (checkpoints, logs)
 ```
@@ -151,7 +158,35 @@ python -m src.inference.generate_submission_taxloss --help
 
 Edit `config/experiment-multiscale.yaml` to customize dataset paths, augmentation strength, backbone selection, optimizer settings, and hierarchy-loss weights.
 
-### 6. Notebook (Legacy)
+### 6. Python API
+
+After installing, you can use the packages directly in Python:
+
+```python
+# Import models
+from src.models import (
+    MultiScaleTaxonomyClassifier,      # Multi-scale with CE loss
+    MultiScaleTaxonomicClassifier,     # Multi-scale with taxonomic loss (best)
+    TaxonomyAwareClassifier,           # Single-scale baseline
+)
+
+# Import loss functions
+from src.losses import TaxonomicDistanceLoss, TaxonomicLabelSmoothing
+
+# Import data utilities
+from data import (
+    load_and_encode_taxonomy,
+    build_multiscale_dataloaders,
+    MultiScalePrecroppedDataset,
+    create_transforms,
+)
+
+# Import default config
+from src.config import Config
+print(Config.BACKBONE)  # "convnextv2_base"
+```
+
+### 7. Notebook (Legacy)
 The original `hierarchical-classifier.ipynb` still ships for interactive exploration, but the scripted workflow above is the preferred, reproducible path for experiments.
 
 ---

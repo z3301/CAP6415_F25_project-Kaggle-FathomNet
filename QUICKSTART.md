@@ -121,12 +121,38 @@ python -m src.training.train_multiscale --scales 1x 3x
 
 ---
 
+## Python API
+
+```python
+# Import models
+from src.models import (
+    MultiScaleTaxonomicClassifier,     # Best model (taxonomic loss)
+    MultiScaleTaxonomyClassifier,      # Multi-scale with CE loss
+    TaxonomyAwareClassifier,           # Single-scale baseline
+)
+
+# Import data utilities
+from data import (
+    load_and_encode_taxonomy,
+    build_multiscale_dataloaders,
+    MultiScalePrecroppedDataset,
+)
+
+# Import losses
+from src.losses import TaxonomicDistanceLoss
+```
+
+---
+
 ## File Locations
 
 ### Key Directories
 - `src/training/` - Training scripts
 - `src/inference/` - Submission generation scripts
 - `src/models/` - Model architectures
+- `src/losses.py` - Custom loss functions
+- `src/config.py` - Default configuration
+- `data/` - Data loading utilities
 - `config/` - YAML configuration files
 - `outputs/` - Training outputs and checkpoints
 

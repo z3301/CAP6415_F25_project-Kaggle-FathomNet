@@ -3,7 +3,7 @@ from .model_multiscale import MultiScaleTaxonomyClassifier
 from .model_multiscale_taxloss import MultiScaleTaxonomicClassifier
 from .model_multiscale_attention import MultiScaleCrossAttentionClassifier
 from .model_dinov2 import DINOv2TaxonomyClassifier
-from .model_dinov2_attention import DINOv2AttentionClassifier
-from .model_attention import AttentionTaxonomyClassifier
-from .model import TaxonomyClassifier
-from .model_simple import SimpleClassifier
+from .model_dinov2_attention import DINOv2PatchAttentionClassifier
+from .model_attention import MultiContextAttentionClassifier
+from .model import TaxonomyAwareClassifier
+from .model_simple import SimpleTaxonomyClassifier
