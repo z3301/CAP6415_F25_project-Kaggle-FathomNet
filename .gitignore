@@ -88,6 +88,7 @@ outputs/lightning_logs/
 #     https://drive.google.com/open?id=1roOwrSRXP93tZRiLqb4paKrmBnT4Jw1y
 # Or train from scratch using the provided scripts.
 outputs/*/checkpoints/*.ckpt
-
+outputs/*.ckpt
 # Keep legacy checkpoint (under 2GB limit)
 !legacy/*.ckpt
+
