@@ -26,9 +26,21 @@ from data.data import load_and_encode_taxonomy
 from src.models.model_multiscale_taxloss import MultiScaleTaxonomicClassifier
 
 
+def _setup_kaggle_env():
+    """Ensure Kaggle environment variables are set correctly."""
+    # Map alternative env var names to what Kaggle API expects
+    if not os.environ.get("KAGGLE_KEY"):
+        for alt_key in ["KAGGLE_API_KEY", "KAGGLE_API_TOKEN"]:
+            if os.environ.get(alt_key):
+                os.environ["KAGGLE_KEY"] = os.environ[alt_key]
+                break
+
+
 def get_latest_submission_score(max_wait: int = 120, poll_interval: int = 5):
     """Poll Kaggle for the latest submission score (private LB)."""
     import time
+
+    _setup_kaggle_env()
 
     try:
         from kaggle.api.kaggle_api_extended import KaggleApi
@@ -69,6 +81,8 @@ def get_latest_submission_score(max_wait: int = 120, poll_interval: int = 5):
 
 def submit_to_kaggle(submission_file: str, message: str = "4-scale taxloss submission", wait_for_score: bool = True):
     """Submit to Kaggle using Python API."""
+    _setup_kaggle_env()
+
     try:
         from kaggle.api.kaggle_api_extended import KaggleApi
         api = KaggleApi()
@@ -76,6 +90,7 @@ def submit_to_kaggle(submission_file: str, message: str = "4-scale taxloss submi
     except Exception as e:
         print(f"\n⚠ Could not initialize Kaggle API: {e}")
         print("  Make sure kaggle is installed and credentials are configured.")
+        print("  Set KAGGLE_USERNAME and KAGGLE_KEY (or KAGGLE_API_KEY) environment variables.")
         return False
 
     print(f"\nSubmitting to Kaggle...")
