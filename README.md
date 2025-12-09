@@ -94,14 +94,37 @@ pip install -e .
 pip install -r requirements.txt
 ```
 
-### 3. Configure Data Path
+### 3. Download the Dataset
+
+Download the FathomNet 2025 competition data using the provided script:
+
+```bash
+# Download both train and test datasets
+python data/download.py data/dataset_train.json data/train
+python data/download.py data/dataset_test.json data/test
+```
+
+Or download individually:
+```bash
+# Test set only (required for inference)
+python data/download.py data/dataset_test.json data/test
+
+# Train set only (required for training)
+python data/download.py data/dataset_train.json data/train
+```
+
+**Note:** To run inference with the pre-trained model, the test set is required at minimum.
+
+Use `-v` for progress info or `-vv` for debug output. Use `-n` to adjust concurrent downloads (default: 10).
+
+### 4. Configure Data Path
 Open `hierarchical-classifier.ipynb` and edit the following line to point to your local dataset:
 ```python
 DATA_ROOT = "/path/to/your/local/data"
 ```
 Make sure the image files are actually present (and not Git LFS pointer text files). If you copied the dataset from a Git LFS repo, run `git lfs pull` in the dataset location before training or inference. The default CLI config expects data under `~/Documents/data/{train,test}/`.
 
-### 4. Repository Structure
+### 5. Repository Structure
 
 ```
 fathomnet/
@@ -137,7 +160,7 @@ fathomnet/
 └── outputs/                         # Training outputs (checkpoints, logs)
 ```
 
-### 5. Command-line Workflow
+### 6. Command-line Workflow
 
 After installing with `pip install -e .`, you can reproduce the best results with a single command:
 
@@ -179,7 +202,7 @@ python -m src.training.train_multiscale_taxloss --help
 
 Edit `config/experiment-multiscale.yaml` to customize dataset paths, augmentation strength, backbone selection, optimizer settings, and hierarchy-loss weights.
 
-### 6. Python API
+### 7. Python API
 
 After installing, you can use the packages directly in Python:
 
@@ -207,7 +230,7 @@ from src.config import Config
 print(Config.BACKBONE)  # "convnextv2_base"
 ```
 
-### 7. Notebook (Legacy)
+### 8. Notebook (Legacy)
 The original `hierarchical-classifier.ipynb` still ships for interactive exploration, but the scripted workflow above is the preferred, reproducible path for experiments.
 
 ---

@@ -190,7 +190,7 @@ def main() -> None:
         description=__doc__,
     )
     parser.add_argument(
-        "dataset_path", type=Path, help="Path to the COCO dataset YAML file."
+        "dataset_path", type=Path, help="Path to the COCO dataset file (JSON or YAML)."
     )
     parser.add_argument(
         "output_dir", type=Path, help="Base directory for the output files."
