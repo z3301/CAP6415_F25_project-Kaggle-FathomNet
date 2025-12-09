@@ -24,11 +24,11 @@ except ImportError:
 
 # Map alternative Kaggle env var names BEFORE importing kaggle
 # The Kaggle API reads credentials at import time
-if not os.environ.get("KAGGLE_KEY"):
-    for alt_key in ["KAGGLE_API_KEY", "KAGGLE_API_TOKEN"]:
-        if os.environ.get(alt_key):
-            os.environ["KAGGLE_KEY"] = os.environ[alt_key]
-            break
+kaggle_key = os.environ.get("KAGGLE_KEY", "")
+kaggle_token = os.environ.get("KAGGLE_API_TOKEN", "")
+if not kaggle_key and kaggle_token:
+    os.environ["KAGGLE_KEY"] = kaggle_token
+    print(f"Mapped KAGGLE_API_TOKEN to KAGGLE_KEY")
 
 from data.data import load_and_encode_taxonomy
 from src.models.model_multiscale_taxloss import MultiScaleTaxonomicClassifier
