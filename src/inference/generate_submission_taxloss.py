@@ -6,7 +6,6 @@ Generate Kaggle submission for FathomNet 2025 using taxonomic loss model.
 import argparse
 import json
 import os
-import subprocess
 
 import pandas as pd
 import torch
@@ -27,19 +26,17 @@ from data.data import load_and_encode_taxonomy
 from src.models.model_multiscale_taxloss import MultiScaleTaxonomicClassifier
 
 
-def get_kaggle_env():
-    """Get Kaggle credentials from environment."""
-    kaggle_username = os.environ.get("KAGGLE_USERNAME")
-    kaggle_key = os.environ.get("KAGGLE_KEY") or os.environ.get("KAGGLE_API_TOKEN")
-    if kaggle_username and kaggle_key:
-        return {**os.environ, "KAGGLE_USERNAME": kaggle_username, "KAGGLE_KEY": kaggle_key}
-    return None
-
-
-def get_latest_submission_score(env, max_wait: int = 120, poll_interval: int = 5):
+def get_latest_submission_score(max_wait: int = 120, poll_interval: int = 5):
     """Poll Kaggle for the latest submission score (private LB)."""
-    import re
     import time
+
+    try:
+        from kaggle.api.kaggle_api_extended import KaggleApi
+        api = KaggleApi()
+        api.authenticate()
+    except Exception as e:
+        print(f"\n⚠ Could not initialize Kaggle API: {e}")
+        return None
 
     print(f"\nWaiting for score (up to {max_wait}s)...", end="", flush=True)
 
@@ -48,35 +45,21 @@ def get_latest_submission_score(env, max_wait: int = 120, poll_interval: int = 5
         print(".", end="", flush=True)
 
         try:
-            result = subprocess.run(
-                ["kaggle", "competitions", "submissions", "-c", "fathomnet-2025"],
-                capture_output=True,
-                text=True,
-                env=env
-            )
+            submissions = api.competition_submissions("fathomnet-2025")
+            if submissions:
+                latest = submissions[0]
+                status = str(latest.status).upper()
 
-            if result.returncode == 0:
-                lines = result.stdout.strip().split("\n")
-                # Skip header and separator lines, get first data line
-                for line in lines[2:]:
-                    if not line.strip() or line.startswith("-"):
-                        continue
-                    # Parse whitespace-separated format
-                    # Format: fileName  date  description  status  publicScore  privateScore
-                    parts = re.split(r'\s{2,}', line.strip())
-                    if len(parts) >= 4:
-                        status = parts[3].strip() if len(parts) > 3 else ""
-                        private_score = parts[-1].strip() if len(parts) > 4 else ""
-
-                        if "COMPLETE" in status.upper() and private_score:
-                            print(f"\n\n{'='*50}")
-                            print(f"✓ KAGGLE PRIVATE SCORE: {private_score}")
-                            print(f"{'='*50}")
-                            return private_score
-                        elif "ERROR" in status.upper():
-                            print(f"\n✗ Submission error")
-                            return None
-                    break  # Only check the latest submission
+                if "COMPLETE" in status:
+                    private_score = latest.private_score
+                    if private_score:
+                        print(f"\n\n{'='*50}")
+                        print(f"✓ KAGGLE PRIVATE SCORE: {private_score}")
+                        print(f"{'='*50}")
+                        return private_score
+                elif "ERROR" in status:
+                    print(f"\n✗ Submission error")
+                    return None
         except Exception as e:
             pass
 
@@ -85,45 +68,33 @@ def get_latest_submission_score(env, max_wait: int = 120, poll_interval: int = 5
 
 
 def submit_to_kaggle(submission_file: str, message: str = "4-scale taxloss submission", wait_for_score: bool = True):
-    """Submit to Kaggle using credentials from environment."""
-    env = get_kaggle_env()
-
-    if not env:
-        print("\n⚠ Kaggle credentials not found in environment.")
-        print("  Set KAGGLE_USERNAME and KAGGLE_KEY (or KAGGLE_API_TOKEN) in .env or environment.")
+    """Submit to Kaggle using Python API."""
+    try:
+        from kaggle.api.kaggle_api_extended import KaggleApi
+        api = KaggleApi()
+        api.authenticate()
+    except Exception as e:
+        print(f"\n⚠ Could not initialize Kaggle API: {e}")
+        print("  Make sure kaggle is installed and credentials are configured.")
         return False
 
-    kaggle_username = os.environ.get("KAGGLE_USERNAME")
-    print(f"\nSubmitting to Kaggle as {kaggle_username}...")
+    print(f"\nSubmitting to Kaggle...")
 
     try:
-        result = subprocess.run(
-            [
-                "kaggle", "competitions", "submit",
-                "-c", "fathomnet-2025",
-                "-f", submission_file,
-                "-m", message
-            ],
-            capture_output=True,
-            text=True,
-            env=env
+        api.competition_submit(
+            file_name=submission_file,
+            message=message,
+            competition="fathomnet-2025"
         )
+        print("✓ Submission successful!")
 
-        if result.returncode == 0:
-            print("✓ Submission successful!")
-            if result.stdout.strip():
-                print(result.stdout)
+        # Wait for and display score
+        if wait_for_score:
+            get_latest_submission_score()
 
-            # Wait for and display score
-            if wait_for_score:
-                get_latest_submission_score(env)
-
-            return True
-        else:
-            print(f"✗ Submission failed: {result.stderr}")
-            return False
-    except FileNotFoundError:
-        print("✗ Kaggle CLI not found. Install with: pip install kaggle")
+        return True
+    except Exception as e:
+        print(f"✗ Submission failed: {e}")
         return False
 
 

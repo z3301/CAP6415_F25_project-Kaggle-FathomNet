@@ -7,11 +7,11 @@ paths:
   taxonomy_csv: "${paths.data_root}/data/taxonomy.csv"
   # COCO-style annotations for multi-scale support
   train_coco_json: "${paths.data_root}/data/dataset_train.json"
-  train_full_image_dir: "${paths.data_root}/data/train/images"
-  train_roi_root: "${paths.data_root}/data/train/rois"
+  train_full_image_dir: "${paths.data_root}/train/images"
+  train_roi_root: "${paths.data_root}/train/rois"
   test_coco_json: "${paths.data_root}/data/dataset_test.json"
-  test_full_image_dir: "${paths.data_root}/data/test/images"
-  test_roi_root: "${paths.data_root}/data/test/rois"
+  test_full_image_dir: "${paths.data_root}/test/images"
+  test_roi_root: "${paths.data_root}/test/rois"
   output_dir: "${paths.data_root}/outputs/multiscale"
   submission_csv: "${paths.output_dir}/submission.csv"
 
