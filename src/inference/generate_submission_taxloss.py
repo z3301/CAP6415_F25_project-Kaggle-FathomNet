@@ -32,61 +32,65 @@ from data.data import load_and_encode_taxonomy
 from src.models.model_multiscale_taxloss import MultiScaleTaxonomicClassifier
 
 
-def get_latest_submission_score(max_wait: int = 120, poll_interval: int = 5):
+def get_latest_submission_score(submission_filename: str = None, max_wait: int = 60, poll_interval: int = 5):
     """Poll Kaggle for the latest submission score (private LB)."""
-    import re
+    import csv
+    import io
     import subprocess
     import time
 
     print(f"\nWaiting for score (up to {max_wait}s)...", end="", flush=True)
 
-    for _ in range(max_wait // poll_interval):
+    for i in range(max_wait // poll_interval):
         time.sleep(poll_interval)
         print(".", end="", flush=True)
 
         try:
             result = subprocess.run(
-                ["kaggle", "competitions", "submissions", "-c", "fathomnet-2025"],
+                ["kaggle", "competitions", "submissions", "-c", "fathomnet-2025", "--csv"],
                 capture_output=True,
                 text=True,
             )
 
-            if result.returncode == 0:
-                lines = result.stdout.strip().split("\n")
-                for line in lines[2:]:  # Skip header
-                    if not line.strip() or line.startswith("-"):
+            if result.returncode == 0 and result.stdout.strip():
+                reader = csv.DictReader(io.StringIO(result.stdout))
+                for row in reader:
+                    # If we specified a filename, match it; otherwise take most recent
+                    if submission_filename and row.get("fileName", "") != submission_filename:
                         continue
-                    # Parse: fileName  date  description  status  publicScore  privateScore
-                    parts = re.split(r'\s{2,}', line.strip())
-                    if len(parts) >= 4:
-                        status = parts[3] if len(parts) > 3 else ""
-                        if "COMPLETE" in status.upper():
-                            private_score = parts[-1] if len(parts) >= 6 else ""
-                            if private_score and private_score != "None":
-                                print(f"\n\n{'='*50}")
-                                print(f"✓ KAGGLE PRIVATE SCORE: {private_score}")
-                                print(f"{'='*50}")
-                                return private_score
-                        elif "ERROR" in status.upper():
-                            print(f"\n✗ Submission error")
-                            return None
-                    break
-        except Exception:
-            pass
 
-    print("\n⚠ Timed out waiting for score. Check Kaggle manually.")
+                    status = row.get("status", "").lower()
+                    private_score = row.get("privateScore", "")
+
+                    if status == "complete" and private_score and private_score.lower() != "none":
+                        print(f"\n\n{'='*50}")
+                        print(f"KAGGLE SCORE: {private_score}")
+                        print(f"{'='*50}")
+                        return private_score
+                    elif status == "pending":
+                        break  # Still processing, keep waiting
+                    elif "error" in status:
+                        print(f"\nSubmission error: {row.get('errorDescription', status)}")
+                        return None
+                    break  # Only check first matching row
+        except Exception as e:
+            if i == 0:
+                print(f"\n(poll error: {e})", end="", flush=True)
+
+    print("\nTimed out. Check manually: kaggle competitions submissions -c fathomnet-2025")
     return None
 
 
 def submit_to_kaggle(submission_file: str, message: str = "4-scale taxloss submission", wait_for_score: bool = True):
     """Submit to Kaggle."""
+    import os
     import shutil
     import subprocess
 
     # Find kaggle CLI
     kaggle_cmd = shutil.which("kaggle")
     if not kaggle_cmd:
-        print(f"\n⚠ Kaggle CLI not found in PATH.")
+        print(f"\nKaggle CLI not found in PATH.")
         print(f"  Submit manually: kaggle competitions submit -c fathomnet-2025 -f {submission_file} -m \"{message}\"")
         return False
 
@@ -100,18 +104,20 @@ def submit_to_kaggle(submission_file: str, message: str = "4-scale taxloss submi
         )
 
         if result.returncode == 0:
-            print("✓ Submission successful!")
+            print("Submission successful!")
             if result.stdout.strip():
                 print(result.stdout.strip())
 
             if wait_for_score:
-                get_latest_submission_score()
+                # Pass the filename so we match the right submission
+                filename = os.path.basename(submission_file)
+                get_latest_submission_score(submission_filename=filename)
             return True
         else:
-            print(f"✗ Submission failed: {result.stderr}")
+            print(f"Submission failed: {result.stderr}")
             return False
     except Exception as e:
-        print(f"✗ Submission failed: {e}")
+        print(f"Submission failed: {e}")
         return False
 
 
