@@ -62,6 +62,10 @@ if [ -f "$CKPT_FILE" ]; then
 else
     # Download from Kaggle Datasets (no rate limits)
     kaggle datasets download -d danzimmerman/fathomnet-2025-checkpoint -p "$CKPT_DIR" --unzip
+    # Kaggle strips '=' from filenames, so rename if needed
+    if [ -f "$CKPT_DIR/best-epoch02-val_tax_score0.531.ckpt" ]; then
+        mv "$CKPT_DIR/best-epoch02-val_tax_score0.531.ckpt" "$CKPT_FILE"
+    fi
 fi
 
 echo ""
