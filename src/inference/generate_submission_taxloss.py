@@ -36,7 +36,7 @@ def get_kaggle_env():
     return None
 
 
-def get_latest_submission_score(env, max_wait: int = 60, poll_interval: int = 5):
+def get_latest_submission_score(env, max_wait: int = 120, poll_interval: int = 5):
     """Poll Kaggle for the latest submission score (private LB)."""
     import re
     import time
