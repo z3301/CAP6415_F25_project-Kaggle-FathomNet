@@ -61,7 +61,7 @@ if [ -f "$CKPT_FILE" ]; then
     echo "     Checkpoint already exists, skipping download"
 else
     # Try gdown first
-    gdown 1keUnBTv0WHi4uWw4j2qBCz1Vd0Nkc34k -O "$CKPT_FILE"
+    gdown 1unENBWipklY9_LX4vFPaHD69Lx_DcwTO -O "$CKPT_FILE"
 fi
 
 echo ""
