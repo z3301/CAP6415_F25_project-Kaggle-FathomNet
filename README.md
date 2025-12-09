@@ -99,9 +99,8 @@ pip install -r requirements.txt
 Download the FathomNet 2025 competition data using the provided script:
 
 ```bash
-# Download both train and test datasets
-python data/download.py data/dataset_train.json data/train
-python data/download.py data/dataset_test.json data/test
+# Download both train and test datasets (single line)
+python data/download.py data/dataset_train.json data/train && python data/download.py data/dataset_test.json data/test
 ```
 
 Or download individually:
@@ -117,14 +116,34 @@ python data/download.py data/dataset_train.json data/train
 
 Use `-v` for progress info or `-vv` for debug output. Use `-n` to adjust concurrent downloads (default: 10).
 
-### 4. Configure Data Path
-Open `hierarchical-classifier.ipynb` and edit the following line to point to your local dataset:
-```python
-DATA_ROOT = "/path/to/your/local/data"
-```
-Make sure the image files are actually present (and not Git LFS pointer text files). If you copied the dataset from a Git LFS repo, run `git lfs pull` in the dataset location before training or inference. The default CLI config expects data under `~/Documents/data/{train,test}/`.
+### 4. Set Kaggle Credentials
 
-### 5. Repository Structure
+Export your Kaggle API credentials (find these at https://www.kaggle.com/settings):
+
+```bash
+export KAGGLE_USERNAME="your_username"
+export KAGGLE_KEY="your_api_key"
+```
+
+### 5. Run Inference
+
+Generate and submit a prediction:
+
+```bash
+python -m src.inference.generate_submission_taxloss
+```
+
+This will:
+1. Load the 4-scale taxloss checkpoint
+2. Run inference on the test set using scales: 1x, 3x, 5x, full
+3. Generate `submission_taxloss.csv`
+4. Auto-submit to Kaggle and display the private leaderboard score
+
+Use `--no-submit` to skip Kaggle submission, or `--help` to see all options.
+
+---
+
+## Repository Structure
 
 ```
 fathomnet/
@@ -134,6 +153,7 @@ fathomnet/
 ├── data/                            # Data loading and preprocessing (Python package)
 │   ├── __init__.py                  # Package exports
 │   ├── data.py                      # Datasets, dataloaders, transforms
+│   ├── download.py                  # Dataset download script
 │   ├── create_multiscale_rois.py    # Multi-scale ROI extraction script
 │   ├── taxonomy.csv                 # Taxonomic hierarchy
 │   └── distance_matrix.csv          # Taxonomic distance matrix
@@ -160,34 +180,20 @@ fathomnet/
 └── outputs/                         # Training outputs (checkpoints, logs)
 ```
 
-### 6. Command-line Workflow
+---
 
-After installing with `pip install -e .`, you can reproduce the best results with a single command:
+## Command-line Workflow
+
+For repeated use, create a `.env` file in the repository root with your Kaggle credentials:
 
 ```bash
-# Generate submission and auto-submit to Kaggle (uses best defaults)
-python -m src.inference.generate_submission_taxloss
+KAGGLE_USERNAME=your_username
+KAGGLE_KEY=your_api_key
 ```
 
-This will:
-1. Load the 4-scale taxloss checkpoint (`outputs/multiscale_4scales_taxloss/checkpoints/best-epoch=02-val_tax_score=0.531.ckpt`)
-2. Run inference on the test set using scales: 1x, 3x, 5x, full
-3. Generate `submission_taxloss.csv`
-4. Auto-submit to Kaggle (requires `KAGGLE_USERNAME` and `KAGGLE_KEY` in `.env`)
-5. Display the private leaderboard score
+The inference script will automatically load these credentials.
 
-Use `--help` to see all available options:
-```bash
-python -m src.inference.generate_submission_taxloss --help
-```
-
-Common options:
-- `--checkpoint PATH` - Use a different model checkpoint
-- `--scales 1x 3x` - Use fewer scales (faster, lower accuracy)
-- `--no-submit` - Generate CSV without submitting to Kaggle
-- `--message "description"` - Custom Kaggle submission message
-
-#### Training
+### Training
 
 ```bash
 # Train multi-scale model with taxonomic loss (best performing)
@@ -202,7 +208,19 @@ python -m src.training.train_multiscale_taxloss --help
 
 Edit `config/experiment-multiscale.yaml` to customize dataset paths, augmentation strength, backbone selection, optimizer settings, and hierarchy-loss weights.
 
-### 7. Python API
+### Inference Options
+
+```bash
+python -m src.inference.generate_submission_taxloss --help
+```
+
+Common options:
+- `--checkpoint PATH` - Use a different model checkpoint
+- `--scales 1x 3x` - Use fewer scales (faster, lower accuracy)
+- `--no-submit` - Generate CSV without submitting to Kaggle
+- `--message "description"` - Custom Kaggle submission message
+
+### Python API
 
 After installing, you can use the packages directly in Python:
 
@@ -230,7 +248,7 @@ from src.config import Config
 print(Config.BACKBONE)  # "convnextv2_base"
 ```
 
-### 8. Notebook (Legacy)
+### Notebook (Legacy)
 The original `hierarchical-classifier.ipynb` still ships for interactive exploration, but the scripted workflow above is the preferred, reproducible path for experiments.
 
 ---
