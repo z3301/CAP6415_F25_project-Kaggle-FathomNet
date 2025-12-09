@@ -39,6 +39,8 @@ dependencies = [
     "httpx",
     "pillow",
     "coco-lib",
+    "kaggle",
+    "gdown",
 ]
 
 [project.optional-dependencies]

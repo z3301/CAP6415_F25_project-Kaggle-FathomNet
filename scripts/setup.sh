@@ -1,16 +1,32 @@
 #!/bin/bash
 # FathomNet 2025 - One-command setup script
-# Downloads test dataset and pre-trained checkpoint
+# Creates virtual environment, downloads test dataset and pre-trained checkpoint
 
 set -e  # Exit on error
+
+VENV_DIR=".venv"
+PYTHON_VERSION="python3"
 
 echo "=== FathomNet 2025 Setup ==="
 echo ""
 
+# Step 0: Create virtual environment if it doesn't exist
+if [ ! -d "$VENV_DIR" ]; then
+    echo "[0/4] Creating virtual environment..."
+    $PYTHON_VERSION -m venv "$VENV_DIR"
+    echo "     Created $VENV_DIR"
+else
+    echo "[0/4] Virtual environment already exists at $VENV_DIR"
+fi
+
+# Activate virtual environment
+source "$VENV_DIR/bin/activate"
+echo "     Activated virtual environment"
+
 # Step 1: Install dependencies
 echo "[1/4] Installing dependencies..."
+pip install --upgrade pip --quiet
 pip install -e . --quiet
-pip install gdown --quiet
 
 # Step 2: Download test dataset (full images + 1x ROIs)
 echo "[2/4] Downloading test dataset..."
@@ -42,6 +58,9 @@ gdown 1roOwrSRXP93tZRiLqb4paKrmBnT4Jw1y -O "outputs/multiscale_4scales_taxloss/c
 
 echo ""
 echo "=== Setup complete! ==="
+echo ""
+echo "To activate the virtual environment:"
+echo "  source .venv/bin/activate"
 echo ""
 echo "To run inference:"
 echo "  export KAGGLE_USERNAME=\"your_username\""
