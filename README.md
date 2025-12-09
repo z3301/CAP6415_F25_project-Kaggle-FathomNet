@@ -75,15 +75,32 @@ The FathomNet 2025 competition uses **taxonomic distance** as the evaluation met
 
 For full instructions including training commands, inference, and troubleshooting, see **[QUICKSTART.md](QUICKSTART.md)**.
 
-To reproduce the results:
- 
-### 1. Clone the Repository
+### Quick Setup (One Command)
+
+After cloning, run the setup script to install dependencies, download the test dataset, and download the pre-trained checkpoint:
+
+```bash
+git clone https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet.git
+cd CAP6415_F25_project-Kaggle-FathomNet
+./scripts/setup.sh
+```
+
+Then set your Kaggle credentials and run inference:
+```bash
+export KAGGLE_USERNAME="your_username"
+export KAGGLE_KEY="your_api_key"
+python -m src.inference.generate_submission_taxloss
+```
+
+### Manual Setup (Step-by-Step)
+
+#### 1. Clone the Repository
 ```bash
 git clone https://github.com/z3301/CAP6415_F25_project-Kaggle-FathomNet.git
 cd CAP6415_F25_project-Kaggle-FathomNet
 ```
 
-### 2. Install Dependencies
+#### 2. Install Dependencies
 Ensure you are using **Python ≥ 3.10**. A GPU is recommended for faster inference but not required.
 
 ```bash
@@ -94,7 +111,7 @@ pip install -e .
 pip install -r requirements.txt
 ```
 
-### 3. Download the Dataset
+#### 3. Download the Dataset
 
 Download the FathomNet 2025 competition data using the provided script:
 
@@ -116,7 +133,7 @@ python data/download.py data/dataset_train.json data/train
 
 Use `-v` for progress info or `-vv` for debug output. Use `-n` to adjust concurrent downloads (default: 10).
 
-### 4. Download Pre-trained Checkpoint
+#### 4. Download Pre-trained Checkpoint
 
 Download the pre-trained model checkpoint (~4GB) from Google Drive:
 
@@ -126,7 +143,7 @@ mkdir -p outputs/multiscale_4scales_taxloss/checkpoints
 gdown 1roOwrSRXP93tZRiLqb4paKrmBnT4Jw1y -O "outputs/multiscale_4scales_taxloss/checkpoints/best-epoch=02-val_tax_score=0.531.ckpt"
 ```
 
-### 5. Set Kaggle Credentials
+#### 5. Set Kaggle Credentials
 
 Export your Kaggle API credentials (find these at https://www.kaggle.com/settings):
 
@@ -135,7 +152,7 @@ export KAGGLE_USERNAME="your_username"
 export KAGGLE_API_TOKEN="your_api_token"
 ```
 
-### 6. Run Inference
+#### 6. Run Inference
 
 Generate and submit a prediction:
 
