@@ -39,7 +39,7 @@ dependencies = [
     "httpx",
     "pillow",
     "coco-lib",
-    "kaggle",
+    "kaggle==1.7.4.5",
     "gdown",
 ]
 

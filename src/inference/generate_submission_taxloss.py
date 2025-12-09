@@ -32,8 +32,9 @@ from data.data import load_and_encode_taxonomy
 from src.models.model_multiscale_taxloss import MultiScaleTaxonomicClassifier
 
 
-def get_submission_score(max_wait: int = 60, poll_interval: int = 5):
-    """Poll Kaggle for the latest submission score."""
+def get_submission_score(kaggle_cmd: str, max_wait: int = 60, poll_interval: int = 5):
+    """Poll Kaggle CLI for the latest submission score."""
+    import subprocess
     import time
 
     print(f"\nWaiting for score (up to {max_wait}s)...", end="", flush=True)
@@ -43,29 +44,36 @@ def get_submission_score(max_wait: int = 60, poll_interval: int = 5):
         print(".", end="", flush=True)
 
         try:
-            from kaggle.api.kaggle_api_extended import KaggleApi
-            api = KaggleApi()
-            api.authenticate()
-            subs = api.competition_submissions("fathomnet-2025")
+            # Use CLI instead of Python API
+            result = subprocess.run(
+                [kaggle_cmd, "competitions", "submissions", "-c", "fathomnet-2025"],
+                capture_output=True,
+                text=True,
+            )
 
-            if subs:
-                s = subs[0]
-                status = str(s.status).lower()
-                if "complete" in status:
-                    score = s.private_score
-                    if score is not None:
-                        print(f"\n\n{'='*50}")
-                        print(f"KAGGLE SCORE: {score}")
-                        print(f"{'='*50}")
-                        return score
-                elif "error" in status:
-                    print(f"\nSubmission error")
-                    return None
-        except Exception as e:
-            print(f"\n(error: {e})")
-            return None
+            if result.returncode == 0 and result.stdout.strip():
+                lines = result.stdout.strip().split("\n")
+                # Find first data line (skip headers)
+                for line in lines:
+                    if "complete" in line.lower():
+                        # Parse the line - score is typically last column
+                        parts = line.split()
+                        for part in reversed(parts):
+                            try:
+                                score = float(part)
+                                print(f"\n\n{'='*50}")
+                                print(f"KAGGLE SCORE: {score}")
+                                print(f"{'='*50}")
+                                return score
+                            except ValueError:
+                                continue
+                        break
+                    elif "pending" in line.lower():
+                        break  # Still processing
+        except Exception:
+            pass
 
-    print("\nTimed out.")
+    print("\nTimed out. Check: https://www.kaggle.com/competitions/fathomnet-2025/submissions")
     return None
 
 
@@ -93,7 +101,7 @@ def submit_to_kaggle(submission_file: str, message: str = "4-scale taxloss submi
             print("Submission successful!")
             if result.stdout.strip():
                 print(result.stdout.strip())
-            get_submission_score()
+            get_submission_score(kaggle_cmd)
             return True
         else:
             print(f"Submission failed: {result.stderr}")
