@@ -60,8 +60,8 @@ mkdir -p "$CKPT_DIR"
 if [ -f "$CKPT_FILE" ]; then
     echo "     Checkpoint already exists, skipping download"
 else
-    # Try gdown first
-    gdown 1unENBWipklY9_LX4vFPaHD69Lx_DcwTO -O "$CKPT_FILE"
+    # Try gdown first (v4 copy - fresh upload via rclone)
+    gdown 1WwBLIHUZ0mPZfxKLvk4nKqFYUPIQSJIr -O "$CKPT_FILE"
 fi
 
 echo ""
