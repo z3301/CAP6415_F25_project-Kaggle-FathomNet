@@ -95,7 +95,9 @@
       "Bash(export KAGGLE_USERNAME KAGGLE_KEY)",
       "Bash(kaggle competitions submissions:*)",
       "Bash(~/miniconda/envs/fathomnet/bin/pip show kaggle)",
-      "Bash(~/miniconda/envs/fathomnet/bin/rclone copy:*)"
+      "Bash(~/miniconda/envs/fathomnet/bin/rclone copy:*)",
+      "Bash(~/miniconda/envs/fathomnet/bin/kaggle datasets list:*)",
+      "Bash(~/miniconda/envs/fathomnet/bin/kaggle datasets create:*)"
     ],
     "deny": [],
     "ask": []
