@@ -34,8 +34,6 @@ from src.models.model_multiscale_taxloss import MultiScaleTaxonomicClassifier
 
 def get_latest_submission_score(submission_filename: str = None, max_wait: int = 60, poll_interval: int = 5):
     """Poll Kaggle for the latest submission score (private LB)."""
-    import csv
-    import io
     import subprocess
     import time
 
@@ -46,36 +44,31 @@ def get_latest_submission_score(submission_filename: str = None, max_wait: int =
         print(".", end="", flush=True)
 
         try:
-            result = subprocess.run(
-                ["kaggle", "competitions", "submissions", "-c", "fathomnet-2025", "--csv"],
-                capture_output=True,
-                text=True,
-            )
+            # Use Python API directly to avoid CLI version issues
+            from kaggle.api.kaggle_api_extended import KaggleApi
+            api = KaggleApi()
+            api.authenticate()
+            subs = api.competitions_submissions_list("fathomnet-2025")
 
-            if result.returncode == 0 and result.stdout.strip():
-                reader = csv.DictReader(io.StringIO(result.stdout))
-                for row in reader:
-                    # If we specified a filename, match it; otherwise take most recent
-                    if submission_filename and row.get("fileName", "") != submission_filename:
-                        continue
+            if subs:
+                # Most recent submission is first
+                sub = subs[0]
+                status = getattr(sub, "status", "").lower()
+                private_score = getattr(sub, "privateScore", None)
 
-                    status = row.get("status", "").lower()
-                    private_score = row.get("privateScore", "")
-
-                    if status == "complete" and private_score and private_score.lower() != "none":
-                        print(f"\n\n{'='*50}")
-                        print(f"KAGGLE SCORE: {private_score}")
-                        print(f"{'='*50}")
-                        return private_score
-                    elif status == "pending":
-                        break  # Still processing, keep waiting
-                    elif "error" in status:
-                        print(f"\nSubmission error: {row.get('errorDescription', status)}")
-                        return None
-                    break  # Only check first matching row
+                if status == "complete" and private_score is not None:
+                    print(f"\n\n{'='*50}")
+                    print(f"KAGGLE SCORE: {private_score}")
+                    print(f"{'='*50}")
+                    return str(private_score)
+                elif status == "pending":
+                    continue  # Still processing
+                elif "error" in status:
+                    print(f"\nSubmission error")
+                    return None
         except Exception as e:
             if i == 0:
-                print(f"\n(poll error: {e})", end="", flush=True)
+                print(f"\n(error: {e})", end="", flush=True)
 
     print("\nTimed out. Check manually: kaggle competitions submissions -c fathomnet-2025")
     return None
