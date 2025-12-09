@@ -32,59 +32,52 @@ from data.data import load_and_encode_taxonomy
 from src.models.model_multiscale_taxloss import MultiScaleTaxonomicClassifier
 
 
-def get_latest_submission_score(submission_filename: str = None, max_wait: int = 60, poll_interval: int = 5):
-    """Poll Kaggle for the latest submission score (private LB)."""
-    import subprocess
+def get_submission_score(max_wait: int = 60, poll_interval: int = 5):
+    """Poll Kaggle for the latest submission score."""
     import time
 
     print(f"\nWaiting for score (up to {max_wait}s)...", end="", flush=True)
 
-    for i in range(max_wait // poll_interval):
+    for _ in range(max_wait // poll_interval):
         time.sleep(poll_interval)
         print(".", end="", flush=True)
 
         try:
-            # Use Python API directly to avoid CLI version issues
             from kaggle.api.kaggle_api_extended import KaggleApi
             api = KaggleApi()
             api.authenticate()
-            subs = api.competitions_submissions_list("fathomnet-2025")
+            subs = api.competition_submissions("fathomnet-2025")
 
             if subs:
-                # Most recent submission is first
-                sub = subs[0]
-                status = getattr(sub, "status", "").lower()
-                private_score = getattr(sub, "privateScore", None)
-
-                if status == "complete" and private_score is not None:
-                    print(f"\n\n{'='*50}")
-                    print(f"KAGGLE SCORE: {private_score}")
-                    print(f"{'='*50}")
-                    return str(private_score)
-                elif status == "pending":
-                    continue  # Still processing
+                s = subs[0]
+                status = str(s.status).lower()
+                if "complete" in status:
+                    score = s.private_score
+                    if score is not None:
+                        print(f"\n\n{'='*50}")
+                        print(f"KAGGLE SCORE: {score}")
+                        print(f"{'='*50}")
+                        return score
                 elif "error" in status:
                     print(f"\nSubmission error")
                     return None
         except Exception as e:
-            if i == 0:
-                print(f"\n(error: {e})", end="", flush=True)
+            print(f"\n(error: {e})")
+            return None
 
-    print("\nTimed out. Check manually: kaggle competitions submissions -c fathomnet-2025")
+    print("\nTimed out.")
     return None
 
 
-def submit_to_kaggle(submission_file: str, message: str = "4-scale taxloss submission", wait_for_score: bool = True):
+def submit_to_kaggle(submission_file: str, message: str = "4-scale taxloss submission"):
     """Submit to Kaggle."""
-    import os
     import shutil
     import subprocess
 
-    # Find kaggle CLI
     kaggle_cmd = shutil.which("kaggle")
     if not kaggle_cmd:
-        print(f"\nKaggle CLI not found in PATH.")
-        print(f"  Submit manually: kaggle competitions submit -c fathomnet-2025 -f {submission_file} -m \"{message}\"")
+        print(f"\nKaggle CLI not found. Submit manually:")
+        print(f"  kaggle competitions submit -c fathomnet-2025 -f {submission_file} -m \"{message}\"")
         return False
 
     print(f"\nSubmitting to Kaggle...")
@@ -100,11 +93,7 @@ def submit_to_kaggle(submission_file: str, message: str = "4-scale taxloss submi
             print("Submission successful!")
             if result.stdout.strip():
                 print(result.stdout.strip())
-
-            if wait_for_score:
-                # Pass the filename so we match the right submission
-                filename = os.path.basename(submission_file)
-                get_latest_submission_score(submission_filename=filename)
+            get_submission_score()
             return True
         else:
             print(f"Submission failed: {result.stderr}")

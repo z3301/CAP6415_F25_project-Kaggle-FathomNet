@@ -93,7 +93,8 @@
       "Bash(export PATH=\"$HOME/miniconda/envs/fathomnet/bin:$PATH\")",
       "Bash(source:*)",
       "Bash(export KAGGLE_USERNAME KAGGLE_KEY)",
-      "Bash(kaggle competitions submissions:*)"
+      "Bash(kaggle competitions submissions:*)",
+      "Bash(~/miniconda/envs/fathomnet/bin/pip show kaggle)"
     ],
     "deny": [],
     "ask": []
