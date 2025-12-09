@@ -129,31 +129,42 @@ fathomnet/
 
 ### 5. Command-line Workflow
 
-After installing with `pip install -e .`, you can use the CLI commands:
+After installing with `pip install -e .`, you can reproduce the best results with a single command:
+
+```bash
+# Generate submission and auto-submit to Kaggle (uses best defaults)
+python -m src.inference.generate_submission_taxloss
+```
+
+This will:
+1. Load the 4-scale taxloss checkpoint (`outputs/multiscale_4scales_taxloss/checkpoints/best-epoch=02-val_tax_score=0.531.ckpt`)
+2. Run inference on the test set using scales: 1x, 3x, 5x, full
+3. Generate `submission_taxloss.csv`
+4. Auto-submit to Kaggle (requires `KAGGLE_USERNAME` and `KAGGLE_KEY` in `.env`)
+5. Display the private leaderboard score
+
+Use `--help` to see all available options:
+```bash
+python -m src.inference.generate_submission_taxloss --help
+```
+
+Common options:
+- `--checkpoint PATH` - Use a different model checkpoint
+- `--scales 1x 3x` - Use fewer scales (faster, lower accuracy)
+- `--no-submit` - Generate CSV without submitting to Kaggle
+- `--message "description"` - Custom Kaggle submission message
+
+#### Training
 
 ```bash
 # Train multi-scale model with taxonomic loss (best performing)
-fathomnet-train-taxloss \
+python -m src.training.train_multiscale_taxloss \
     --config config/experiment-multiscale.yaml \
     --scales 1x 3x 5x full \
     --exp-name taxloss_4scales
 
-# Train standard multi-scale model
-fathomnet-train \
-    --config config/experiment-multiscale.yaml \
-    --scales 1x 3x 5x
-
-# Generate submission
-fathomnet-predict-taxloss \
-    --checkpoint outputs/taxloss_4scales/checkpoints/best.ckpt \
-    --output submission.csv
-```
-
-Or run the scripts directly:
-
-```bash
+# See all training options
 python -m src.training.train_multiscale_taxloss --help
-python -m src.inference.generate_submission_taxloss --help
 ```
 
 Edit `config/experiment-multiscale.yaml` to customize dataset paths, augmentation strength, backbone selection, optimizer settings, and hierarchy-loss weights.
