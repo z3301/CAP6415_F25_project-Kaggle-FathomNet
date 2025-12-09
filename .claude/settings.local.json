@@ -94,7 +94,8 @@
       "Bash(source:*)",
       "Bash(export KAGGLE_USERNAME KAGGLE_KEY)",
       "Bash(kaggle competitions submissions:*)",
-      "Bash(~/miniconda/envs/fathomnet/bin/pip show kaggle)"
+      "Bash(~/miniconda/envs/fathomnet/bin/pip show kaggle)",
+      "Bash(~/miniconda/envs/fathomnet/bin/rclone copy:*)"
     ],
     "deny": [],
     "ask": []

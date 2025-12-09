@@ -53,8 +53,16 @@ python data/create_full_scale_rois.py \
 
 # Step 4: Download pre-trained checkpoint
 echo "[4/4] Downloading pre-trained checkpoint (~4GB)..."
-mkdir -p outputs/multiscale_4scales_taxloss/checkpoints
-gdown 1roOwrSRXP93tZRiLqb4paKrmBnT4Jw1y -O "outputs/multiscale_4scales_taxloss/checkpoints/best-epoch=02-val_tax_score=0.531.ckpt"
+CKPT_DIR="outputs/multiscale_4scales_taxloss/checkpoints"
+CKPT_FILE="$CKPT_DIR/best-epoch=02-val_tax_score=0.531.ckpt"
+mkdir -p "$CKPT_DIR"
+
+if [ -f "$CKPT_FILE" ]; then
+    echo "     Checkpoint already exists, skipping download"
+else
+    # Try gdown first
+    gdown 1keUnBTv0WHi4uWw4j2qBCz1Vd0Nkc34k -O "$CKPT_FILE"
+fi
 
 echo ""
 echo "=== Setup complete! ==="
