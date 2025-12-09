@@ -118,16 +118,13 @@ Use `-v` for progress info or `-vv` for debug output. Use `-n` to adjust concurr
 
 ### 4. Download Pre-trained Checkpoint
 
-Download the pre-trained model checkpoint (~4GB):
+Download the pre-trained model checkpoint (~4GB) from Google Drive:
 
 ```bash
-mkdir -p outputs/multiscale_4scales_taxloss/checkpoints
-# Download from Google Drive
 pip install gdown
-gdown 1roOwrSRXP93tZRiLqb4paKrmBnT4Jw1y -O outputs/multiscale_4scales_taxloss/checkpoints/best-epoch=02-val_tax_score=0.531.ckpt
+mkdir -p outputs/multiscale_4scales_taxloss/checkpoints
+gdown 1roOwrSRXP93tZRiLqb4paKrmBnT4Jw1y -O "outputs/multiscale_4scales_taxloss/checkpoints/best-epoch=02-val_tax_score=0.531.ckpt"
 ```
-
-Or download manually from [Google Drive](https://drive.google.com/open?id=1roOwrSRXP93tZRiLqb4paKrmBnT4Jw1y) and place in `outputs/multiscale_4scales_taxloss/checkpoints/`.
 
 ### 5. Set Kaggle Credentials
 
