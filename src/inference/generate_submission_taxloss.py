@@ -254,6 +254,7 @@ def main():
         scales=args.scales,
         distance_matrix_path=args.distance_matrix,
         strict=False,
+        map_location=device,  # Load directly to CPU if no GPU available
     )
     model.to(device)
     model.eval()
@@ -292,7 +293,7 @@ def main():
         test_dataset,
         batch_size=args.batch_size,
         shuffle=False,
-        num_workers=4,
+        num_workers=0,  # Avoid multiprocessing pickle issues
         collate_fn=collate_fn,
     )
 

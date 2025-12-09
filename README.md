@@ -84,7 +84,7 @@ cd CAP6415_F25_project-Kaggle-FathomNet
 ```
 
 ### 2. Install Dependencies
-Ensure you are using **Python ≥ 3.10** and have **CUDA-enabled GPUs** configured.
+Ensure you are using **Python ≥ 3.10**. A GPU is recommended for faster inference but not required.
 
 ```bash
 # Install as editable package (recommended)
