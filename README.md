@@ -7,7 +7,7 @@
 
 ## Abstract
 
-This report presents a comprehensive analysis of approaches to the FathomNet 2025 marine species classification competition at CVPR-FGVC. I describe the progression from adapting an 8th place Kaggle notebook solution to a modular Python training pipeline, enabling systematic experimentation with architectures and hyperparameters. I explore the winning solution's architecture, experiment with DINOv2 backbones, and develop multi-scale context models using ConvNeXtV2. My experiments demonstrate that adding full-image context (4-scale) combined with taxonomic distance-aware loss achieves our best performance (**private score 1.94**), representing a **27% improvement** over baseline approaches. I find that aligning training objectives with the evaluation metric provides greater benefit than architectural complexity.
+This repo presents a comprehensive analysis of approaches to the FathomNet 2025 marine species classification competition at CVPR-FGVC. I describe the progression from adapting an 8th place Kaggle notebook solution to a modular Python training pipeline, enabling systematic experimentation with architectures and hyperparameters. I explore the winning solution's architecture, experiment with DINOv2 backbones, and develop multi-scale context models using ConvNeXtV2. My experiments demonstrate that adding full-image context (4-scale) combined with taxonomic distance-aware loss achieves our best performance (**private score 1.94**), representing a **27% improvement** over baseline approaches. I find that aligning training objectives with the evaluation metric provides greater benefit than architectural complexity.
 
 ### Project Resources
 
