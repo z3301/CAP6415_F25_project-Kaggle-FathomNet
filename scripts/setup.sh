@@ -60,8 +60,8 @@ mkdir -p "$CKPT_DIR"
 if [ -f "$CKPT_FILE" ]; then
     echo "     Checkpoint already exists, skipping download"
 else
-    # Try gdown first (v4 copy - fresh upload via rclone)
-    gdown 1WwBLIHUZ0mPZfxKLvk4nKqFYUPIQSJIr -O "$CKPT_FILE"
+    # Download from Kaggle Datasets (no rate limits)
+    kaggle datasets download -d danzimmerman/fathomnet-2025-checkpoint -p "$CKPT_DIR" --unzip
 fi
 
 echo ""
