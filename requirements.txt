@@ -12,4 +12,5 @@ tqdm>=4.66.0
 httpx
 pillow
 coco-lib
-dotenv
+kaggle==1.7.4.5
+gdown
