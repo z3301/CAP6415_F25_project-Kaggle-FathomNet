@@ -3,7 +3,7 @@
 
 # Multi-Scale Context and Taxonomic Distance Learning for Marine Species Classification
 
-**CAP6415 Computer Vision — Fall 2025 — University of Central Florida**
+**CAP6415 Computer Vision — Fall 2025 — Florida Atlantic University**
 
 ## Abstract
 
@@ -25,7 +25,7 @@ This report presents a comprehensive analysis of approaches to the FathomNet 202
 
 ![Multi-Scale FathomNet Architecture](multiscale_architecture.png) 
 
-Our best-performing model uses **asymmetric multi-scale context** with a **confidence-based taxonomic fallback**:
+My best-performing model uses **asymmetric multi-scale context** with a **confidence-based taxonomic fallback**:
 
 - **ROI Encoder**: ConvNeXtV2-Large (197M params) → 1536-d features
 - **Context Encoders**: 3× ConvNeXtV2-Base (88M each) for 3×, 5×, and full-image scales → 1024-d each
